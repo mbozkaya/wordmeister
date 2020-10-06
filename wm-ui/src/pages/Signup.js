@@ -1,14 +1,15 @@
-import React from "react";
-import AnimationRevealPage from "helpers/AnimationRevealPage.js";
-import { Container as ContainerBase } from "components/misc/Layouts";
+import React, { useState } from "react";
+import AnimationRevealPage from "./../helpers/AnimationRevealPage.js";
+import { Container as ContainerBase } from "./../components/misc/Layouts";
 import tw from "twin.macro";
 import styled from "styled-components";
 import { css } from "styled-components/macro"; //eslint-disable-line
-import illustration from "images/signup-illustration.svg";
-import logo from "images/logo.svg";
-import googleIconImageSrc from "images/google-icon.png";
-import twitterIconImageSrc from "images/twitter-icon.png";
+import illustration from "../images/signup-illustration.svg";
+import logo from "../images/logo.svg";
+import googleIconImageSrc from "../images/google-icon.png";
+import twitterIconImageSrc from "../images/twitter-icon.png";
 import { ReactComponent as SignUpIcon } from "feather-icons/dist/icons/user-plus.svg";
+import { Link } from "react-router-dom";
 
 const Container = tw(ContainerBase)`min-h-screen bg-primary-900 text-white font-medium flex justify-center -m-8`;
 const Content = tw.div`max-w-screen-xl m-0 sm:mx-20 sm:my-16 bg-white text-gray-900 shadow sm:rounded-lg flex justify-center flex-1`;
@@ -54,7 +55,7 @@ const IllustrationImage = styled.div`
 `;
 
 export default ({
-  logoLinkUrl = "#",
+  logoLinkUrl = "/",
   illustrationImageSrc = illustration,
   headingText = "Sign Up For Treact",
   socialButtons = [
@@ -73,63 +74,123 @@ export default ({
   SubmitButtonIcon = SignUpIcon,
   tosUrl = "#",
   privacyPolicyUrl = "#",
-  signInUrl = "#"
-}) => (
-  <AnimationRevealPage>
-    <Container>
-      <Content>
-        <MainContainer>
-          <LogoLink href={logoLinkUrl}>
-            <LogoImage src={logo} />
-          </LogoLink>
-          <MainContent>
-            <Heading>{headingText}</Heading>
-            <FormContainer>
-              <SocialButtonsContainer>
-                {socialButtons.map((socialButton, index) => (
-                  <SocialButton key={index} href={socialButton.url}>
-                    <span className="iconContainer">
-                      <img src={socialButton.iconImageSrc} className="icon" alt="" />
-                    </span>
-                    <span className="text">{socialButton.text}</span>
-                  </SocialButton>
-                ))}
-              </SocialButtonsContainer>
-              <DividerTextContainer>
-                <DividerText>Or Sign up with your e-mail</DividerText>
-              </DividerTextContainer>
-              <Form>
-                <Input type="email" placeholder="Email" />
-                <Input type="password" placeholder="Password" />
-                <SubmitButton type="submit">
-                  <SubmitButtonIcon className="icon" />
-                  <span className="text">{submitButtonText}</span>
-                </SubmitButton>
-                <p tw="mt-6 text-xs text-gray-600 text-center">
-                  I agree to abide by treact's{" "}
-                  <a href={tosUrl} tw="border-b border-gray-500 border-dotted">
-                    Terms of Service
-                  </a>{" "}
-                  and its{" "}
-                  <a href={privacyPolicyUrl} tw="border-b border-gray-500 border-dotted">
-                    Privacy Policy
-                  </a>
-                </p>
+  signInUrl = "login"
+}) => {
 
-                <p tw="mt-8 text-sm text-gray-600 text-center">
-                  Already have an account?{" "}
-                  <a href={signInUrl} tw="border-b border-gray-500 border-dotted">
-                    Sign In
-                  </a>
-                </p>
-              </Form>
-            </FormContainer>
-          </MainContent>
-        </MainContainer>
-        <IllustrationContainer>
-          <IllustrationImage imageSrc={illustrationImageSrc} />
-        </IllustrationContainer>
-      </Content>
-    </Container>
-  </AnimationRevealPage>
-);
+  const [form, setForm] = useState({
+    email: '',
+    emailError: false,
+    password: '',
+    rePassword: '',
+    passwordError: false,
+    privacyPolicyCheck: false,
+  });
+
+  return (
+    <AnimationRevealPage>
+      <Container>
+        <Content>
+          <MainContainer>
+            <Link to={logoLinkUrl}>
+            <LogoImage src={logo} />
+            </Link>
+            <MainContent>
+              <Heading>{headingText}</Heading>
+              <FormContainer>
+                <SocialButtonsContainer>
+                  {socialButtons.map((socialButton, index) => (
+                    <SocialButton key={index} href={socialButton.url}>
+                      <span className="iconContainer">
+                        <img src={socialButton.iconImageSrc} className="icon" alt="" />
+                      </span>
+                      <span className="text">{socialButton.text}</span>
+                    </SocialButton>
+                  ))}
+                </SocialButtonsContainer>
+                <DividerTextContainer>
+                  <p style={{ padding: '10px' }}>Or Sign in with your e-mail</p>
+                </DividerTextContainer>
+                <Form>
+                  <Input
+                    type="email"
+                    placeholder="Email"
+                    value={form.email}
+                    onChange={val => setForm({
+                      ...form,
+                      email: val.target.val,
+                    })}
+                    onBlur={e => {
+                      setForm({
+                        ...form,
+                        emailError: !/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/.test(e.target.value.toLowerCase()),
+                      });
+                      console.log(form.emailError)
+                    }}
+                  />
+                  {form.email !== '' && form.emailError && <span>Please enter valid Email</span>}
+                  <Input
+                    type="password"
+                    placeholder="Password"
+                    value={form.password}
+                    onChange={event => setForm({
+                      ...form,
+                      password: event.target.value,
+                      passwordError: event.target.value !== form.rePassword,
+                    })} />
+                  {form.password !== '' && form.rePassword !== '' && form.passwordError && <span>Password and Re Password must be match</span>}
+                  <Input
+                    type="password"
+                    placeholder="Re Password"
+                    onChange={event => setForm({
+                      ...form,
+                      rePassword: event.target.value,
+                      passwordError: event.target.value !== form.password
+                    })}
+                    value={form.rePassword}
+                  />
+                  {form.password !== '' && form.rePassword !== '' && form.passwordError && <span>Password and Re Password must be match</span>}
+                  <div style={{ paddingTop: '10px' }}>
+                    <input type='checkbox' style={{
+                      display: 'inline',
+                      marginRight: '20px'
+                    }} checked={form.privacyPolicyCheck} onChange={event => setForm({
+                      ...form,
+                      privacyPolicyCheck: event.target.checked,
+                    })} />
+
+                    <p tw="mt-6 text-xs text-gray-600 text-center" style={{ display: "inline" }}>
+                      I agree to abide by treact's{" "}
+                      <a href={tosUrl} tw="border-b border-gray-500 border-dotted">
+                        Terms of Service
+                    </a>{" "}
+                    and its{" "}
+                      <a href={privacyPolicyUrl} tw="border-b border-gray-500 border-dotted">
+                        Privacy Policy
+                    </a>
+                    </p>
+                  </div>
+
+                  <SubmitButton type="button" onClick={e => alert(console.table(form))}>
+                    <SubmitButtonIcon className="icon" />
+                    <span className="text">{submitButtonText}</span>
+                  </SubmitButton>
+
+
+                  <p tw="mt-8 text-sm text-gray-600 text-center">
+                    Already have an account?{" "}
+                    <a href={signInUrl} tw="border-b border-gray-500 border-dotted">
+                      Sign In
+                    </a>
+                  </p>
+                </Form>
+              </FormContainer>
+            </MainContent>
+          </MainContainer>
+          <IllustrationContainer>
+            <IllustrationImage imageSrc={illustrationImageSrc} />
+          </IllustrationContainer>
+        </Content>
+      </Container>
+    </AnimationRevealPage>
+  );
+}
