@@ -1,3 +1,4 @@
 *.suo
 vm-api/wordmeister-api/obj/
 vm-api/wordmeister-api/bin/
+vm-api/wordmeister-api/.vs/wordmeister-api/DesignTimeBuild/.dtbcache.v2
