@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using wordmeister_api.Dtos.Account;
+using wordmeister_api.Entities;
 using wordmeister_api.Services;
 
 namespace wordmeister_api.Controllers
@@ -38,6 +39,13 @@ namespace wordmeister_api.Controllers
         {
             var users = _userService.GetAll();
             return Ok(users);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("signup")]
+        public IActionResult SignUp([FromBody]SignUp model)
+        {
+            return Ok(_userService.CreateUser(model));
         }
     }
 }

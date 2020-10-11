@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using wordmeister_api.Dtos;
 using wordmeister_api.Dtos.Account;
+using wordmeister_api.Dtos.General;
 using wordmeister_api.Entities;
 
 namespace wordmeister_api.Services
@@ -18,26 +19,24 @@ namespace wordmeister_api.Services
         AuthenticateResponse Authenticate(AuthenticateRequest model);
         IEnumerable<User> GetAll();
         User GetById(int id);
+        General.ResponseResult CreateUser(SignUp model);
     }
 
     public class UserService : IUserService
     {
-        // users hardcoded for simplicity, store in a db with hashed passwords in production applications
-        private List<User> _users = new List<User>
-        {
-            new User { Id = 1, FirstName = "Test", LastName = "User", Password = "test" }
-        };
-
         private readonly Appsettings _appSettings;
+        private WordMeisterDbContext _wordMeisterDbContext;
 
-        public UserService(IOptions<Appsettings> appSettings)
+        public UserService(IOptions<Appsettings> appSettings, WordMeisterDbContext wordMeisterDbContext)
         {
             _appSettings = appSettings.Value;
+            _wordMeisterDbContext = wordMeisterDbContext;
+
         }
 
         public AuthenticateResponse Authenticate(AuthenticateRequest model)
         {
-            var user = _users.SingleOrDefault(x => x.Email == model.Email && x.Password == model.Password);
+            var user = _wordMeisterDbContext.User.SingleOrDefault(x => x.Email == model.Email && x.Password == model.Password);
 
             // return null if user not found
             if (user == null) return null;
@@ -50,12 +49,39 @@ namespace wordmeister_api.Services
 
         public IEnumerable<User> GetAll()
         {
-            return _users;
+            return _wordMeisterDbContext.User.Where(w=>w.Status).ToList();
         }
 
         public User GetById(int id)
         {
-            return _users.FirstOrDefault(x => x.Id == id);
+            return _wordMeisterDbContext.User.Where(w=>w.Id==id).FirstOrDefault();
+        }
+
+        public General.ResponseResult CreateUser(SignUp model)
+        {
+            var user = _wordMeisterDbContext.User.Where(w => w.Email == model.Email).FirstOrDefault();
+
+            if(user != null)
+            {
+                return new General.ResponseResult() { Error = true, ErrorMessage = "There is a user that have same email" };
+            }
+
+            _wordMeisterDbContext.User.Add(new User
+            {
+                Email = model.Email,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Password = model.Password,
+                CreatedDate = DateTime.Now,
+                Guid = Guid.NewGuid(),
+                Status = true,
+            });
+
+            _wordMeisterDbContext.SaveChanges();
+
+            //TODO Send Email
+
+            return new General.ResponseResult();
         }
 
         // helper methods
