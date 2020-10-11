@@ -10,6 +10,7 @@ import googleIconImageSrc from "../images/google-icon.png";
 import twitterIconImageSrc from "../images/twitter-icon.png";
 import { ReactComponent as SignUpIcon } from "feather-icons/dist/icons/user-plus.svg";
 import { Link } from "react-router-dom";
+import accountService from '../services/accountService';
 
 const Container = tw(ContainerBase)`min-h-screen bg-primary-900 text-white font-medium flex justify-center -m-8`;
 const Content = tw.div`max-w-screen-xl m-0 sm:mx-20 sm:my-16 bg-white text-gray-900 shadow sm:rounded-lg flex justify-center flex-1`;
@@ -83,8 +84,25 @@ export default ({
     password: '',
     rePassword: '',
     passwordError: false,
+    firstname: 'Muhammet',
+    lastname: 'Bozkaya',
     privacyPolicyCheck: false,
   });
+
+  const handleSingUp = () => {
+    if (form.emailError || form.passwordError) {
+      return alert('Please Enter valid password and email');
+    }
+
+    const model = {
+      firstname: form.firstname,
+      lastname: form.lastname,
+      email: form.email,
+      password: form.password,
+    };
+    debugger;
+    accountService.signup(model).then(response => console.log(response));
+  }
 
   return (
     <AnimationRevealPage>
@@ -92,7 +110,7 @@ export default ({
         <Content>
           <MainContainer>
             <Link to={logoLinkUrl}>
-            <LogoImage src={logo} />
+              <LogoImage src={logo} />
             </Link>
             <MainContent>
               <Heading>{headingText}</Heading>
@@ -117,7 +135,7 @@ export default ({
                     value={form.email}
                     onChange={val => setForm({
                       ...form,
-                      email: val.target.val,
+                      email: val.target.value,
                     })}
                     onBlur={e => {
                       setForm({
@@ -170,12 +188,10 @@ export default ({
                     </p>
                   </div>
 
-                  <SubmitButton type="button" onClick={e => alert(console.table(form))}>
+                  <SubmitButton type="button" onClick={() => handleSingUp()}>
                     <SubmitButtonIcon className="icon" />
                     <span className="text">{submitButtonText}</span>
                   </SubmitButton>
-
-
                   <p tw="mt-8 text-sm text-gray-600 text-center">
                     Already have an account?{" "}
                     <a href={signInUrl} tw="border-b border-gray-500 border-dotted">
