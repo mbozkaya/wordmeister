@@ -12,17 +12,18 @@ import { ReactComponent as SignUpIcon } from "feather-icons/dist/icons/user-plus
 import { Link } from "react-router-dom";
 import accountService from '../services/accountService';
 
-const Container = tw(ContainerBase)`min-h-screen bg-primary-900 text-white font-medium flex justify-center -m-8`;
-const Content = tw.div`max-w-screen-xl m-0 sm:mx-20 sm:my-16 bg-white text-gray-900 shadow sm:rounded-lg flex justify-center flex-1`;
-const MainContainer = tw.div`lg:w-1/2 xl:w-5/12 p-6 sm:p-12`;
-const LogoLink = tw.a``;
-const LogoImage = tw.img`h-12 mx-auto`;
-const MainContent = tw.div`mt-12 flex flex-col items-center`;
-const Heading = tw.h1`text-2xl xl:text-3xl font-extrabold`;
-const FormContainer = tw.div`w-full flex-1 mt-8`;
+const Container = tw(ContainerBase)
+`min-h-screen bg-primary-900 text-white font-medium flex justify-center -m-8`;
+const Content = tw.div `max-w-screen-xl m-0 sm:mx-20 sm:my-16 bg-white text-gray-900 shadow sm:rounded-lg flex justify-center flex-1`;
+const MainContainer = tw.div `lg:w-1/2 xl:w-5/12 p-6 sm:p-12`;
+const LogoLink = tw.a ``;
+const LogoImage = tw.img `h-12 mx-auto`;
+const MainContent = tw.div `mt-12 flex flex-col items-center`;
+const Heading = tw.h1 `text-2xl xl:text-3xl font-extrabold`;
+const FormContainer = tw.div `w-full flex-1 mt-8`;
 
-const SocialButtonsContainer = tw.div`flex flex-col items-center`;
-const SocialButton = styled.a`
+const SocialButtonsContainer = tw.div `flex flex-col items-center`;
+const SocialButton = styled.a `
   ${tw`w-full max-w-xs font-semibold rounded-lg py-3 border text-gray-900 bg-gray-100 hocus:bg-gray-200 hocus:border-gray-400 flex items-center justify-center transition-all duration-300 focus:outline-none focus:shadow-outline text-sm mt-5 first:mt-0`}
   .iconContainer {
     ${tw`bg-white p-2 rounded-full`}
@@ -101,7 +102,7 @@ export default ({
       password: form.password,
     };
     debugger;
-    accountService.signup(model).then(response => console.log(response));
+    accountService.signup(model).then(response => { });
   }
 
   return (
@@ -142,10 +143,9 @@ export default ({
                         ...form,
                         emailError: !/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/.test(e.target.value.toLowerCase()),
                       });
-                      console.log(form.emailError)
                     }}
                   />
-                  {form.email !== '' && form.emailError && <span>Please enter valid Email</span>}
+                  {form.email !== '' && form.emailError && <div className="alert alert-danger">Please enter valid Email</div>}
                   <Input
                     type="password"
                     placeholder="Password"
@@ -155,7 +155,7 @@ export default ({
                       password: event.target.value,
                       passwordError: event.target.value !== form.rePassword,
                     })} />
-                  {form.password !== '' && form.rePassword !== '' && form.passwordError && <span>Password and Re Password must be match</span>}
+                  {form.password !== '' && form.rePassword !== '' && form.passwordError && <div className="alert alert-danger">Password and Re Password must be match</div>}
                   <Input
                     type="password"
                     placeholder="Re Password"
@@ -166,7 +166,7 @@ export default ({
                     })}
                     value={form.rePassword}
                   />
-                  {form.password !== '' && form.rePassword !== '' && form.passwordError && <span>Password and Re Password must be match</span>}
+                  {form.password !== '' && form.rePassword !== '' && form.passwordError && <div className="alert alert-danger">Password and Re Password must be match</div>}
                   <div style={{ paddingTop: '10px' }}>
                     <input type='checkbox' style={{
                       display: 'inline',

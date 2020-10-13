@@ -6,6 +6,8 @@ import { createBrowserHistory as History } from 'history';
 import Home from './views/home';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
+import Dashboard from './views/dashboard/dashboard';
+import { AuthContext, AuthProvider, AuthRoute } from './contexts/authContext';
 
 
 // function App() {
@@ -32,13 +34,22 @@ import Login from './pages/Login';
 const App = props => {
   return (
     <BrowserRouter>
-      <Router history={History()}>
-        <Switch>
-          <Route exact path='/' component={Home} />
-          <Route exact path='/signup' component={Signup} />
-          <Route exact path='/login' component={Login} />
-        </Switch>
-      </Router>
+      <AuthProvider>
+        <AuthContext.Consumer>
+          {() => (
+            <Router history={History()}>
+              <Switch>
+                <Route exact path='/' component={Home} />
+                <Route exact path='/signup' component={Signup} />
+                <Route exact path='/login' component={Login} />
+                <AuthRoute>
+                  <Route exact path='/dashboard' component={Dashboard} />
+                </AuthRoute>
+              </Switch>
+            </Router>
+          )}
+        </AuthContext.Consumer>
+      </AuthProvider>
     </BrowserRouter>
   )
 }

@@ -11,7 +11,7 @@ export const Fetch = (url, requestOptions) => {
             }
             if (response.status === 401) {
                 localStorage.removeItem('user');
-                window.location.reload();
+                if (window.location.pathname !== '/') window.location = '/';
             } else {
                 throw new Error();
             }

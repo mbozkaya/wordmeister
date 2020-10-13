@@ -45,10 +45,10 @@ const CustomersLogoStrip = styled.div`
   }
 `;
 
-export default ({ roundedHeaderButton }) => {
+export default ({ roundedHeaderButton, authorize, onLogout }) => {
   return (
     <>
-      <Header roundedHeaderButton={roundedHeaderButton} />
+      <Header roundedHeaderButton={roundedHeaderButton} authorize={authorize} onLogout={onLogout} />
       <Container>
         <TwoColumn>
           <LeftColumn>
