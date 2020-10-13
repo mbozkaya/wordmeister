@@ -22,7 +22,7 @@ namespace wordmeister_api.Entities
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseSqlServer("data source=localhost;initial catalog=WordMeister;User Id=sa;Password=Sovos2018@;MultipleActiveResultSets=True;App=EntityFramework");
+                optionsBuilder.UseSqlServer("data source=localhost;initial catalog=WordMeister;User Id=sa;Password=!wordmeister123;MultipleActiveResultSets=True;App=EntityFramework");
             }
         }
 

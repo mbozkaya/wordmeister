@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using wordmeister_api.Dtos.Account;
+using wordmeister_api.Dtos.General;
 using wordmeister_api.Entities;
 using wordmeister_api.Services;
 
@@ -22,15 +23,17 @@ namespace wordmeister_api.Controllers
             _userService = userService;
         }
 
-        [HttpPost("authenticate")]
-        public IActionResult Authenticate(AuthenticateRequest model)
+        [HttpPost("login")]
+        public IActionResult Login(AuthenticateRequest model)
         {
             var response = _userService.Authenticate(model);
 
             if (response == null)
                 return BadRequest(new { message = "Username or password is incorrect" });
 
-            return Ok(response);
+            var result = new General.ResponseResult() { Data = response };
+
+            return Ok(result);
         }
 
         [Authorize]
@@ -46,6 +49,13 @@ namespace wordmeister_api.Controllers
         public IActionResult SignUp([FromBody]SignUp model)
         {
             return Ok(_userService.CreateUser(model));
+        }
+
+        [Authorize]
+        [HttpGet("Authenticated")]
+        public IActionResult Authenticated()
+        {
+            return Ok();
         }
     }
 }

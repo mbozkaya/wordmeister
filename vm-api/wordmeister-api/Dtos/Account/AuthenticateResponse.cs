@@ -8,7 +8,8 @@ namespace wordmeister_api.Dtos.Account
 {
     public class AuthenticateResponse
     {
-        public int Id { get; set; }
+        //public int Id { get; set; }
+        public string Guid { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
@@ -17,7 +18,7 @@ namespace wordmeister_api.Dtos.Account
 
         public AuthenticateResponse(User user, string token)
         {
-            Id = user.Id;
+            Guid = user.Guid.ToString();
             FirstName = user.FirstName;
             LastName = user.LastName;
             Email = user.Email;
