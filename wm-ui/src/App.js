@@ -1,5 +1,4 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 import { Router, Route, Switch, BrowserRouter, Redirect } from 'react-router-dom';
 import { createBrowserHistory as History } from 'history';

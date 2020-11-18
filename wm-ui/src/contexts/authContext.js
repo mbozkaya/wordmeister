@@ -2,6 +2,7 @@ import React, { Component, useEffect, useLayoutEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Route, Redirect, withRouter, Router } from 'react-router-dom';
 import accountService from '../services/accountService';
+import { Layout } from '../views/layout/layout';
 // import Login from '../pages/Login';
 
 
@@ -29,7 +30,8 @@ const AuthProvider = props => {
                 setContextState({
                     authorize: true,
                     loginError: false,
-                    loginErrorMessage: ""
+                    loginErrorMessage: "",
+                    checkAuth:true,
                 });
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('ug', data.guid);
@@ -119,7 +121,9 @@ const AuthRoute = ({ component: Component, ...rest }) => (
                 content = (
                     <Route path='/df'
                         render={props => (
-                            <Component {...props} />
+                            <Layout>
+                                <Component {...props} />
+                            </Layout>
                         )}
                         {...rest}
                     />

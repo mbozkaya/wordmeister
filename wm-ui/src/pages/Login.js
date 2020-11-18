@@ -9,23 +9,23 @@ import logo from "./../images/logo.svg";
 import googleIconImageSrc from "./../images/google-icon.png";
 import twitterIconImageSrc from "./../images/twitter-icon.png";
 import { ReactComponent as LoginIcon } from "feather-icons/dist/icons/log-in.svg";
-import { Link, Redirect, Route } from "react-router-dom";
+import { Link, Navigate, Redirect, Route } from "react-router-dom";
 import accountService from '../services/accountService';
 import { AuthConsumer, AuthContext, AuthProvider } from "../contexts/authContext.js";
 import Dashboard from "../views/dashboard/dashboard.js";
 
 const Container = tw(ContainerBase)
-`min-h-screen bg-primary-900 text-white font-medium flex justify-center -m-8`;
-const Content = tw.div `max-w-screen-xl m-0 sm:mx-20 sm:my-16 bg-white text-gray-900 shadow sm:rounded-lg flex justify-center flex-1`;
-const MainContainer = tw.div `lg:w-1/2 xl:w-5/12 p-6 sm:p-12`;
-const LogoLink = tw.a ``;
-const LogoImage = tw.img `h-12 mx-auto`;
-const MainContent = tw.div `mt-12 flex flex-col items-center`;
-const Heading = tw.h1 `text-2xl xl:text-3xl font-extrabold`;
-const FormContainer = tw.div `w-full flex-1 mt-8`;
+  `min-h-screen bg-primary-900 text-white font-medium flex justify-center -m-8`;
+const Content = tw.div`max-w-screen-xl m-0 sm:mx-20 sm:my-16 bg-white text-gray-900 shadow sm:rounded-lg flex justify-center flex-1`;
+const MainContainer = tw.div`lg:w-1/2 xl:w-5/12 p-6 sm:p-12`;
+const LogoLink = tw.a``;
+const LogoImage = tw.img`h-12 mx-auto`;
+const MainContent = tw.div`mt-12 flex flex-col items-center`;
+const Heading = tw.h1`text-2xl xl:text-3xl font-extrabold`;
+const FormContainer = tw.div`w-full flex-1 mt-8`;
 
-const SocialButtonsContainer = tw.div `flex flex-col items-center`;
-const SocialButton = styled.a `
+const SocialButtonsContainer = tw.div`flex flex-col items-center`;
+const SocialButton = styled.a`
   ${tw`w-full max-w-xs font-semibold rounded-lg py-3 border text-gray-900 bg-gray-100 hocus:bg-gray-200 hocus:border-gray-400 flex items-center justify-center transition-all duration-300 focus:outline-none focus:shadow-outline text-sm mt-5 first:mt-0`}
   .iconContainer {
     ${tw`bg-white p-2 rounded-full`}
@@ -59,7 +59,7 @@ const IllustrationImage = styled.div`
 `;
 
 const Login = ({
-  
+
 
   logoLinkUrl = "/",
   illustrationImageSrc = illustration,
@@ -86,30 +86,26 @@ const Login = ({
     email: '',
     password: '',
     error: false,
-    errorMessage :''
+    errorMessage: ''
   });
 
   return (
     <AuthContext.Consumer>
-      {({loginError, loginErrorMessage, onLogin }) =>
-        (
-          // console.log("aa:"+authorize);
-          // authorize === true ? 
-          //   <Redirect to="/dashboard"/>
-            // <Route render={() => <Redirect to="/dashboard" />} />
-            // <Route component= {Dashboard} />
-          // :
-          <AnimationRevealPage>
-            <Container>
-              <Content>
-                <MainContainer>
-                  <Link to={logoLinkUrl}>
-                    <LogoImage src={logo} />
-                  </Link>
-                  <MainContent>
-                    <Heading>{headingText}</Heading>
-                    <FormContainer>
-                      {/* <SocialButtonsContainer>
+      {({ loginError, loginErrorMessage, onLogin, authorize }) =>
+
+        authorize ? <Redirect to="/dashboard" /> :
+          (
+            <AnimationRevealPage>
+              <Container>
+                <Content>
+                  <MainContainer>
+                    <Link to={logoLinkUrl}>
+                      <LogoImage src={logo} />
+                    </Link>
+                    <MainContent>
+                      <Heading>{headingText}</Heading>
+                      <FormContainer>
+                        {/* <SocialButtonsContainer>
                         {socialButtons.map((socialButton, index) => (
                           <SocialButton key={index} href={socialButton.url}>
                             <span className="iconContainer">
@@ -123,66 +119,66 @@ const Login = ({
                         <p style={{ padding: '10px' }}>Or Sign in with your e-mail</p>
                       </DividerTextContainer> */}
 
-                      <Form onKeyDown={e => {
-                        if (e.key.toLowerCase() === 'enter' && loginState.email !== '' && loginState.password !== '' && !loginState.error) {
-                          const model = {
-                            email: loginState.email,
-                            password: loginState.password,
-                          };
-                          onLogin(model);
-                        }
-                      }} >
-
-
-                        <Input type="email" placeholder="Email" onChange={val => setLoginState({
-                          ...loginState,
-                          email: val.target.value,
-                        })}
-                          onBlur={e =>
-                            setLoginState({
-                              ...loginState,
-                              error: !/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/.test(e.target.value.toLowerCase()),
-                            })}
-                        />
-                        {loginState.email != '' && loginState.error && <div className="alert alert-danger">Please enter valid Email</div>}
-                        <Input type="password" placeholder="Password" onChange={val => setLoginState({
-                          ...loginState,
-                          password: val.target.value,
-                        })} />
-                        <SubmitButton type="button" onClick={e => {
-                          if (loginState.email === '' || loginState.password === '' || loginState.error) {
-                            return alert('Please enter invalid value');
+                        <Form onKeyDown={e => {
+                          if (e.key.toLowerCase() === 'enter' && loginState.email !== '' && loginState.password !== '' && !loginState.error) {
+                            const model = {
+                              email: loginState.email,
+                              password: loginState.password,
+                            };
+                            onLogin(model);
                           }
-                          const model = {
-                            email: loginState.email,
-                            password: loginState.password,
-                          };
-                          onLogin(model);
-                        }}>
-                        { loginError && <div className="alert alert-danger">{loginErrorMessage}</div>} 
-                          <SubmitButtonIcon className="icon" />
-                          <span className="text">{submitButtonText}</span>
-                        </SubmitButton>
-                      </Form>
-                      <p tw="mt-6 text-xs text-gray-600 text-center">
-                        <a href={forgotPasswordUrl} tw="border-b border-gray-500 border-dotted">
-                          Forgot Password ?
+                        }} >
+
+
+                          <Input type="email" placeholder="Email" onChange={val => setLoginState({
+                            ...loginState,
+                            email: val.target.value,
+                          })}
+                            onBlur={e =>
+                              setLoginState({
+                                ...loginState,
+                                error: !/^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/.test(e.target.value.toLowerCase()),
+                              })}
+                          />
+                          {loginState.email != '' && loginState.error && <div className="alert alert-danger">Please enter valid Email</div>}
+                          <Input type="password" placeholder="Password" onChange={val => setLoginState({
+                            ...loginState,
+                            password: val.target.value,
+                          })} />
+                          <SubmitButton type="button" onClick={e => {
+                            if (loginState.email === '' || loginState.password === '' || loginState.error) {
+                              return alert('Please enter invalid value');
+                            }
+                            const model = {
+                              email: loginState.email,
+                              password: loginState.password,
+                            };
+                            onLogin(model);
+                          }}>
+                            {loginError && <div className="alert alert-danger">{loginErrorMessage}</div>}
+                            <SubmitButtonIcon className="icon" />
+                            <span className="text">{submitButtonText}</span>
+                          </SubmitButton>
+                        </Form>
+                        <p tw="mt-6 text-xs text-gray-600 text-center">
+                          <a href={forgotPasswordUrl} tw="border-b border-gray-500 border-dotted">
+                            Forgot Password ?
                 </a>
-                      </p>
-                      <p tw="mt-8 text-sm text-gray-600 text-center">
-                        Dont have an account?{" "}
-                        <Link to="/signup" tw="border-b border-gray-500 border-dotted">Sign up</Link>
-                      </p>
-                    </FormContainer>
-                  </MainContent>
-                </MainContainer>
-                <IllustrationContainer>
-                  <IllustrationImage imageSrc={illustrationImageSrc} />
-                </IllustrationContainer>
-              </Content>
-            </Container>
-          </AnimationRevealPage>
-        )
+                        </p>
+                        <p tw="mt-8 text-sm text-gray-600 text-center">
+                          Dont have an account?{" "}
+                          <Link to="/signup" tw="border-b border-gray-500 border-dotted">Sign up</Link>
+                        </p>
+                      </FormContainer>
+                    </MainContent>
+                  </MainContainer>
+                  <IllustrationContainer>
+                    <IllustrationImage imageSrc={illustrationImageSrc} />
+                  </IllustrationContainer>
+                </Content>
+              </Container>
+            </AnimationRevealPage>
+          )
       }
     </AuthContext.Consumer >
   )
