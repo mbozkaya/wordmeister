@@ -3,7 +3,10 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import { Router, Route, Switch, BrowserRouter, Redirect } from 'react-router-dom';
 import Home from './views/home';
+import Dashboard from './views/dashboard/dashboard';
+
 
 ReactDOM.render(
     <App />,

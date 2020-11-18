@@ -9,9 +9,10 @@ import logo from "./../images/logo.svg";
 import googleIconImageSrc from "./../images/google-icon.png";
 import twitterIconImageSrc from "./../images/twitter-icon.png";
 import { ReactComponent as LoginIcon } from "feather-icons/dist/icons/log-in.svg";
-import { Link, Redirect } from "react-router-dom";
+import { Link, Redirect, Route } from "react-router-dom";
 import accountService from '../services/accountService';
 import { AuthConsumer, AuthContext, AuthProvider } from "../contexts/authContext.js";
+import Dashboard from "../views/dashboard/dashboard.js";
 
 const Container = tw(ContainerBase)
 `min-h-screen bg-primary-900 text-white font-medium flex justify-center -m-8`;
@@ -58,6 +59,8 @@ const IllustrationImage = styled.div`
 `;
 
 const Login = ({
+  
+
   logoLinkUrl = "/",
   illustrationImageSrc = illustration,
   headingText = "Sign In To Treact",
@@ -83,13 +86,19 @@ const Login = ({
     email: '',
     password: '',
     error: false,
+    errorMessage :''
   });
+
   return (
     <AuthContext.Consumer>
-      {({ authorize, onLogin }) =>
-        (authorize === true ?
-          <Redirect to='/dashboard' />
-          :
+      {({loginError, loginErrorMessage, onLogin }) =>
+        (
+          // console.log("aa:"+authorize);
+          // authorize === true ? 
+          //   <Redirect to="/dashboard"/>
+            // <Route render={() => <Redirect to="/dashboard" />} />
+            // <Route component= {Dashboard} />
+          // :
           <AnimationRevealPage>
             <Container>
               <Content>
@@ -100,7 +109,7 @@ const Login = ({
                   <MainContent>
                     <Heading>{headingText}</Heading>
                     <FormContainer>
-                      <SocialButtonsContainer>
+                      {/* <SocialButtonsContainer>
                         {socialButtons.map((socialButton, index) => (
                           <SocialButton key={index} href={socialButton.url}>
                             <span className="iconContainer">
@@ -112,7 +121,8 @@ const Login = ({
                       </SocialButtonsContainer>
                       <DividerTextContainer>
                         <p style={{ padding: '10px' }}>Or Sign in with your e-mail</p>
-                      </DividerTextContainer>
+                      </DividerTextContainer> */}
+
                       <Form onKeyDown={e => {
                         if (e.key.toLowerCase() === 'enter' && loginState.email !== '' && loginState.password !== '' && !loginState.error) {
                           const model = {
@@ -122,6 +132,8 @@ const Login = ({
                           onLogin(model);
                         }
                       }} >
+
+
                         <Input type="email" placeholder="Email" onChange={val => setLoginState({
                           ...loginState,
                           email: val.target.value,
@@ -147,6 +159,7 @@ const Login = ({
                           };
                           onLogin(model);
                         }}>
+                        { loginError && <div className="alert alert-danger">{loginErrorMessage}</div>} 
                           <SubmitButtonIcon className="icon" />
                           <span className="text">{submitButtonText}</span>
                         </SubmitButton>

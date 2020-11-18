@@ -10,6 +10,7 @@ import logo from "../../images/logo.svg";
 import { ReactComponent as MenuIcon } from "feather-icons/dist/icons/menu.svg";
 import { ReactComponent as CloseIcon } from "feather-icons/dist/icons/x.svg";
 import { Link } from "react-router-dom";
+import { AuthConsumer, AuthContext, AuthProvider } from "../../contexts/authContext";
 
 const Header = tw.header`
   flex justify-between items-center
@@ -57,7 +58,7 @@ export const DesktopNavLinks = tw.nav`
   hidden lg:flex flex-1 justify-between items-center
 `;
 
-export default ({ roundedHeaderButton = false, logoLink, links, className, collapseBreakpointClass = "lg", authorize, onLogout }) => {
+export default ({ roundedHeaderButton = false, logoLink, links, className, collapseBreakpointClass = "lg" }) => {
   /*
    * This header component accepts an optionals "links" prop that specifies the links to render in the navbar.
    * This links props should be an array of "NavLinks" components which is exported from this file.
@@ -73,17 +74,20 @@ export default ({ roundedHeaderButton = false, logoLink, links, className, colla
    */
 
   const defaultLinks = [
-    <NavLinks key={1}>
-      <NavLink href="/#">About</NavLink>
-      <NavLink href="/#">About</NavLink>
-      <NavLink href="/#">Blog</NavLink>
-      <NavLink href="/#">Pricing</NavLink>
-      <NavLink href="/#">Contact Us</NavLink>
-      {authorize === true && <PrimaryLink css={roundedHeaderButton && tw`rounded-full`} href="#" onClick={() => onLogout()}>Logout</PrimaryLink>}
-      {authorize === false && <NavLink href="/login" tw="lg:ml-12!">Login</NavLink>}
-      {authorize === false && <PrimaryLink css={roundedHeaderButton && tw`rounded-full`} href="/signup">Sign Up</PrimaryLink>}
-
-    </NavLinks>
+    <AuthContext.Consumer>
+      {({authorize,onLogout}) => (
+        <NavLinks key={1}>
+          <NavLink key={2} href="/#">About</NavLink>
+          <NavLink key={3} href="/#">About</NavLink>
+          <NavLink key={4} href="/#">Blog</NavLink>
+          <NavLink key={5} href="/#">Pricing</NavLink>
+          {/* <NavLink key={6} href="/#">{user.name}</NavLink> */}
+          {authorize === true && <PrimaryLink key={9} css={roundedHeaderButton && tw`rounded-full`} href="#" onClick={() => onLogout()}>Logout</PrimaryLink>}
+          {authorize === false && <NavLink key={7} href="/login" tw="lg:ml-12!">Login</NavLink>}
+          {authorize === false && <PrimaryLink key={89} css={roundedHeaderButton && tw`rounded-full`} href="/signup">Sign Up</PrimaryLink>}
+        </NavLinks>
+      )}
+    </AuthContext.Consumer>
   ];
 
   const { showNavLinks, animation, toggleNavbar } = useAnimatedNavToggler();

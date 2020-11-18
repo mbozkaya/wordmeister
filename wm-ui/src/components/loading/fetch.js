@@ -12,7 +12,11 @@ export const Fetch = (url, requestOptions) => {
             if (response.status === 401) {
                 localStorage.removeItem('user');
                 if (window.location.pathname !== '/') window.location = '/';
-            } else {
+            } 
+            if (response.status === 400) {
+                return response.json();
+            } 
+            else {
                 throw new Error();
             }
             return false;

@@ -12,6 +12,7 @@ export default {
         };
 
         return Fetch(urlConfig.account.login, requestOptions);
+
     },
     signup: model => {
         var requestOptions = {
@@ -31,23 +32,23 @@ export default {
         };
 
         return fetch(urlConfig.account.authenticated, requestOptions)
-        .then(response => {
-            if (response.ok) {
+            .then(response => {
+                if (response.ok) {
+                    return true;
+                }
+                if (response.status === 401) {
+                    localStorage.removeItem('user');
+                } else {
+                    throw new Error();
+                }
+                return false;
+            })
+            .then(json => {
+                return json;
+            })
+            .catch(ex => {
+                console.error(ex);
                 return true;
-            }
-            if (response.status === 401) {
-                localStorage.removeItem('user');
-            } else {
-                throw new Error();
-            }
-            return false;
-        })
-        .then(json => {
-            return json;
-        })
-        .catch(ex => {
-            console.error(ex);
-            return false;
-        });
+            });
     }
 };

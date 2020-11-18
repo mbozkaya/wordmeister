@@ -1,6 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Header, Footer, SideBar} from './';
+import { Header } from './header';
+import { Sidebar } from './sidebar';
+import { Footer } from './footer';
+
 
 const Layout = props => {
   const { topbar, sidebar, footer, onLogout, children, menu } = props;
@@ -8,7 +11,7 @@ const Layout = props => {
         <main>
             <div id="wrapper">
                 {topbar ? <Header onLogout={onLogout} /> : null}
-                {sidebar ? <SideBar onLogout={onLogout} MenuItems={menu} /> : null}
+                {sidebar ? <Sidebar onLogout={onLogout} MenuItems={menu} /> : null}
                 <div className="content-page">
                     <div className="content">
                         <div className="container-fluid">

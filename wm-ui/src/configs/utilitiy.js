@@ -5,6 +5,6 @@ const utilitity = {
             return { 'Content-Type': 'application/json', Authorization: `Bearer ${user.token}` };
         }
         return { 'Content-Type': 'application/json' };
-    },
+    }
 }
 export default utilitity;

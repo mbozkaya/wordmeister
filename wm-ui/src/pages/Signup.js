@@ -11,6 +11,7 @@ import twitterIconImageSrc from "../images/twitter-icon.png";
 import { ReactComponent as SignUpIcon } from "feather-icons/dist/icons/user-plus.svg";
 import { Link } from "react-router-dom";
 import accountService from '../services/accountService';
+import { AuthContext } from "../contexts/authContext.js";
 
 const Container = tw(ContainerBase)
 `min-h-screen bg-primary-900 text-white font-medium flex justify-center -m-8`;
@@ -81,18 +82,19 @@ export default ({
 
   const [form, setForm] = useState({
     email: '',
-    emailError: false,
+    emailError: true,
     password: '',
     rePassword: '',
-    passwordError: false,
+    passwordError: true,
     firstname: 'Muhammet',
     lastname: 'Bozkaya',
     privacyPolicyCheck: false,
   });
 
-  const handleSingUp = () => {
+  const handleSingUp = (e) => {
     if (form.emailError || form.passwordError) {
-      return alert('Please Enter valid password and email');
+      alert('Please Enter valid password and email');
+      return null;
     }
 
     const model = {
@@ -101,12 +103,13 @@ export default ({
       email: form.email,
       password: form.password,
     };
-    debugger;
-    accountService.signup(model).then(response => { });
+    return model;
   }
 
   return (
-    <AnimationRevealPage>
+    <AuthContext.Consumer>
+      {({authorize, signupError, signupErrorMessage, onSignup})=>(
+      <AnimationRevealPage>
       <Container>
         <Content>
           <MainContainer>
@@ -116,7 +119,7 @@ export default ({
             <MainContent>
               <Heading>{headingText}</Heading>
               <FormContainer>
-                <SocialButtonsContainer>
+                {/* <SocialButtonsContainer>
                   {socialButtons.map((socialButton, index) => (
                     <SocialButton key={index} href={socialButton.url}>
                       <span className="iconContainer">
@@ -128,8 +131,14 @@ export default ({
                 </SocialButtonsContainer>
                 <DividerTextContainer>
                   <p style={{ padding: '10px' }}>Or Sign in with your e-mail</p>
-                </DividerTextContainer>
-                <Form>
+                </DividerTextContainer> */}
+
+                <Form onKeyDown={e => {
+                        if (e.key.toLowerCase() === 'enter' && form.email !== '' &&  !form.emailError && !form.passwordError) {
+                          const model = handleSingUp();
+                          onSignup(model);
+                        }
+                      }}>
                   <Input
                     type="email"
                     placeholder="Email"
@@ -187,8 +196,12 @@ export default ({
                     </a>
                     </p>
                   </div>
+                  { signupError && <div className="alert alert-danger">{signupErrorMessage}</div>} 
 
-                  <SubmitButton type="button" onClick={() => handleSingUp()}>
+                  <SubmitButton type="button" onClick={e=>{
+                    const model = handleSingUp()
+                    onSignup(model)}}>
+
                     <SubmitButtonIcon className="icon" />
                     <span className="text">{submitButtonText}</span>
                   </SubmitButton>
@@ -208,5 +221,7 @@ export default ({
         </Content>
       </Container>
     </AnimationRevealPage>
+      )}    
+    </AuthContext.Consumer>
   );
 }

@@ -1,104 +1,147 @@
-import React, { Component, useEffect, useState } from 'react';
+import React, { Component, useEffect, useLayoutEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Route, Redirect } from 'react-router-dom';
+import { Route, Redirect, withRouter, Router } from 'react-router-dom';
 import accountService from '../services/accountService';
+// import Login from '../pages/Login';
+
 
 const AuthContext = React.createContext();
 
 const AuthConsumer = AuthContext.Consumer;
 
-class AuthProvider extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            authorize: false,
-            permission: 0,
-        };
+const AuthProvider = props => {
 
-        this.onLogin = this.onLogin.bind(this);
-        this.onLogout = this.onLogout.bind(this);
-    }
+    const [contextState, setContextState] = useState({
+        authorize: false,
+        checkAuth: false,
+        permission: 0,
+        loginError: false,
+        loginErrorMessage: "",
+        signupError: false,
+        signupErrorMessage: ""
+    });
 
-    onLogin(model) {
+    console.log("AuthProvider");
+    const { children } = props;
+
+    const onLogin = model => {
         accountService.login(model).then(response => {
             if (response && response.error === false) {
                 const { data } = response;
-                this.setState({
-                    ...this.state,
+                setContextState({
                     authorize: true,
-                    email: data.email,
+                    loginError: false,
+                    loginErrorMessage: ""
                 });
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('ug', data.guid);
                 localStorage.setItem('user', JSON.stringify(data));
             }
+            else {
+                setContextState({
+                    ...contextState,
+                    loginError: true,
+                    loginErrorMessage: response.errorMessage
+                });
+            }
         })
     };
 
-    onLogout() {
+    const onLogout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('ug');
         localStorage.removeItem('user');
 
-        this.setState({
+        setContextState({
             authorize: false,
             permission: 0,
         });
     }
 
-    componentDidMount() {
-        accountService.authenticated().then(response => {
-            if (response) {
-                this.setState({
-                    authorize: true,
-                    permission: 0,
+    const onSignup = model => {
+        if (model === null)
+            return;
+
+        accountService.signup(model).then(response => {
+            if (response && response.error === false) {
+                // signup basarili ise authorize'de olacak
+                setContextState({
+                    // ...this.state,
+                    // authorize:true,
+                    // email:model.email
+                    signupError: false,
+                    signupError: ""
                 });
-            }
+                alert("Registration Successful!");
+                onLogin(model);
 
+            } else {
+                setContextState({
+                    // ...this.state,
+                    signupError: true,
+                    signupErrorMessage: response.errorMessage
+                })
+            }
+        })
+    }
+
+
+    useLayoutEffect(() => {
+        accountService.authenticated().then(response => {
+            setContextState({
+                ...contextState,
+                authorize: response,
+                checkAuth: true,
+                permission: 0,
+            });
         });
-    }
+    }, []);
 
-    render() {
-        const { children } = this.props;
-        const { authorize } = this.state;
-        return (
-            <AuthContext.Provider
-                value={{
-                    authorize,
-                    onLogin: this.onLogin,
-                    onLogout: this.onLogout,
-                }}
-            >
-                {children}
-            </AuthContext.Provider>
-        );
-    }
-}
-
-const AuthRoute = ({ component: Component, ...rest }) => {
-    let content = ''
     return (
-        <AuthContext.Consumer>
-            {
-                ({ authorize }) => {
-                    if (authorize) {
-                        content = (<Route render={props =>
-                            <Component {...props} />
-                        } />)
-                    } else {
-                        content = <Redirect to='/login' />
-                    }
-
-                    return content;
-                }
-            }
-        </AuthContext.Consumer>
-    )
-
+        <AuthContext.Provider
+            value={{
+                authorize: contextState.authorize,
+                checkAuth: contextState.checkAuth,
+                onLogin,
+                onLogout,
+                onSignup,
+            }}
+        >
+            {children}
+        </AuthContext.Provider>
+    );
 }
+
+
+const AuthRoute = ({ component: Component, ...rest }) => (
+    <AuthContext.Consumer>
+        {({ authorize, checkAuth }) => {
+            let content = '';
+
+            console.log("authorize : " + authorize)
+            console.log("checkAuth : " + checkAuth)
+            if (!authorize) {
+                console.log("getti")
+
+                content = (
+                    <Route path='/df'
+                        render={props => (
+                            <Component {...props} />
+                        )}
+                        {...rest}
+                    />
+                );
+            } else if (checkAuth && !authorize) {
+                console.log('You must be login')
+                content = <Redirect to="/" />;
+            }
+            return content;
+        }}
+    </AuthContext.Consumer>
+);
 
 AuthProvider.propTypes = {
     children: PropTypes.node.isRequired,
 };
 
-export { AuthProvider, AuthConsumer, AuthContext, AuthRoute };
+export { AuthContext, AuthProvider, AuthRoute };
