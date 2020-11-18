@@ -48,7 +48,7 @@ export default {
             })
             .catch(ex => {
                 console.error(ex);
-                return true;
+                return false;
             });
     }
 };

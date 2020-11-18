@@ -7,8 +7,6 @@ import accountService from '../services/accountService';
 
 const AuthContext = React.createContext();
 
-const AuthConsumer = AuthContext.Consumer;
-
 const AuthProvider = props => {
 
     const [contextState, setContextState] = useState({
@@ -85,7 +83,6 @@ const AuthProvider = props => {
         })
     }
 
-
     useLayoutEffect(() => {
         accountService.authenticated().then(response => {
             setContextState({
@@ -118,11 +115,7 @@ const AuthRoute = ({ component: Component, ...rest }) => (
         {({ authorize, checkAuth }) => {
             let content = '';
 
-            console.log("authorize : " + authorize)
-            console.log("checkAuth : " + checkAuth)
-            if (!authorize) {
-                console.log("getti")
-
+            if (authorize) {
                 content = (
                     <Route path='/df'
                         render={props => (
@@ -132,7 +125,6 @@ const AuthRoute = ({ component: Component, ...rest }) => (
                     />
                 );
             } else if (checkAuth && !authorize) {
-                console.log('You must be login')
                 content = <Redirect to="/" />;
             }
             return content;

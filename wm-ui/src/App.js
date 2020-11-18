@@ -8,39 +8,25 @@ import Signup from './pages/Signup';
 import Login from './pages/Login';
 import Dashboard from './views/dashboard/dashboard';
 import NotFoundView from './views/common/notFound';
-import { AuthContext, AuthProvider, AuthRoute, UnAuthRoute } from './contexts/authContext';
-import { AuthRouteX, UnAuthRouteX } from './contexts/authRouter';
-import { Header } from './views/layout/header';
+import { AuthProvider, AuthRoute } from './contexts/authContext';
 
-const App = props => {
+const App = () => {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <AuthContext.Consumer>
-          {({authorize}) => (
-            <Router history={History()}>
-              <Switch>
-                <Route exact path='/' component={Home} />
-                <UnAuthRouteX exact path='/signup' component={Signup} />
-                <UnAuthRouteX exact path='/login' component={Login} />
-                <Route exact path='/404' component={NotFoundView} />
-                <Route exact path='/index' component={Home} />
-                <AuthRouteX path='/dashboard' component ={Dashboard} />
-                {/* <AuthRouteX path='/x' component ={Dashboard} /> */}
-
-               <Route  path='*'>
-                  <Redirect exact to='/404'/>
-                </Route>
-
-                {/* <AuthRoute>
-                  <Route exact path='/dashboard' component={Dashboard} />
-                </AuthRoute>
-                */}
-              
-              </Switch>
-            </Router>
-          )}
-        </AuthContext.Consumer>
+        <Router history={History()}>
+          <Switch>
+            <Route exact path='/' component={Home} />
+            <Route exact path='/signup' component={Signup} />
+            <Route exact path='/login' component={Login} />
+            <Route exact path='/404' component={NotFoundView} />
+            <Route exact path='/index' component={Home} />
+            <AuthRoute path='/dashboard' component={Dashboard} />
+            <Route path='*'>
+              <Redirect exact to='/404' />
+            </Route>
+          </Switch>
+        </Router>
       </AuthProvider>
     </BrowserRouter>
   )
