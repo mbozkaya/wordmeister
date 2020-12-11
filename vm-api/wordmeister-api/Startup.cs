@@ -20,6 +20,7 @@ using Microsoft.IdentityModel.Tokens;
 using wordmeister_api.Dtos;
 using wordmeister_api.Entities;
 using wordmeister_api.Helpers;
+using wordmeister_api.Interfaces;
 using wordmeister_api.Services;
 
 namespace wordmeister_api
@@ -38,6 +39,16 @@ namespace wordmeister_api
         {
             services.AddCors();
             services.AddControllers();
+
+            services.AddSwaggerGen(options =>
+            {
+                options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+                {
+                    Title = "WordMeister API",
+                    Version = "v1",
+                    Description = "Sample interface for test service",
+                });
+            });
 
             // Configure Compression level
             services.Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.Fastest);
@@ -78,6 +89,7 @@ namespace wordmeister_api
 
             // configure DI for application services
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IWordBookService, WordBookSevice>();
 
             services.Configure<FormOptions>(x =>
             {
@@ -122,6 +134,9 @@ namespace wordmeister_api
             {
                 endpoints.MapControllers();
             });
+
+            app.UseSwagger();
+            app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "Query result Service API"));
         }
     }
 }
