@@ -11,17 +11,10 @@ using wordmeister_api.Dtos;
 using wordmeister_api.Dtos.Account;
 using wordmeister_api.Dtos.General;
 using wordmeister_api.Entities;
+using wordmeister_api.Interfaces;
 
 namespace wordmeister_api.Services
 {
-    public interface IUserService
-    {
-        AuthenticateResponse Authenticate(AuthenticateRequest model);
-        IEnumerable<User> GetAll();
-        User GetById(int id);
-        General.ResponseResult CreateUser(SignUp model);
-    }
-
     public class UserService : IUserService
     {
         private readonly Appsettings _appSettings;
