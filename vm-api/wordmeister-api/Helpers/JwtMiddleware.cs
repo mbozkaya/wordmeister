@@ -2,13 +2,12 @@
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using wordmeister_api.Dtos;
-using wordmeister_api.Services;
+using wordmeister_api.Interfaces;
 
 namespace wordmeister_api.Helpers
 {

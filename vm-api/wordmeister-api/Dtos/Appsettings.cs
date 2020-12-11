@@ -8,5 +8,6 @@ namespace wordmeister_api.Dtos
     public class Appsettings
     {
         public string Secret { get; set; }
+        public string AESSecret { get; set; }
     }
 }
