@@ -13,6 +13,7 @@ namespace wordmeister_api.Entities
         public int Id { get; set; }
         public int KeywordRegisterId { get; set; }
         public string Key { get; set; }
+        public string OriginalKey { get; set; }
         public DateTime CreatedDate { get; set; }
 
         public virtual KeywordRegister KeywordRegister { get; set; }

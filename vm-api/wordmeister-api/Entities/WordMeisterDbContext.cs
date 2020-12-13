@@ -42,6 +42,10 @@ namespace wordmeister_api.Entities
                     .IsRequired()
                     .HasMaxLength(255);
 
+                entity.Property(e => e.OriginalKey)
+                    .IsRequired()
+                    .HasMaxLength(255);
+
                 entity.HasOne(d => d.KeywordRegister)
                     .WithMany(p => p.KeywordAnswer)
                     .HasForeignKey(d => d.KeywordRegisterId)
