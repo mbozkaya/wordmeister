@@ -33,6 +33,7 @@ namespace wordmeister_api.Services
                 _wordMeisterDbContext.KeywordAnswer.Add(new KeywordAnswer
                 {
                     Key = key.Trim().TurkishCharReplace().Replace(" ", "").ToLower(),
+                    OriginalKey = key,
                     KeywordRegisterId = newRegister.Id,
                 });
             }
@@ -46,6 +47,7 @@ namespace wordmeister_api.Services
             {
                 Key = model.Text.Trim().TurkishCharReplace().Replace(" ", "").ToLower(),
                 KeywordRegisterId = model.Id,
+                OriginalKey = model.Text,
             });
 
             _wordMeisterDbContext.SaveChanges();
@@ -96,11 +98,14 @@ namespace wordmeister_api.Services
             _wordMeisterDbContext.SaveChanges();
         }
 
-        public List<WordBookDto.Keyword> GetKeywords(int skip = 1, int take = 50) => _wordMeisterDbContext
+        public List<WordBookDto.Keyword> GetKeywords(int skip = 0, int take = 50)
+        {
+            var registers = _wordMeisterDbContext
                 .KeywordRegister
                 .Where(w => w.Status.Value)
-                .Take(take)
-                .Skip(skip)
+                //.AsEnumerable()
+                //.Skip(skip)
+                //.Take(take)
                 .Select(s => new WordBookDto.Keyword
                 {
                     CreatedDate = s.CreatedDate,
@@ -110,8 +115,11 @@ namespace wordmeister_api.Services
                     UserId = s.UserId,
                 })
                 .ToList();
-
-        public List<WordBookDto.KeywordAnswer> GetKeywordAnswers(int keywordId) => _wordMeisterDbContext
+            return registers;
+        }
+        public List<WordBookDto.KeywordAnswer> GetKeywordAnswers(int keywordId)
+        {
+            var answers = _wordMeisterDbContext
             .KeywordAnswer
             .Where(w => w.KeywordRegisterId == keywordId)
             .Select(s => new WordBookDto.KeywordAnswer
@@ -120,25 +128,32 @@ namespace wordmeister_api.Services
                 Text = s.Key
             }).ToList();
 
-        public bool CheckAnswer(WordBookDto.CheckAnswer model)
+            return answers;
+        }
+
+        public string CheckAnswer(WordBookDto.CheckAnswer model)
         {
             var answers = _wordMeisterDbContext
                 .KeywordAnswer
                 .Where(w => w.KeywordRegisterId == model.Id)
                 .ToList();
 
+            string mutuatedText = model.Text.Trim().TurkishCharReplace().Replace(" ", "").ToLower();
+
             foreach (var answer in answers)
             {
-                if (GetCorrectnessPercentage(answer.Key, model.Text) > 80)
+                float acceptence = (float)answer.Key.Length * 80 / 100;
+
+                if (GetSimilarity(answer.Key, mutuatedText) > acceptence)
                 {
-                    return true;
+                    return answer.OriginalKey;
                 }
             }
 
-            return false;
+            return string.Empty;
         }
 
-        private decimal GetCorrectnessPercentage(string soure, string target)
+        private float GetCorrectnessPercentage(string soure, string target)
         {
             int n = soure.Length;
             int m = target.Length;
@@ -180,7 +195,19 @@ namespace wordmeister_api.Services
                 }
             }
             // Step 7
-            return d[n, m] / soure.Length * 100;
+            return d[n, m];
+        }
+
+        private float GetSimilarity(string string1, string string2)
+        {
+            float dis = GetCorrectnessPercentage(string1, string2);
+            float maxLen = string1.Length;
+            if (maxLen < string2.Length)
+                maxLen = string2.Length;
+            if (maxLen == 0.0F)
+                return 1.0F;
+            else
+                return 1.0F - dis / maxLen;
         }
     }
 }
