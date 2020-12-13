@@ -1,54 +1,54 @@
-import { Fetch } from "../components/loading/fetch";
+import { Fetch } from '../components/Fetch';
 import urlConfig from '../configs/urlConfig';
-import utilitity from "../configs/utilitiy";
+import utilitity from '../configs/utilitiy';
+
 export default {
-    login: model => {
-        var requestOptions = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(model),
-        };
+  login: (model) => {
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(model),
+    };
 
-        return Fetch(urlConfig.account.login, requestOptions);
+    return Fetch(urlConfig.account.login, requestOptions);
+  },
+  signup: (model) => {
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(model)
+    };
 
-    },
-    signup: model => {
-        var requestOptions = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(model)
-        };
+    return Fetch(urlConfig.account.signup, requestOptions);
+  },
+  authenticated: () => {
+    const requestOptions = {
+      method: 'GET',
+      headers: utilitity.authorizedHeader(),
+    };
 
-        return Fetch(urlConfig.account.signup, requestOptions);
-    },
-    authenticated: () => {
-        var requestOptions = {
-            method: 'GET',
-            headers: utilitity.authorizedHeader(),
-        };
-
-        return fetch(urlConfig.account.authenticated, requestOptions)
-            .then(response => {
-                if (response.ok) {
-                    return true;
-                }
-                if (response.status === 401) {
-                    localStorage.removeItem('user');
-                } else {
-                    throw new Error();
-                }
-                return false;
-            })
-            .then(json => {
-                return json;
-            })
-            .catch(ex => {
-                console.error(ex);
-                return false;
-            });
-    }
+    return fetch(urlConfig.account.authenticated, requestOptions)
+      .then((response) => {
+        if (response.ok) {
+          return true;
+        }
+        if (response.status === 401) {
+          localStorage.removeItem('user');
+        } else {
+          throw new Error();
+        }
+        return false;
+      })
+      .then((json) => {
+        return json;
+      })
+      .catch((ex) => {
+        console.error(ex);
+        return false;
+      });
+  }
 };

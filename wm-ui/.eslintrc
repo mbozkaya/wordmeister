@@ -17,7 +17,6 @@
         ],
         "extensions": [
           ".js",
-          ".jsx"
         ]
       }
     }

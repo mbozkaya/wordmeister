@@ -5,4 +5,5 @@ vm-api/wordmeister-api/.vs/wordmeister-api/DesignTimeBuild/.dtbcache.v2
 vm-api/wordmeister-api/.vs/wordmeister-api/v16/TestStore/0/000.testlog
 vm-api/wordmeister-api/vm-api/wordmeister-api/appsettings.json
 vm-api/wordmeister-api/appsettings.json
-
+vm-ui/node_modules
+wm-ui/node_modules/.bin/eslint-config-prettier-check.cmd
