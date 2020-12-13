@@ -1,8 +1,9 @@
 import React, { Component, useEffect, useLayoutEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Route, Redirect, withRouter, Router } from 'react-router-dom';
+import { Route, Navigate, withRouter, Router } from 'react-router-dom';
 import accountService from '../services/accountService';
 import { Layout } from '../views/layout/layout';
+import { DashboardLayout } from '../views/layout/DashboardLayout/index';
 // import Login from '../pages/Login';
 
 
@@ -31,7 +32,7 @@ const AuthProvider = props => {
                     authorize: true,
                     loginError: false,
                     loginErrorMessage: "",
-                    checkAuth:true,
+                    checkAuth: true,
                 });
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('ug', data.guid);
@@ -112,24 +113,24 @@ const AuthProvider = props => {
 }
 
 
-const AuthRoute = ({ component: Component, ...rest }) => (
+const AuthRoute = ({ Component: Component, ...rest }) => (
     <AuthContext.Consumer>
         {({ authorize, checkAuth }) => {
             let content = '';
-
+            debugger;
             if (authorize) {
                 content = (
-                    <Route path='/df'
+                    <Route
                         render={props => (
-                            <Layout>
+                            <DashboardLayout>
                                 <Component {...props} />
-                            </Layout>
+                            </DashboardLayout>
                         )}
                         {...rest}
                     />
                 );
             } else if (checkAuth && !authorize) {
-                content = <Redirect to="/" />;
+                content = <Navigate to="/" />;
             }
             return content;
         }}
