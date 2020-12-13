@@ -16,6 +16,6 @@ namespace wordmeister_api.Interfaces
         void UpdateAnswer(WordBookDto.Update model);
         List<WordBookDto.Keyword> GetKeywords(int skip = 1, int take = 50);
         List<WordBookDto.KeywordAnswer> GetKeywordAnswers(int keywordId);
-        public bool CheckAnswer(WordBookDto.CheckAnswer model);
+        public string CheckAnswer(WordBookDto.CheckAnswer model);
     }
 }
