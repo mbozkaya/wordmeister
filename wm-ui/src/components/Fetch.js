@@ -4,7 +4,6 @@ import { loading } from './Loading';
 // eslint-disable-next-line import/prefer-default-export
 export const Fetch = (url, requestOptions) => {
   loading();
-
   return (fetch(url, requestOptions)
     .then((response) => {
       if (response.ok) {
@@ -24,7 +23,6 @@ export const Fetch = (url, requestOptions) => {
       return json;
     })
     .catch((ex) => {
-      loading();
       console.error(ex);
       return false;
     })
