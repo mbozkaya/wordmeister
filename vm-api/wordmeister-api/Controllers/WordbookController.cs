@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using wordmeister_api.Dtos.General;
 using wordmeister_api.Dtos.WordBook;
 using wordmeister_api.Interfaces;
 
@@ -11,6 +13,7 @@ namespace wordmeister_api.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize]
     public class WordbookController : ControllerBase
     {
         IWordBookService _wordbookService;
@@ -80,7 +83,7 @@ namespace wordmeister_api.Controllers
         {
             try
             {
-                return Ok(_wordbookService.GetKeywords());
+                return Ok(new General.ResponseResult { Data = _wordbookService.GetKeywords() });
             }
             catch
             {
