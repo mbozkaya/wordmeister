@@ -4,11 +4,12 @@ import {
   Container,
   makeStyles
 } from '@material-ui/core';
+import columns from 'src/configs/columns';
 import Page from 'src/components/Page';
 import wordMeisterService from 'src/services/wordMeisterService';
-import Results from '../customer/CustomerListView/Results';
 import Toolbar from '../customer/CustomerListView/Toolbar';
 import DataGrid from './DataGrid';
+import DataTable from '../../components/Datatable/DataTable';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -31,6 +32,7 @@ const KeywordView = () => {
     });
   }, []);
 
+  const { register, register2 } = columns;
   return (
     <Page
       className={classes.root}
@@ -39,7 +41,10 @@ const KeywordView = () => {
       <Container maxWidth={false}>
         <Toolbar />
         <Box mt={3}>
-          <DataGrid data={data} />
+          <DataGrid data={data} columns={register} />
+        </Box>
+        <Box mt={3}>
+          <DataTable data={data} columns={register2} />
         </Box>
       </Container>
     </Page>
