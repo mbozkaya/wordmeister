@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { lighten, makeStyles } from '@material-ui/core/styles';
@@ -8,6 +8,11 @@ import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
 import FilterListIcon from '@material-ui/icons/FilterList';
+import { AddIcon } from '@material-ui/data-grid';
+import {
+  Container, Drawer, TextField, Box, Button, Dialog, DialogTitle, DialogContent,
+  DialogContentText, DialogActions
+} from '@material-ui/core';
 
 const useToolbarStyles = makeStyles((theme) => ({
   root: {
@@ -15,23 +20,50 @@ const useToolbarStyles = makeStyles((theme) => ({
     paddingRight: theme.spacing(1),
   },
   highlight:
-      theme.palette.type === 'light'
-        ? {
-          color: theme.palette.secondary.main,
-          backgroundColor: lighten(theme.palette.secondary.light, 0.85),
-        }
-        : {
-          color: theme.palette.text.primary,
-          backgroundColor: theme.palette.secondary.dark,
-        },
+    theme.palette.type === 'light'
+      ? {
+        color: theme.palette.secondary.main,
+        backgroundColor: lighten(theme.palette.secondary.light, 0.85),
+      }
+      : {
+        color: theme.palette.text.primary,
+        backgroundColor: theme.palette.secondary.dark,
+      },
   title: {
     flex: '1 1 100%',
+  },
+  textField: {
+    '& > *': {
+      margin: theme.spacing(1),
+      width: '25ch',
+      height: '10ch'
+    },
+  },
+  margin: {
+    margin: theme.spacing(0),
   },
 }));
 
 const EnhancedTableToolbar = (props) => {
   const classes = useToolbarStyles();
-  const { numSelected } = props;
+  const {
+    numSelected, title, drawerOpen, drawerData, onDrawerClose,
+    onDrawerUpdate, dialogOnSubmit, DialogName, DialogDescription,
+    confirmationDialogSubmit, confirmationDialogSubmitText
+  } = props;
+
+  const [updateData, setUpdateData] = useState({});
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [dialogData, setDialogData] = useState({});
+  const [confirmationDialog, setConfirmationDialog] = useState(false);
+
+  useEffect(() => {
+    if (Object.keys(updateData).length === 0 && updateData.constructor === Object) {
+      setUpdateData(drawerData);
+    }
+  }, []);
+
+  useEffect(() => setDialogData(''), [dialogOpen]);
 
   return (
     <Toolbar
@@ -45,31 +77,149 @@ const EnhancedTableToolbar = (props) => {
           {' '}
           selected
         </Typography>
-      ) : (
-        <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
-          Nutrition
-        </Typography>
-      )}
+      )
+        : (
+          <Typography className={classes.title} variant="h6" id="tableTitle" component="div">
+            {title}
+          </Typography>
+        )}
 
       {numSelected > 0 ? (
         <Tooltip title="Delete">
-          <IconButton aria-label="delete">
+          <IconButton aria-label="delete" onClick={() => setConfirmationDialog(true)}>
             <DeleteIcon />
           </IconButton>
         </Tooltip>
-      ) : (
-        <Tooltip title="Filter list">
-          <IconButton aria-label="filter list">
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
-      )}
+      )
+        : (
+          <>
+            <Tooltip title="Filter list">
+              <IconButton aria-label="filter list">
+                <FilterListIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Add Item">
+              <IconButton
+                aria-label="add-icon"
+                onClick={() => setDialogOpen(true)}
+              >
+                <AddIcon />
+              </IconButton>
+            </Tooltip>
+          </>
+        )}
+      <Drawer anchor="right" open={drawerOpen} onClose={onDrawerClose}>
+        <Container>
+          <Box mt={3}>
+            <form className={classes.textField} noValidate autoComplete="off">
+              <div>
+                <TextField
+                  id="standard-basic"
+                  label="Title"
+                  value={updateData.title}
+                  onChange={(el) => setUpdateData({
+                    ...updateData,
+                    title: el.target.value,
+                  })}
+                />
+              </div>
+              <div>
+                <TextField id="filled-basic" label="Filled" disabled value={updateData.createdUserName} />
+              </div>
+              <div>
+                <TextField id="outlined-basic" label="Outlined" disabled value={updateData.createdDate} />
+              </div>
+              <div>
+                <Button variant="contained" size="small" color="primary" className={classes.margin} onClick={() => onDrawerUpdate(updateData)}>
+                  Update
+                </Button>
+              </div>
+            </form>
+          </Box>
+        </Container>
+      </Drawer>
+      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} aria-labelledby="form-dialog-title">
+        <DialogTitle id="form-dialog-title">{DialogName}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {DialogDescription}
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="registerTitle"
+            label="Register Name"
+            fullWidth
+            value={dialogData.title}
+            onChange={(el) => setDialogData({
+              ...dialogData,
+              title: el.target.value,
+            })}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDialogOpen(false)} color="primary">
+            Cancel
+          </Button>
+          <Button
+            onClick={() => {
+              setDialogOpen(false);
+              dialogOnSubmit(dialogData);
+            }}
+            color="primary"
+          >
+            Submit
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog
+        open={confirmationDialog}
+        onClose={() => setConfirmationDialog(false)}
+        aria-labelledby="responsive-dialog-title"
+      >
+        <DialogTitle id="responsive-dialog-title">Are you sure?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {`Do you want to delete ${numSelected === 1 ? 'this one selected item' : `these ${numSelected} items`}`}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={() => setConfirmationDialog(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={confirmationDialogSubmit} color="primary" autoFocus>
+            {confirmationDialogSubmitText}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Toolbar>
   );
 };
 
 EnhancedTableToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
+  title: PropTypes.string.isRequired,
+  drawerOpen: PropTypes.bool,
+  drawerData: PropTypes.object,
+  onDrawerClose: PropTypes.func,
+  onDrawerUpdate: PropTypes.func,
+  dialogOnSubmit: PropTypes.func,
+  DialogName: PropTypes.string,
+  DialogDescription: PropTypes.string,
+  confirmationDialogSubmit: PropTypes.func,
+  confirmationDialogSubmitText: PropTypes.string,
+};
+
+EnhancedTableToolbar.defaultProps = {
+  drawerOpen: false,
+  drawerData: {},
+  onDrawerClose: () => console.log('closed'),
+  onDrawerUpdate: (data) => console.log(data),
+  dialogOnSubmit: (model) => console.log(model),
+  DialogName: 'Register',
+  DialogDescription: 'Create a new register',
+  confirmationDialogSubmit: () => console.log('confirmation dialog submit'),
+  confirmationDialogSubmitText: 'Delete',
 };
 
 export default EnhancedTableToolbar;

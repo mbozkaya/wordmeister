@@ -1,5 +1,5 @@
 /* eslint-disable no-underscore-dangle */
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -12,6 +12,9 @@ import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { Button } from '@material-ui/core';
 import EnhancedTableHead from './EnhencedTableHead';
 import EnhancedTableToolbar from './EnhencedTableToolbar';
 
@@ -85,13 +88,20 @@ const useStyles = makeStyles((theme) => ({
     top: 20,
     width: 1,
   },
+  margin: {
+    margin: theme.spacing(1),
+  },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
+  },
 }));
 
 const DataTable = (props) => {
   const {
-    defaultOrder, defaultOrderBy, defaultRowsPerPage, columns, data
+    defaultOrder, defaultOrderBy, defaultRowsPerPage, columns, data, rowEdit, insertNewRow
   } = props;
-  data.map((da, index) => Object.assign(da, { _uuid: `${da[0]}${index}` }));
+  data.map((da, index) => Object.assign(da, { _uuid: da.id ? da.id : `${da[0]}${index}` }));
   const classes = useStyles();
   const [order, setOrder] = React.useState(defaultOrder);
   const [orderBy, setOrderBy] = React.useState(defaultOrderBy);
@@ -99,6 +109,8 @@ const DataTable = (props) => {
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(defaultRowsPerPage);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [editRow, setEditRow] = useState({});
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
@@ -116,6 +128,7 @@ const DataTable = (props) => {
   };
 
   const handleClick = (event, name) => {
+    if (event.target.classList.value.toLowerCase().includes('button')) return;
     const selectedIndex = selected.indexOf(name);
     let newSelected = [];
 
@@ -155,7 +168,18 @@ const DataTable = (props) => {
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar
+          numSelected={selected.length}
+          title="Register"
+          drawerOpen={drawerOpen}
+          drawerData={editRow}
+          onDrawerClose={() => setDrawerOpen(false)}
+          onDrawerUpdate={(model) => {
+            setDrawerOpen(false);
+            rowEdit(model);
+          }}
+          dialogOnSubmit={(model) => insertNewRow(model)}
+        />
         <TableContainer>
           <Table
             className={classes.table}
@@ -171,11 +195,11 @@ const DataTable = (props) => {
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={rows.length}
+              rowCount={data.length}
             />
             <TableBody>
               {stableSort(data, getComparator(order, orderBy))
-                // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map((row, index) => {
                   const isItemSelected = isSelected(row._uuid);
                   const labelId = `enhanced-table-checkbox-${index}`;
@@ -202,7 +226,20 @@ const DataTable = (props) => {
                           )}
                           {
                             <TableCell id={labelId} scope="row" padding="none" align="left">
-                              {row[col.id]}
+                              {row[col.id] ? row[col.id] : (
+                                <Button
+                                  variant="contained"
+                                  size="small"
+                                  color="primary"
+                                  className={classes.margin}
+                                  onClick={() => {
+                                    setDrawerOpen(true);
+                                    setEditRow(row);
+                                  }}
+                                >
+                                  Edit
+                                </Button>
+                              )}
                             </TableCell>
                           }
 
@@ -248,6 +285,8 @@ DataTable.propTypes = {
   defaultOrder: PropTypes.string,
   defaultOrderBy: PropTypes.string,
   defaultRowsPerPage: PropTypes.number,
+  rowEdit: PropTypes.func,
+  insertNewRow: PropTypes.func,
 };
 
 DataTable.defaultProps = {
@@ -259,4 +298,6 @@ DataTable.defaultProps = {
   defaultOrder: 'asc',
   defaultOrderBy: 'name',
   defaultRowsPerPage: 5,
+  rowEdit: () => console.log('edit'),
+  insertNewRow: () => { },
 };
