@@ -7,8 +7,6 @@ import {
 import columns from 'src/configs/columns';
 import Page from 'src/components/Page';
 import wordMeisterService from 'src/services/wordMeisterService';
-import Toolbar from '../customer/CustomerListView/Toolbar';
-import DataGrid from './DataGrid';
 import DataTable from '../../components/Datatable/DataTable';
 
 const useStyles = makeStyles((theme) => ({
@@ -24,27 +22,43 @@ const KeywordView = () => {
   const classes = useStyles();
   const [data, setData] = useState([]);
 
-  useEffect(() => {
-    wordMeisterService.getKeywords().then((response) => {
+  const getRegisters = () => wordMeisterService.getKeywords().then((response) => {
+    if (response.error === false) {
+      setData(response.data);
+    }
+  });
+
+  const updateRegister = (model) => {
+    wordMeisterService.updateRegister(model).then((response) => {
       if (response.error === false) {
-        setData(response.data);
+        getRegisters();
+      } else {
+        console.log(response);
       }
     });
+  };
+
+  const insertRegister = (model) => wordMeisterService.createRegister(model).then((response) => {
+    if (response.error === false) {
+      getRegisters();
+    } else {
+      console.log(response);
+    }
+  });
+
+  useEffect(() => {
+    getRegisters();
   }, []);
 
-  const { register, register2 } = columns;
+  const { register } = columns;
   return (
     <Page
       className={classes.root}
-      title="Customers"
+      title="Keywords"
     >
       <Container maxWidth={false}>
-        <Toolbar />
         <Box mt={3}>
-          <DataGrid data={data} columns={register} />
-        </Box>
-        <Box mt={3}>
-          <DataTable data={data} columns={register2} />
+          <DataTable data={data} columns={register} rowEdit={(model) => updateRegister(model)} insertNewRow={(model) => insertRegister(model)} />
         </Box>
       </Container>
     </Page>

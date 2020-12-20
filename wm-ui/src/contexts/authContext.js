@@ -17,7 +17,8 @@ const AuthProvider = (props) => {
     loginError: false,
     loginErrorMessage: '',
     signupError: false,
-    signupErrorMessage: ''
+    signupErrorMessage: '',
+    backdropOpen: false,
   });
   const { children } = props;
 
@@ -79,6 +80,11 @@ const AuthProvider = (props) => {
     });
   };
 
+  const setBackrop = () => setContextState({
+    ...contextState,
+    backdropOpen: !contextState.backdropOpen
+  });
+
   useLayoutEffect(() => {
     accountService.authenticated().then((response) => {
       setContextState({
@@ -97,9 +103,11 @@ const AuthProvider = (props) => {
         checkAuth: contextState.checkAuth,
         loginError: contextState.loginError,
         loginErrorMessage: contextState.loginErrorMessage,
+        backdropOpen: contextState.backdropOpen,
         onLogin,
         onLogout,
         onSignup,
+        setBackrop,
       }}
     >
       {children}
