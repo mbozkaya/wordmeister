@@ -10,13 +10,13 @@ namespace wordmeister_api.Dtos.WordBook
         public class Create
         {
             public string Title { get; set; }
-            public List<string> Keys { get; set; }
+            public List<string> Keys { get; set; } = new List<string>();
         }
 
         public class Update
         {
             public int Id { get; set; }
-            public string Text { get; set; }
+            public string Title { get; set; }
         }
 
         public class Keyword

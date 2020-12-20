@@ -28,11 +28,11 @@ namespace wordmeister_api.Controllers
             try
             {
                 _wordbookService.CreateRegister(model, 1);
-                return Ok(_wordbookService.GetKeywords());
+                return Ok(new General.ResponseResult { Error = false });
             }
             catch
             {
-                return Problem();
+                return Ok(new General.ResponseResult { Error = true });
             }
         }
 
@@ -42,11 +42,11 @@ namespace wordmeister_api.Controllers
             try
             {
                 _wordbookService.CreateAnswer(model);
-                return Ok(_wordbookService.GetKeywordAnswers(model.Id));
+                return Ok(new General.ResponseResult { Error = false });
             }
             catch
             {
-                return Problem();
+                return Ok(new General.ResponseResult { Error = true });
             }
         }
 
@@ -56,11 +56,11 @@ namespace wordmeister_api.Controllers
             try
             {
                 _wordbookService.UpdateRegister(model);
-                return Ok(_wordbookService.GetKeywords());
+                return Ok(new General.ResponseResult { Error = false });
             }
             catch
             {
-                return Problem();
+                return Ok(new General.ResponseResult { Error = true });
             }
         }
 
@@ -70,11 +70,11 @@ namespace wordmeister_api.Controllers
             try
             {
                 _wordbookService.UpdateAnswer(model);
-                return Ok(_wordbookService.GetKeywordAnswers(model.Id));
+                return Ok(new General.ResponseResult { Error = false });
             }
             catch
             {
-                return Problem();
+                return Ok(new General.ResponseResult { Error = true });
             }
         }
 

@@ -45,9 +45,9 @@ namespace wordmeister_api.Services
         {
             _wordMeisterDbContext.KeywordAnswer.Add(new KeywordAnswer
             {
-                Key = model.Text.Trim().TurkishCharReplace().Replace(" ", "").ToLower(),
+                Key = model.Title.Trim().TurkishCharReplace().Replace(" ", "").ToLower(),
                 KeywordRegisterId = model.Id,
-                OriginalKey = model.Text,
+                OriginalKey = model.Title,
             });
 
             _wordMeisterDbContext.SaveChanges();
@@ -83,7 +83,7 @@ namespace wordmeister_api.Services
                 .Where(w => w.Id == model.Id)
                 .FirstOrDefault();
 
-            update.Title = model.Text;
+            update.Title = model.Title;
             _wordMeisterDbContext.SaveChanges();
         }
 
@@ -94,7 +94,7 @@ namespace wordmeister_api.Services
                 .Where(w => w.Id == model.Id)
                 .FirstOrDefault();
 
-            update.Key = model.Text;
+            update.Key = model.Title;
             _wordMeisterDbContext.SaveChanges();
         }
 
@@ -138,7 +138,7 @@ namespace wordmeister_api.Services
                 .Where(w => w.KeywordRegisterId == model.Id)
                 .ToList();
 
-            string mutuatedText = model.Text.Trim().TurkishCharReplace().Replace(" ", "").ToLower();
+            string mutuatedText = model.Title.Trim().TurkishCharReplace().Replace(" ", "").ToLower();
 
             foreach (var answer in answers)
             {
