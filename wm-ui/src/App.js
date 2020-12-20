@@ -7,6 +7,7 @@ import 'src/mixins/chartjs';
 import theme from 'src/theme';
 import routes from 'src/routes';
 import { AuthProvider } from './contexts/authContext';
+import Blockui from './components/Blockui';
 
 const App = () => {
   const routing = useRoutes(routes);
@@ -17,6 +18,7 @@ const App = () => {
         <GlobalStyles />
         {routing}
       </ThemeProvider>
+      <Blockui />
     </AuthProvider>
   );
 };
