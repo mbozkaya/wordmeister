@@ -10,7 +10,7 @@ const columns = {
       id: 'createdUserName', numeric: false, disablePadding: false, label: 'User Name', description: 'Created User Name'
     },
     {
-      id: 'createdDate', numeric: false, disablePadding: false, label: 'Created Date', description: 'Created Date'
+      id: 'createdDate', numeric: false, disablePadding: false, label: 'Created Date', description: 'Created Date', date: true
     },
     {
       id: 'action', numeric: false, disablePadding: false, label: 'Action', description: 'Action'

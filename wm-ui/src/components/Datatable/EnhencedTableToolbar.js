@@ -49,7 +49,7 @@ const EnhancedTableToolbar = (props) => {
   const {
     numSelected, title, drawerOpen, drawerData, onDrawerClose,
     onDrawerUpdate, dialogOnSubmit, DialogName, DialogDescription,
-    confirmationDialogSubmit, confirmationDialogSubmitText
+    confirmationDialogSubmit, confirmationDialogSubmitText, selectedData
   } = props;
 
   const [updateData, setUpdateData] = useState({});
@@ -187,7 +187,14 @@ const EnhancedTableToolbar = (props) => {
           <Button autoFocus onClick={() => setConfirmationDialog(false)} color="primary">
             Cancel
           </Button>
-          <Button onClick={confirmationDialogSubmit} color="primary" autoFocus>
+          <Button
+            onClick={() => {
+              setConfirmationDialog(false);
+              confirmationDialogSubmit(selectedData);
+            }}
+            color="primary"
+            autoFocus
+          >
             {confirmationDialogSubmitText}
           </Button>
         </DialogActions>
@@ -208,6 +215,7 @@ EnhancedTableToolbar.propTypes = {
   DialogDescription: PropTypes.string,
   confirmationDialogSubmit: PropTypes.func,
   confirmationDialogSubmitText: PropTypes.string,
+  selectedData: PropTypes.array,
 };
 
 EnhancedTableToolbar.defaultProps = {
@@ -220,6 +228,7 @@ EnhancedTableToolbar.defaultProps = {
   DialogDescription: 'Create a new register',
   confirmationDialogSubmit: () => console.log('confirmation dialog submit'),
   confirmationDialogSubmitText: 'Delete',
+  selectedData: [],
 };
 
 export default EnhancedTableToolbar;

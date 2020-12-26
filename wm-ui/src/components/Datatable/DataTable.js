@@ -1,5 +1,8 @@
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable max-len */
+/* eslint-disable no-nested-ternary */
 /* eslint-disable no-underscore-dangle */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
@@ -12,8 +15,6 @@ import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Switch from '@material-ui/core/Switch';
-import Backdrop from '@material-ui/core/Backdrop';
-import CircularProgress from '@material-ui/core/CircularProgress';
 import { Button } from '@material-ui/core';
 import EnhancedTableHead from './EnhencedTableHead';
 import EnhancedTableToolbar from './EnhencedTableToolbar';
@@ -99,7 +100,7 @@ const useStyles = makeStyles((theme) => ({
 
 const DataTable = (props) => {
   const {
-    defaultOrder, defaultOrderBy, defaultRowsPerPage, columns, data, rowEdit, insertNewRow
+    defaultOrder, defaultOrderBy, defaultRowsPerPage, columns, data, rowEdit, insertNewRow, removeRow
   } = props;
   data.map((da, index) => Object.assign(da, { _uuid: da.id ? da.id : `${da[0]}${index}` }));
   const classes = useStyles();
@@ -148,6 +149,12 @@ const DataTable = (props) => {
     setSelected(newSelected);
   };
 
+  const resetSelected = () => {
+    const reselected = [];
+    selected.map((m) => data.filter((f) => f._uuid === m).length > 0 && reselected.push(m));
+    setSelected(reselected);
+  };
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
@@ -165,6 +172,8 @@ const DataTable = (props) => {
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
+  useEffect(() => { resetSelected(); }, [data.length]);
+
   return (
     <div className={classes.root}>
       <Paper className={classes.paper}>
@@ -179,6 +188,8 @@ const DataTable = (props) => {
             rowEdit(model);
           }}
           dialogOnSubmit={(model) => insertNewRow(model)}
+          confirmationDialogSubmit={(model) => removeRow(model)}
+          selectedData={selected}
         />
         <TableContainer>
           <Table
@@ -226,20 +237,22 @@ const DataTable = (props) => {
                           )}
                           {
                             <TableCell id={labelId} scope="row" padding="none" align="left">
-                              {row[col.id] ? row[col.id] : (
-                                <Button
-                                  variant="contained"
-                                  size="small"
-                                  color="primary"
-                                  className={classes.margin}
-                                  onClick={() => {
-                                    setDrawerOpen(true);
-                                    setEditRow(row);
-                                  }}
-                                >
-                                  Edit
-                                </Button>
-                              )}
+                              {row[col.id]
+                                ? (col.date ? new Date(Date.parse(row[col.id])).toLocaleString() : row[col.id])
+                                : (
+                                  <Button
+                                    variant="contained"
+                                    size="small"
+                                    color="primary"
+                                    className={classes.margin}
+                                    onClick={() => {
+                                      setDrawerOpen(true);
+                                      setEditRow(row);
+                                    }}
+                                  >
+                                    Edit
+                                  </Button>
+                                )}
                             </TableCell>
                           }
 
@@ -287,6 +300,7 @@ DataTable.propTypes = {
   defaultRowsPerPage: PropTypes.number,
   rowEdit: PropTypes.func,
   insertNewRow: PropTypes.func,
+  removeRow: PropTypes.func,
 };
 
 DataTable.defaultProps = {
@@ -300,4 +314,5 @@ DataTable.defaultProps = {
   defaultRowsPerPage: 5,
   rowEdit: () => console.log('edit'),
   insertNewRow: () => { },
+  removeRow: () => { },
 };
