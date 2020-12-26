@@ -46,6 +46,15 @@ const KeywordView = () => {
     }
   });
 
+  const removeRegister = (model) => wordMeisterService.removeRegister(model)
+    .then((response) => {
+      if (response.error === false) {
+        getRegisters();
+      } else {
+        console.log(response);
+      }
+    });
+
   useEffect(() => {
     getRegisters();
   }, []);
@@ -58,7 +67,13 @@ const KeywordView = () => {
     >
       <Container maxWidth={false}>
         <Box mt={3}>
-          <DataTable data={data} columns={register} rowEdit={(model) => updateRegister(model)} insertNewRow={(model) => insertRegister(model)} />
+          <DataTable
+            data={data}
+            columns={register}
+            rowEdit={(model) => updateRegister(model)}
+            insertNewRow={(model) => insertRegister(model)}
+            removeRow={(model) => removeRegister(model)}
+          />
         </Box>
       </Container>
     </Page>

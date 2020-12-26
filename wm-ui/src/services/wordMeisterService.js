@@ -14,7 +14,7 @@ export default {
     const requestOptions = {
       method: 'GET',
       headers: utilitity.authorizedHeader(),
-      data: id
+      body: JSON.stringify(id),
     };
     return Fetch(`${urlConfig.wordMeister.getAnswer}`, requestOptions);
   },
@@ -22,7 +22,7 @@ export default {
     const requestOptions = {
       method: 'POST',
       headers: utilitity.authorizedHeader(),
-      data: model,
+      body: JSON.stringify(model),
     };
     return Fetch(urlConfig.wordMeister.createRegister, requestOptions);
   },
@@ -30,7 +30,7 @@ export default {
     const requestOptions = {
       method: 'POST',
       headers: utilitity.authorizedHeader(),
-      data: model,
+      body: JSON.stringify(model),
     };
     return Fetch(urlConfig.wordMeister.updateRegister, requestOptions);
   },
@@ -38,7 +38,7 @@ export default {
     const requestOptions = {
       method: 'POST',
       headers: utilitity.authorizedHeader(),
-      data: model,
+      body: JSON.stringify(model),
     };
     return Fetch(urlConfig.wordMeister.updateAnswer, requestOptions);
   },
@@ -46,8 +46,24 @@ export default {
     const requestOptions = {
       method: 'POST',
       headers: utilitity.authorizedHeader(),
-      data: model,
+      body: JSON.stringify(model),
     };
     return Fetch(urlConfig.wordMeister.checkAnswer, requestOptions);
+  },
+  removeAnswer: (model) => {
+    const requestOptions = {
+      method: 'DELETE ',
+      headers: utilitity.authorizedHeader(),
+      body: JSON.stringify(model),
+    };
+    return Fetch(urlConfig.wordMeister.removeAnswer, requestOptions);
+  },
+  removeRegister: (model) => {
+    const requestOptions = {
+      method: 'DELETE',
+      headers: utilitity.authorizedHeader(),
+      body: JSON.stringify(model),
+    };
+    return Fetch(urlConfig.wordMeister.removeRegister, requestOptions);
   },
 };

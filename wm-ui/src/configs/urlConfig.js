@@ -13,5 +13,7 @@ export default {
     updateRegister: `${appConfig.api.service()}Wordbook/UpdateRegister`,
     updateAnswer: `${appConfig.api.service()}Wordbook/UpdateAnswer`,
     checkAnswer: `${appConfig.api.service()}Wordbook/CheckAnswer`,
+    removeRegister: `${appConfig.api.service()}Wordbook/RemoveRegister`,
+    removeAnswer: `${appConfig.api.service()}Wordbook/RemoveAnswer`,
   },
 };
