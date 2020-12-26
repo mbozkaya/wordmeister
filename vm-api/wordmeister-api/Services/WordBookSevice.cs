@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -98,14 +99,11 @@ namespace wordmeister_api.Services
             _wordMeisterDbContext.SaveChanges();
         }
 
-        public List<WordBookDto.Keyword> GetKeywords(int skip = 0, int take = 50)
+        public async Task<List<WordBookDto.Keyword>> GetKeywords(int skip, int take)
         {
-            var registers = _wordMeisterDbContext
+            var registers = await _wordMeisterDbContext
                 .KeywordRegister
                 .Where(w => w.Status.Value)
-                //.AsEnumerable()
-                //.Skip(skip)
-                //.Take(take)
                 .Select(s => new WordBookDto.Keyword
                 {
                     CreatedDate = s.CreatedDate,
@@ -114,7 +112,9 @@ namespace wordmeister_api.Services
                     CreatedUserName = string.Concat(s.User.FirstName, " ", s.User.LastName),
                     UserId = s.UserId,
                 })
-                .ToList();
+                .Skip(skip)
+                .Take(take)
+                .ToListAsync();
             return registers;
         }
         public List<WordBookDto.KeywordAnswer> GetKeywordAnswers(int keywordId)

@@ -14,7 +14,7 @@ namespace wordmeister_api.Interfaces
         void RemoveAnswer(int id);
         void UpdateRegister(WordBookDto.Update model);
         void UpdateAnswer(WordBookDto.Update model);
-        List<WordBookDto.Keyword> GetKeywords(int skip = 1, int take = 50);
+        Task<List<WordBookDto.Keyword>> GetKeywords(int skip = 0, int take = 50);
         List<WordBookDto.KeywordAnswer> GetKeywordAnswers(int keywordId);
         public string CheckAnswer(WordBookDto.CheckAnswer model);
     }

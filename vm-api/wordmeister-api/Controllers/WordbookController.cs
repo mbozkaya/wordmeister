@@ -78,16 +78,18 @@ namespace wordmeister_api.Controllers
             }
         }
 
-        [HttpGet("GetRegister")]
-        public IActionResult GetRegister()
+        [HttpPost("GetRegister")]
+        public async Task<IActionResult> GetRegister(PagingDto model)
         {
             try
             {
-                return Ok(new General.ResponseResult { Data = _wordbookService.GetKeywords() });
+                var data = await _wordbookService.GetKeywords(model.PageCount, model.PageSize);
+
+                return Ok(new General.ResponseResult { Data = data });
             }
-            catch
+            catch (Exception ex)
             {
-                return Problem();
+                return Ok(new General.ResponseResult { Error = true, ErrorMessage = ex.Message });
             }
         }
 
