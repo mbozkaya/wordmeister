@@ -3,10 +3,11 @@ import urlConfig from '../configs/urlConfig';
 import utilitity from '../configs/utilitiy';
 
 export default {
-  getKeywords: () => {
+  getKeywords: (model) => {
     const requestOptions = {
-      method: 'GET',
+      method: 'POST',
       headers: utilitity.authorizedHeader(),
+      body: JSON.stringify(model),
     };
     return Fetch(urlConfig.wordMeister.getKeywords, requestOptions);
   },

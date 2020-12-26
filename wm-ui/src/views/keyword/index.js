@@ -20,44 +20,9 @@ const useStyles = makeStyles((theme) => ({
 
 const KeywordView = () => {
   const classes = useStyles();
-  const [data, setData] = useState([]);
+  const [callback, setCallback] = useState();
 
-  const getRegisters = () => wordMeisterService.getKeywords().then((response) => {
-    if (response.error === false) {
-      setData(response.data);
-    }
-  });
-
-  const updateRegister = (model) => {
-    wordMeisterService.updateRegister(model).then((response) => {
-      if (response.error === false) {
-        getRegisters();
-      } else {
-        console.log(response);
-      }
-    });
-  };
-
-  const insertRegister = (model) => wordMeisterService.createRegister(model).then((response) => {
-    if (response.error === false) {
-      getRegisters();
-    } else {
-      console.log(response);
-    }
-  });
-
-  const removeRegister = (model) => wordMeisterService.removeRegister(model)
-    .then((response) => {
-      if (response.error === false) {
-        getRegisters();
-      } else {
-        console.log(response);
-      }
-    });
-
-  useEffect(() => {
-    getRegisters();
-  }, []);
+  const getRegisters = (model) => wordMeisterService.getKeywords(model);
 
   const { register } = columns;
   return (
@@ -68,11 +33,11 @@ const KeywordView = () => {
       <Container maxWidth={false}>
         <Box mt={3}>
           <DataTable
-            data={data}
             columns={register}
-            rowEdit={(model) => updateRegister(model)}
-            insertNewRow={(model) => insertRegister(model)}
-            removeRow={(model) => removeRegister(model)}
+            rowEdit={(model) => wordMeisterService.updateRegister(model)}
+            insertNewRow={(model) => wordMeisterService.createRegister(model)}
+            removeRow={(model) => wordMeisterService.removeRegister(model)}
+            getData={getRegisters}
           />
         </Box>
       </Container>

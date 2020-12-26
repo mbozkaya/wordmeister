@@ -100,10 +100,11 @@ const useStyles = makeStyles((theme) => ({
 
 const DataTable = (props) => {
   const {
-    defaultOrder, defaultOrderBy, defaultRowsPerPage, columns, data, rowEdit, insertNewRow, removeRow
+    defaultOrder, defaultOrderBy, defaultRowsPerPage, columns,
+    rowEdit, insertNewRow, removeRow, getData
   } = props;
-  data.map((da, index) => Object.assign(da, { _uuid: da.id ? da.id : `${da[0]}${index}` }));
   const classes = useStyles();
+  const [data, setData] = useState([]);
   const [order, setOrder] = React.useState(defaultOrder);
   const [orderBy, setOrderBy] = React.useState(defaultOrderBy);
   const [selected, setSelected] = React.useState([]);
@@ -112,11 +113,21 @@ const DataTable = (props) => {
   const [rowsPerPage, setRowsPerPage] = React.useState(defaultRowsPerPage);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editRow, setEditRow] = useState({});
+  const [pagingParam, setPagingParam] = useState({
+    pageSize: rowsPerPage,
+    pageCount: page,
+    order,
+    orderBy,
+  });
 
   const handleRequestSort = (event, property) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
+    setPagingParam({
+      ...pagingParam,
+      orderBy: property,
+    });
   };
 
   const handleSelectAllClick = (event) => {
@@ -157,11 +168,20 @@ const DataTable = (props) => {
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
+    setPagingParam({
+      ...pagingParam,
+      pageCount: newPage,
+    });
   };
 
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
+    const newPageSize = parseInt(event.target.value, 10);
+    setRowsPerPage(newPageSize);
     setPage(0);
+    setPagingParam({
+      ...pagingParam,
+      pageSize: newPageSize,
+    });
   };
 
   const handleChangeDense = (event) => {
@@ -172,7 +192,21 @@ const DataTable = (props) => {
 
   const emptyRows = rowsPerPage - Math.min(rowsPerPage, rows.length - page * rowsPerPage);
 
+  const getRegister = () => getData(pagingParam).then((response) => {
+    if (response && response.error === false) {
+      const newData = response.data;
+      newData.map((da, index) => Object.assign(da, { _uuid: da.id ? da.id : `${da[0]}${index}` }));
+      setData(newData);
+    } else {
+      console.log('error');
+    }
+  });
+
   useEffect(() => { resetSelected(); }, [data.length]);
+
+  useEffect(() => {
+    getRegister();
+  }, [pagingParam]);
 
   return (
     <div className={classes.root}>
@@ -185,10 +219,24 @@ const DataTable = (props) => {
           onDrawerClose={() => setDrawerOpen(false)}
           onDrawerUpdate={(model) => {
             setDrawerOpen(false);
-            rowEdit(model);
+            rowEdit(model).then((response) => {
+              if (response.error === false) {
+                getRegister();
+              }
+            });
           }}
-          dialogOnSubmit={(model) => insertNewRow(model)}
-          confirmationDialogSubmit={(model) => removeRow(model)}
+          dialogOnSubmit={(model) => insertNewRow(model)
+            .then((response) => {
+              if (response.error === false) {
+                getRegister();
+              }
+            })}
+          confirmationDialogSubmit={(model) => removeRow(model)
+            .then((response) => {
+              if (response.error === false) {
+                getRegister();
+              }
+            })}
           selectedData={selected}
         />
         <TableContainer>
@@ -301,6 +349,7 @@ DataTable.propTypes = {
   rowEdit: PropTypes.func,
   insertNewRow: PropTypes.func,
   removeRow: PropTypes.func,
+  getData: PropTypes.func,
 };
 
 DataTable.defaultProps = {
@@ -315,4 +364,5 @@ DataTable.defaultProps = {
   rowEdit: () => console.log('edit'),
   insertNewRow: () => { },
   removeRow: () => { },
+  getData: () => { },
 };
