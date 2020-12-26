@@ -118,6 +118,41 @@ namespace wordmeister_api.Controllers
             }
         }
 
+        [HttpDelete("RemoveRegister")]
+        public IActionResult RemoveRegister(List<int> Ids)
+        {
+            try
+            {
+                foreach (var id in Ids)
+                {
+                    _wordbookService.RemoveRegister(id);
+                }
+
+                return Ok(new General.ResponseResult());
+            }
+            catch (Exception)
+            {
+                return Ok(new General.ResponseResult { Error = true });
+            }
+        }
+
+        [HttpDelete("RemoveAnswer")]
+        public IActionResult RemoveAnswer(WordBookDto.Delete model)
+        {
+            try
+            {
+                foreach (var id in model.Id)
+                {
+                    _wordbookService.RemoveAnswer(id);
+                }
+
+                return Ok(new General.ResponseResult());
+            }
+            catch (Exception)
+            {
+                return Ok(new General.ResponseResult { Error = true });
+            }
+        }
 
     }
 }

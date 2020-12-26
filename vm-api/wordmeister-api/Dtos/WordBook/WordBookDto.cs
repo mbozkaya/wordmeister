@@ -43,5 +43,10 @@ namespace wordmeister_api.Dtos.WordBook
         {
 
         }
+
+        public class Delete
+        {
+            public List<int> Id { get; set; } = new List<int>();
+        }
     }
 }
