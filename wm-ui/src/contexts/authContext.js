@@ -39,7 +39,7 @@ const AuthProvider = (props) => {
         setContextState({
           ...contextState,
           loginError: true,
-          loginErrorMessage: response.message,
+          loginErrorMessage: response.message || 'Api not found',
         });
       }
     });

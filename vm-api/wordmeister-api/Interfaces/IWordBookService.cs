@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using wordmeister_api.Dtos.General;
 using wordmeister_api.Dtos.WordBook;
 
 namespace wordmeister_api.Interfaces
@@ -14,7 +15,7 @@ namespace wordmeister_api.Interfaces
         void RemoveAnswer(int id);
         void UpdateRegister(WordBookDto.Update model);
         void UpdateAnswer(WordBookDto.Update model);
-        Task<List<WordBookDto.Keyword>> GetKeywords(int skip = 0, int take = 50);
+        Task<PagingDto.Response<WordBookDto.Keyword>> GetKeywords(int skip = 0, int take = 50);
         List<WordBookDto.KeywordAnswer> GetKeywordAnswers(int keywordId);
         public string CheckAnswer(WordBookDto.CheckAnswer model);
     }

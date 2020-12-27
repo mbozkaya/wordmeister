@@ -111,6 +111,7 @@ const DataTable = (props) => {
   const [page, setPage] = React.useState(0);
   const [dense, setDense] = React.useState(false);
   const [rowsPerPage, setRowsPerPage] = React.useState(defaultRowsPerPage);
+  const [totalRowCount, setTotalRowCount] = useState(0);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [editRow, setEditRow] = useState({});
   const [pagingParam, setPagingParam] = useState({
@@ -127,6 +128,7 @@ const DataTable = (props) => {
     setPagingParam({
       ...pagingParam,
       orderBy: property,
+      order: isAsc ? 'desc' : 'asc',
     });
   };
 
@@ -181,6 +183,7 @@ const DataTable = (props) => {
     setPagingParam({
       ...pagingParam,
       pageSize: newPageSize,
+      pageCount: 0,
     });
   };
 
@@ -194,9 +197,11 @@ const DataTable = (props) => {
 
   const getRegister = () => getData(pagingParam).then((response) => {
     if (response && response.error === false) {
-      const newData = response.data;
+      const newData = response.data.data;
+      const { totalCount } = response.data;
       newData.map((da, index) => Object.assign(da, { _uuid: da.id ? da.id : `${da[0]}${index}` }));
       setData(newData);
+      setTotalRowCount(totalCount);
     } else {
       console.log('error');
     }
@@ -257,8 +262,7 @@ const DataTable = (props) => {
               rowCount={data.length}
             />
             <TableBody>
-              {stableSort(data, getComparator(order, orderBy))
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              {data
                 .map((row, index) => {
                   const isItemSelected = isSelected(row._uuid);
                   const labelId = `enhanced-table-checkbox-${index}`;
@@ -320,7 +324,7 @@ const DataTable = (props) => {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={data.length}
+          count={totalRowCount}
           rowsPerPage={rowsPerPage}
           page={page}
           onChangePage={handleChangePage}

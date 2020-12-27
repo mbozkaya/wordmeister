@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using wordmeister_api.Dtos.General;
 using wordmeister_api.Dtos.WordBook;
 using wordmeister_api.Entities;
 using wordmeister_api.Helpers;
@@ -99,9 +100,16 @@ namespace wordmeister_api.Services
             _wordMeisterDbContext.SaveChanges();
         }
 
-        public async Task<List<WordBookDto.Keyword>> GetKeywords(int skip, int take)
+        public async Task<PagingDto.Response<WordBookDto.Keyword>> GetKeywords(int skip, int take)
         {
-            var registers = await _wordMeisterDbContext
+            PagingDto.Response<WordBookDto.Keyword> response = new PagingDto.Response<WordBookDto.Keyword>();
+
+            response.TotalCount = _wordMeisterDbContext
+              .KeywordRegister
+              .Where(w => w.Status.Value).Count();
+            response.PageCount = response.TotalCount / take;
+
+            response.Data = await _wordMeisterDbContext
                 .KeywordRegister
                 .Where(w => w.Status.Value)
                 .Select(s => new WordBookDto.Keyword
@@ -112,10 +120,13 @@ namespace wordmeister_api.Services
                     CreatedUserName = string.Concat(s.User.FirstName, " ", s.User.LastName),
                     UserId = s.UserId,
                 })
-                .Skip(skip)
+                .Skip(skip * take)
                 .Take(take)
                 .ToListAsync();
-            return registers;
+
+
+
+            return response;
         }
         public List<WordBookDto.KeywordAnswer> GetKeywordAnswers(int keywordId)
         {

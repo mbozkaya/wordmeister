@@ -79,7 +79,7 @@ namespace wordmeister_api.Controllers
         }
 
         [HttpPost("GetRegister")]
-        public async Task<IActionResult> GetRegister(PagingDto model)
+        public async Task<IActionResult> GetRegister(PagingDto.Request model)
         {
             try
             {
