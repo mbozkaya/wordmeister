@@ -17,6 +17,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using wordmeister_api.Controllers;
 using wordmeister_api.Dtos;
 using wordmeister_api.Entities;
 using wordmeister_api.Helpers;
@@ -39,6 +40,7 @@ namespace wordmeister_api
         {
             services.AddCors();
             services.AddControllers();
+            services.AddHttpClient<ISlackService, SlackService>();
 
             services.AddSwaggerGen(options =>
             {
@@ -102,7 +104,7 @@ namespace wordmeister_api
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-           
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

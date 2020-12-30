@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace wordmeister_api.Controllers
@@ -19,5 +15,6 @@ namespace wordmeister_api.Controllers
             $"© 2020 - {DateTime.Now.Year}";
 
         //Scaffold-DbContext -Connection "data source=localhost;initial catalog=WordMeister;User Id=sa;Password=!wordmeister123;MultipleActiveResultSets=True;App=EntityFramework" -Provider Microsoft.EntityFrameworkCore.SqlServer -OutputDir "Entities/" -Context "WordMeisterDbContext" –Force
+
     }
 }

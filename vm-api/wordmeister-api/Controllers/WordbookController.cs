@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using wordmeister_api.Dtos;
 using wordmeister_api.Dtos.General;
 using wordmeister_api.Dtos.WordBook;
 using wordmeister_api.Interfaces;
@@ -17,9 +22,12 @@ namespace wordmeister_api.Controllers
     public class WordbookController : ControllerBase
     {
         IWordBookService _wordbookService;
-        public WordbookController(IWordBookService wordbookService)
+        ISlackService _slackService;
+
+        public WordbookController(IWordBookService wordbookService, ISlackService slackService)
         {
             _wordbookService = wordbookService;
+            _slackService = slackService;
         }
 
         [HttpPost("CreateRegister")]
@@ -154,6 +162,15 @@ namespace wordmeister_api.Controllers
             {
                 return Ok(new General.ResponseResult { Error = true });
             }
+        }
+
+        [AllowAnonymous]
+        [HttpGet("SendMessage")]
+        public IActionResult SendMessage(string message = "Hello World")
+        {
+            _slackService.PostMessage($"{message} {DateTime.Now.ToLocalTime()} sdfsdf");
+
+            return Ok();
         }
 
     }
