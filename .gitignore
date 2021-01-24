@@ -6,6 +6,8 @@ vm-api/wordmeister-api/.vs/wordmeister-api/v16/TestStore/0/000.testlog
 vm-api/wordmeister-api/vm-api/wordmeister-api/appsettings.json
 vm-api/wordmeister-api/appsettings.json
 wm-ui/node_modules/
+vm-api/WordMigration/obj/
+vm-api/WordMigration/bin/
 *.ps1
 *.cmd
 *.cmd
