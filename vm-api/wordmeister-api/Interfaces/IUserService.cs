@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using wordmeister_api.Dtos.Account;
 using wordmeister_api.Dtos.General;
-using wordmeister_api.Entities;
+using wordmeister_api.Model;
 
 namespace wordmeister_api.Interfaces
 {

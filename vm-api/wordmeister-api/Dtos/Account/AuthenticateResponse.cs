@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using wordmeister_api.Entities;
+using wordmeister_api.Model;
 
 namespace wordmeister_api.Dtos.Account
 {

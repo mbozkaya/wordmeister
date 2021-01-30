@@ -11,16 +11,18 @@ using wordmeister_api.Dtos;
 using wordmeister_api.Dtos.Account;
 using wordmeister_api.Dtos.General;
 using wordmeister_api.Entities;
+using wordmeister_api.Entity;
 using wordmeister_api.Interfaces;
+using wordmeister_api.Model;
 
 namespace wordmeister_api.Services
 {
     public class UserService : IUserService
     {
         private readonly Appsettings _appSettings;
-        private WordMeisterDbContext _wordMeisterDbContext;
+        private WordmeisterContext _wordMeisterDbContext;
 
-        public UserService(IOptions<Appsettings> appSettings, WordMeisterDbContext wordMeisterDbContext)
+        public UserService(IOptions<Appsettings> appSettings, WordmeisterContext wordMeisterDbContext)
         {
             _appSettings = appSettings.Value;
             _wordMeisterDbContext = wordMeisterDbContext;
@@ -29,7 +31,7 @@ namespace wordmeister_api.Services
 
         public AuthenticateResponse Authenticate(AuthenticateRequest model)
         {
-            var user = _wordMeisterDbContext.User.SingleOrDefault(x => x.Email == model.Email && x.Password == model.Password);
+            var user = _wordMeisterDbContext.Users.SingleOrDefault(x => x.Email == model.Email && x.Password == model.Password);
 
             // return null if user not found
             if (user == null) return null;
@@ -42,24 +44,24 @@ namespace wordmeister_api.Services
 
         public IEnumerable<User> GetAll()
         {
-            return _wordMeisterDbContext.User.Where(w=>w.Status).ToList();
+            return _wordMeisterDbContext.Users.Where(w => w.Status).ToList();
         }
 
         public User GetById(int id)
         {
-            return _wordMeisterDbContext.User.Where(w=>w.Id==id).FirstOrDefault();
+            return _wordMeisterDbContext.Users.Where(w => w.Id == id).FirstOrDefault();
         }
 
         public General.ResponseResult CreateUser(SignUp model)
         {
-            var user = _wordMeisterDbContext.User.Where(w => w.Email == model.Email).FirstOrDefault();
+            var user = _wordMeisterDbContext.Users.Where(w => w.Email == model.Email).FirstOrDefault();
 
-            if(user != null)
+            if (user != null)
             {
                 return new General.ResponseResult() { Error = true, ErrorMessage = "There is a user that have same email" };
             }
 
-            _wordMeisterDbContext.User.Add(new User
+            _wordMeisterDbContext.Users.Add(new User
             {
                 Email = model.Email,
                 FirstName = model.FirstName,
