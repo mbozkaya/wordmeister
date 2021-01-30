@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ViewComponents;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -20,6 +21,7 @@ using Microsoft.IdentityModel.Tokens;
 using wordmeister_api.Controllers;
 using wordmeister_api.Dtos;
 using wordmeister_api.Entities;
+using wordmeister_api.Entity;
 using wordmeister_api.Helpers;
 using wordmeister_api.Interfaces;
 using wordmeister_api.Services;
@@ -55,6 +57,8 @@ namespace wordmeister_api
             // Configure Compression level
             services.Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.Fastest);
 
+            services.AddEntityFrameworkNpgsql().AddDbContext<WordmeisterContext>(opt =>
+       opt.UseNpgsql(Configuration.GetConnectionString("MyWebApiConection")));
 
             // Add Response compression services
             services.AddResponseCompression(options =>
@@ -65,8 +69,6 @@ namespace wordmeister_api
 
             // configure strongly typed settings object
             services.Configure<Appsettings>(Configuration.GetSection("AppSettings"));
-
-            services.AddDbContext<WordMeisterDbContext>();
 
             // JWT Authentication ayarlarý yapýlýyor.
             var key = Encoding.ASCII.GetBytes(Configuration["AppSettings:Secret"]);
@@ -91,7 +93,6 @@ namespace wordmeister_api
 
             // configure DI for application services
             services.AddScoped<IUserService, UserService>();
-            services.AddScoped<IWordBookService, WordBookSevice>();
 
             services.Configure<FormOptions>(x =>
             {
