@@ -1,5 +1,6 @@
 ﻿using CSharpVerbalExpressions;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 
@@ -21,7 +22,7 @@ namespace WordMigration
                     continue;
                 }
 
-                line = Regex.Replace(line, @"\d[)]|\d[.]", "-");
+                line = Regex.Replace(line, @"\d[)]|\d[.]|[^\x00-\x7F]+\ *(?:[^\x00-\x7F]| )", "-");
 
                 var splittedTab = line.Replace("\t", "").Split("-");
 

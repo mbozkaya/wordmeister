@@ -6409,13 +6409,10 @@ BrE) abbr.
 2046)	negative adj.	2046.Negatif sıf.	
 		 	
 			
-2047)	neighbour (BrE) (NAmE	2047.Komşu (BRE) (isim komşu	
-neighbor) n.	 	
- 	) n.	
+2047)	neighbour (BrE) (NAmE	2047.Komşu (BRE) (isim komşu neighbor) n.) n.	
 		 	
 			
-2048)	neighbourhood (BrE) (NAmE	2048.Mahalle (BRE) (isim mah	
-neighborhood) n.	alle) n.	
+2048)	neighbourhood (BrE) (NAmE	2048.Mahalle (BRE) (isim mah neighborhood) n. alle) n.	
 			
 2049)	neither det., pron., adv.	 ne det., zam., adv.	
 			
@@ -6461,8 +6458,8 @@ neighborhood) n.	alle) n.
 		
 2069)	no exclamation, det.	 ünlem, det.
 		
-2070)	No. (also no.) abbr.  number	
-		(No. ayrıca no.) Kısalt.  numara
+2070)	No. (also no.) abbr.  number	(No. ayrıca no.) Kısalt.  numara
+
 2071)	nobody (also no one) pron.	 kimse (ayrıca kimse) zam.
 		
 2072)	noise n.	 Gürültü n.
@@ -6515,9 +6512,8 @@ neighborhood) n.	alle) n.
 		
 2095)	nuclear adj.	 Nükleer sıf.
 		
-2096)	number (abbr. No., no.) n.	
-		numarası (kısalt. Hayır, hayır.)
-		n.
+2096)	number (abbr. No., no.) n.	 numarası (kısalt. Hayır, hayır.) n.
+
 2097)	nurse n.	 Hemşire n.
 		
 2098)	nut n.	 fındık n.
@@ -6564,8 +6560,7 @@ neighborhood) n.	alle) n.
 		
 2118)	off adv., prep.	 adv kapatır., hazırlık.
 		
-2119)	offence (BrE) (NAmE offense)	 suç (BRE) (isim suç) n.
-n.		
+2119)	offence (BrE) (NAmE offense)	 suç (BRE) (isim suç) n.n.		
 		
 2120)	offend v.	 v rencide.
 		
@@ -6587,9 +6582,8 @@ n.
 		
 2129)	oil n.	 Yağ n.
 		
-2130)	OK (also okay) exclamation,	
-adj., adv.	Tamam (ayrıca tamam) ünlem,
-		adj., Adv.
+2130)	OK (also okay) exclamation,	 adj., adv.	Tamam (ayrıca tamam) ünlem,adj., Adv.
+
 2131)	old adj.	 Eski sıf.
 		
 2132)	old-fashioned adj.	 Eski moda adj.
@@ -6650,10 +6644,7 @@ adj., adv.	Tamam (ayrıca tamam) ünlem,
 		
 2159)	organ n.	 Organ n.
 		
-2160)	organization (BrE also -	 Organizasyon (BRE ayrıca -
-isation) n.	isation) n.
-		
- 
+2160)	organization (BrE also -	 Organizasyon (BRE ayrıca -isation) n.	isation) n. 
 
 2161)	organize (BrE also -ise) v.	 düzenlemek (BRE da -ise) v.
 		
@@ -7066,8 +7057,7 @@ n.)		fotoğraf n.)
 		
 2357)	practically adv.	 pratik adv.
 		
-2358)	practice n. (BrE, NAmE), v.	
-(NAmE)	uygulama n. (BRE, adı), v. (isim
+2358)	practice n. (BrE, NAmE), v.	 (NAmE)	uygulama n. (BRE, adı), v. (isim
 		)
 2359)	practise v. (BrE)	 uygulama v. (BRE)
 		
@@ -7245,8 +7235,7 @@ n.)		fotoğraf n.)
 		
 2443)	provide v.	 v sağlar.
 		
-2444)	provided (also providing)	 Resim (aynı zamanda
-conj.		sağlayan) conj.
+2444)	provided (also providing)	 Resim (aynı zamanda conj.		sağlayan) conj.
 		
 2445)	pt abbr.  pint	 kısalt pt.  pint
 		
@@ -7340,9 +7329,7 @@ conj.		sağlayan) conj.
 		
 2488)	rail n.	 demiryolu n.
 		
-2489)	railway (BrE) (NAmE	
-railroad) n.	Demiryolu (BRE) (name demiry
-		olu) n.
+2489)	railway (BrE) (NAmE	 railroad) n.	Demiryolu (BRE) (name demiryolu) n.
 2490)	rain n., v.	 Yağmur n., v.
 		
 2491)	raise v.	 yükseltmek v.
@@ -7693,8 +7680,7 @@ railroad) n.	Demiryolu (BRE) (name demiry
 		
 2657)	roughly adv.	 kabaca adv.
 		
-2658)	round adj., adv., prep., n.	
-		Yuvarlak adj., adv., hazırlık., n.
+2658)	round adj., adv., prep., n.	 Yuvarlak adj., adv., hazırlık., n.
 2659)	rounded adj.	 yuvarlak sıf.
 		
 2660)	route n.	 Rota n.
@@ -7835,9 +7821,7 @@ railroad) n.	Demiryolu (BRE) (name demiry
 		
 2726)	seat n.	 Koltuk n.
 		
-2727)	second det., ordinal number,	
-adv., n.	İkinci det., sıra numarası, adv.,
-		n.
+2727)	second det., ordinal number,	 adv., n.	İkinci det., sıra numarası, adv., n.
 2728)	secondary adj.	 İkincil sıf.
 		
 2729)	secret adj., n.	 Gizli adj., n.
@@ -8098,12 +8082,9 @@ adv., n.	İkinci det., sıra numarası, adv.,
 		
 2852)	-sized	 ölçülü
 		
-2853)	skilful (BrE) (NAmE skillful)	 becerikli (BRE) (adı usta) sıf.
-adj.		
+2853)	skilful (BrE) (NAmE skillful)	 becerikli (BRE) (adı usta) sıf. adj.		
 		
-2854)	skilfully (BrE) (NAmE	
-skillfully) adv.	ustalıkla (BRE) (adı ustaca) adv
-		.
+2854)	skilfully (BrE) (NAmE	 skillfully) adv.	ustalıkla (BRE) (adı ustaca) adv.
 2855)	skill n.	 beceri n.
 		
 2856)	skilled adj.	 yetenekli sıf.
@@ -8659,8 +8640,7 @@ pron.
 		
 3121)	team n.	 Ekip n.
 		
-3122)	tear /te?(r), NAmE ter/ v., n.	 /
-		gözyaşı te? (r), adı ter / v., n.
+3122)	tear /te?(r), NAmE ter/ v., n.	 / gözyaşı te? (r), adı ter / v., n.
 3123)	tear /t??(r), NAmE t?r/ n.	 / gözyaşı t ?? (r), adı t? r / n.
 		
 
@@ -8788,8 +8768,7 @@ n.		Tiyatro (BRE) (name tiyatro) n.
 		
 3182)	thumb n.	 Başparmak n.
 		
-3183)	Thursday n. (abbr. Thur.,	 Perşembe n. (Kısalt. Per, Per)
-Thurs.)	
+3183)	Thursday n. (abbr. Thur.,	 Perşembe n. (Kısalt. Per, Per)Thurs.)	
 		
 3184)	thus adv.	 Böylece adv.
 		
@@ -8811,17 +8790,14 @@ Thurs.)
 		
 3193)	time n.	 Zaman n.
 		
-3194)	timetable n. (especially BrE)	 zaman
-		çizelgesi n. (özellikle BRE)
+3194)	timetable n. (especially BrE)	 zaman çizelgesi n. (özellikle BRE)
 3195)	tin n.	 kalay n.
 		
 3196)	tiny adj.	 minik sıf.
 		
 3197)	tip n., v.	 İpucu n., v.
 		
-3198)	tire v. (BrE, NAmE), n.	
-(NAmE) (BrE tyre)	Lastik v. (BRE, adı), n. (name)
-		(BRE lastik)
+3198)	tire v. (BrE, NAmE), n.	(NAmE) (BrE tyre)	Lastik v. (BRE, adı), n. (name)		(BRE lastik)
 3199)	tiring adj.	 yorucu sıf.
 		
 3200)	tired adj.	 Yorgun sıf.
