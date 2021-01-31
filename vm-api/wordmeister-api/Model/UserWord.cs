@@ -1,19 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace wordmeister_api.Model
 {
-    public class UserWord:BaseModel
+    public class UserWord
     {
         public long UserId { get; set; }
         public long WordId { get; set; }
+
         public string Description { get; set; }
-        [ForeignKey("UserId")]
+
         public virtual User User { get; set; }
-        [ForeignKey("WordId")]
         public virtual Word Word { get; set; }
-    }
+
+        public DateTime CreatedDate { get; set; }
+        public DateTime? UpdateDate { get; set; } 
+    } 
 }

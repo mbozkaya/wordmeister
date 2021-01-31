@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace wordmeister_api.Model
 {
@@ -11,6 +7,6 @@ namespace wordmeister_api.Model
         public string Text { get; set; }
         public long WordId { get; set; }
         [ForeignKey("WordId")]
-        public Word Word { get; set; }
+        public virtual Word Word { get; set; }
     }
 }
