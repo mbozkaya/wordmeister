@@ -1,26 +1,16 @@
-using System;
-using System.Collections.Generic;
-using System.IO.Compression;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ViewComponents;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
-using wordmeister_api.Controllers;
+using System.IO.Compression;
+using System.Text;
 using wordmeister_api.Dtos;
-using wordmeister_api.Entities;
 using wordmeister_api.Entity;
 using wordmeister_api.Helpers;
 using wordmeister_api.Interfaces;
@@ -93,6 +83,7 @@ namespace wordmeister_api
 
             // configure DI for application services
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IWordService, WordService>();
 
             services.Configure<FormOptions>(x =>
             {
