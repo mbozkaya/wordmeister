@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace wordmeister_api.Helpers
 {
@@ -23,5 +21,19 @@ namespace wordmeister_api.Helpers
             text = text.Replace("ç", "c");
             return text;
         }
+
+        public static bool IsNotNullAndAny<T>(this IList<T> source)
+        {
+            if (source != null && source.FirstOrDefault() != null && source.Any())
+                return true;
+
+            return false;
+        }
+
+        public static bool IsNullOrDefault<T>(this T value)
+        {
+            return object.Equals(value, default(T));
+        }
+
     }
 }

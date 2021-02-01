@@ -83,10 +83,11 @@ namespace wordmeister_api.Migrations
 
             modelBuilder.Entity("wordmeister_api.Model.UserWord", b =>
                 {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .UseIdentityByDefaultColumn();
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("WordId")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp without time zone");
@@ -97,15 +98,7 @@ namespace wordmeister_api.Migrations
                     b.Property<DateTime?>("UpdateDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("WordId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
+                    b.HasKey("UserId", "WordId");
 
                     b.HasIndex("WordId");
 
@@ -128,12 +121,7 @@ namespace wordmeister_api.Migrations
                     b.Property<DateTime?>("UpdateDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<long?>("WordId")
-                        .HasColumnType("bigint");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("WordId");
 
                     b.ToTable("Words");
                 });
@@ -141,7 +129,7 @@ namespace wordmeister_api.Migrations
             modelBuilder.Entity("wordmeister_api.Model.Sentence", b =>
                 {
                     b.HasOne("wordmeister_api.Model.Word", "Word")
-                        .WithMany()
+                        .WithMany("Sentences")
                         .HasForeignKey("WordId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -152,13 +140,13 @@ namespace wordmeister_api.Migrations
             modelBuilder.Entity("wordmeister_api.Model.UserWord", b =>
                 {
                     b.HasOne("wordmeister_api.Model.User", "User")
-                        .WithMany()
+                        .WithMany("UserWords")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("wordmeister_api.Model.Word", "Word")
-                        .WithMany()
+                        .WithMany("UserWords")
                         .HasForeignKey("WordId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -168,16 +156,16 @@ namespace wordmeister_api.Migrations
                     b.Navigation("Word");
                 });
 
-            modelBuilder.Entity("wordmeister_api.Model.Word", b =>
+            modelBuilder.Entity("wordmeister_api.Model.User", b =>
                 {
-                    b.HasOne("wordmeister_api.Model.Word", null)
-                        .WithMany("Sentences")
-                        .HasForeignKey("WordId");
+                    b.Navigation("UserWords");
                 });
 
             modelBuilder.Entity("wordmeister_api.Model.Word", b =>
                 {
                     b.Navigation("Sentences");
+
+                    b.Navigation("UserWords");
                 });
 #pragma warning restore 612, 618
         }

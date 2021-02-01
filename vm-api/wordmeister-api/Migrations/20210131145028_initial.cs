@@ -35,19 +35,12 @@ namespace wordmeister_api.Migrations
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Text = table.Column<string>(type: "text", nullable: true),
-                    WordId = table.Column<long>(type: "bigint", nullable: true),
                     CreatedDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     UpdateDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Words", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Words_Words_WordId",
-                        column: x => x.WordId,
-                        principalTable: "Words",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -76,8 +69,6 @@ namespace wordmeister_api.Migrations
                 name: "UserWords",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     UserId = table.Column<long>(type: "bigint", nullable: false),
                     WordId = table.Column<long>(type: "bigint", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
@@ -86,7 +77,7 @@ namespace wordmeister_api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UserWords", x => x.Id);
+                    table.PrimaryKey("PK_UserWords", x => new { x.UserId, x.WordId });
                     table.ForeignKey(
                         name: "FK_UserWords_Users_UserId",
                         column: x => x.UserId,
@@ -107,18 +98,8 @@ namespace wordmeister_api.Migrations
                 column: "WordId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_UserWords_UserId",
-                table: "UserWords",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_UserWords_WordId",
                 table: "UserWords",
-                column: "WordId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Words_WordId",
-                table: "Words",
                 column: "WordId");
         }
 
