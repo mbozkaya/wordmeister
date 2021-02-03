@@ -9,10 +9,10 @@ namespace wordmeister_api.Interfaces
 {
    public interface IWordService
     {
-        WordResponse GetWord(long wordId);
-        PageResponse GetWords(int skipRows, int pageSize);
-        ResponseResult AddWord(WordRequest model);
-        bool UpdateWord(WordRequest model);
-        bool DeleteWord(long wordId);
+        WordResponse GetWord(long wordId,int userId);
+        PageResponse GetWords(int skipRows, int pageSize, int userId);
+        ResponseResult AddWord(WordRequest model, int userId);
+        void UpdateWord(WordRequest model, int userId);
+        void DeleteWord(long wordId, int userId);
     }
 }

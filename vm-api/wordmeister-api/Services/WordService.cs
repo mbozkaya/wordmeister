@@ -14,22 +14,16 @@ namespace wordmeister_api.Services
 {
     public class WordService : IWordService
     {
-        private WordmeisterContext context;
-        public User currentUser;
-        private readonly IHttpContextAccessor _httpContext;
+        private WordmeisterContext _wordMeisterDbContext;
 
         public WordService(WordmeisterContext wordMeisterDbContext)
         {
-            context = wordMeisterDbContext;
-
-            currentUser = context.Users.FirstOrDefault();
-            //TODO: swaggerden auth kontrol edilemedigi icin simdilik yorum satırında kalacak.
-            //currentUser = (User)_httpContext.HttpContext.Items["User"];
+            _wordMeisterDbContext = wordMeisterDbContext;
         }
 
-        public WordResponse GetWord(long wordId)
+        public WordResponse GetWord(long wordId,int userId)
         {
-            var exist = context.UserWords.FirstOrDefault(x => x.WordId == wordId && x.UserId == currentUser.Id);
+            var exist = _wordMeisterDbContext.UserWords.FirstOrDefault(x => x.WordId == wordId && x.UserId == userId);
 
             if (exist.IsNullOrDefault())
                 return null;
@@ -48,9 +42,9 @@ namespace wordmeister_api.Services
             };
         }
 
-        public PageResponse GetWords(int pageNumber, int pageSize)
+        public PageResponse GetWords(int pageNumber, int pageSize,int userId)
         {
-            var query = context.UserWords.Where(x => x.UserId == currentUser.Id);
+            var query = _wordMeisterDbContext.UserWords.Where(x => x.UserId == userId);
             var page = query.OrderBy(x => x.WordId)
                 .Select(x => new WordResponse
                 {
@@ -68,83 +62,71 @@ namespace wordmeister_api.Services
             int total = query.Count();
             var words = page.Select(x => x);
 
-            if (total < 1)
-                return null;
-
             return new PageResponse { Data = words, Total = total };
         }
 
-        public ResponseResult AddWord(WordRequest model)
+        public ResponseResult AddWord(WordRequest model, int userId)
         {
-            var existWord = context.Words.FirstOrDefault(x => x.Text == model.Text);
+            var existWord = _wordMeisterDbContext.Words.FirstOrDefault(x => x.Text == model.Text);
 
             var userWord = new UserWord();
 
-            if (!existWord.IsNullOrDefault())
+            if (existWord.IsNullOrDefault())
             {
-                var exist = context.UserWords.FirstOrDefault(x => x.UserId == currentUser.Id && x.WordId == existWord.Id);
+                var newWord = _wordMeisterDbContext.Words.Add(new Word
+                {
+                    Text = model.Text,
+                    Sentences = null,
+                    CreatedDate = DateTime.Now
+                });
+
+                _wordMeisterDbContext.SaveChanges();
+
+                userWord = new UserWord
+                {
+                    UserId = userId,
+                    WordId = newWord.Entity.Id,
+                    Description = model.Description
+                };
+
+            }
+            else
+            {
+                var exist = _wordMeisterDbContext.UserWords.FirstOrDefault(x => x.UserId == userId && x.WordId == existWord.Id);
 
                 if (!exist.IsNullOrDefault())
                     return new ResponseResult() { Error = true, ErrorMessage = "Such a word has been added before." };
 
                 userWord = new UserWord
                 {
-                    User = currentUser,
-                    Word = existWord,
+                    UserId = userId,
+                    WordId = existWord.Id,
                     Description = model.Description,
                     CreatedDate = DateTime.Now
                 };
+                _wordMeisterDbContext.UserWords.Add(userWord);
             }
-            else
-            {
-                var word = new Word
-                {
-                    Text = model.Text,
-                    Sentences = null,
-                    CreatedDate = DateTime.Now
-                };
+            _wordMeisterDbContext.SaveChanges();
 
-                userWord = new UserWord
-                {
-                    User = currentUser,
-                    Word = word,
-                    Description = model.Description
-                };
-            }
-
-            context.UserWords.Add(userWord);
-            context.SaveChanges();
-
-            return new ResponseResult() { Data = new WordResponse { Text = userWord.Word.Text, Description = userWord.Description } };
-
+            return new ResponseResult();
         }
 
-        public bool DeleteWord(long wordId)
+        public void DeleteWord(long wordId,int userId)
         {
-            var exist = context.UserWords.FirstOrDefault(x => x.WordId == wordId && x.UserId == currentUser.Id);
+            var exist = _wordMeisterDbContext.UserWords.FirstOrDefault(x => x.WordId == wordId && x.UserId == userId);
 
-            if (exist.IsNullOrDefault())
-                return false;
-
-            context.UserWords.Remove(exist);
-            context.SaveChanges();
-
-            return true;
+            _wordMeisterDbContext.UserWords.Remove(exist);
+            _wordMeisterDbContext.SaveChanges();
         }
-        
-        public bool UpdateWord(WordRequest model)
-        {
-            var existWord = context.UserWords.FirstOrDefault(x => x.WordId == model.Id && x.UserId == currentUser.Id);
 
-            if (existWord.IsNullOrDefault())
-                return false;
+        public void UpdateWord(WordRequest model,int userId)
+        {
+            var existWord = _wordMeisterDbContext.UserWords.FirstOrDefault(x => x.WordId == model.Id && x.UserId == userId);
 
             existWord.Description = model.Description;
             existWord.UpdateDate = DateTime.Now;
 
-            context.SaveChanges();
-
-            return true;
+            _wordMeisterDbContext.SaveChanges();
         }
     }
 }

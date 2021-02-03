@@ -6,10 +6,10 @@ using wordmeister_api.Interfaces;
 
 namespace wordmeister_api.Controllers
 {
-    [Route("wordApi/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     //TODO: swaggerden auth kontrol edilemedigi icin simdilik yorum satırında kalacak.
-    //[Authorize]
+    [Authorize]
     public class WordController : ControllerBase
     {
         private IWordService _wordService;
@@ -18,80 +18,48 @@ namespace wordmeister_api.Controllers
             _wordService = wordService;
         }
 
-        [HttpPost("addWord")]
+        [HttpPost("AddWord")]
         public IActionResult AddWord(WordRequest model)
         {
-            var response = _wordService.AddWord(model);
-
-            if (response == null)
-                return BadRequest(new { message = "Word Insertion successful!" });
-
+            var response = _wordService.AddWord(model, User.GetUserId());
             var result = new General.ResponseResult() { Data = response };
             return Ok(result);
         }
 
-        [HttpGet("getWord")]
-        public IActionResult GetWord(long? wordId)
+        [HttpGet("GetWord")]
+        public IActionResult GetWord(IdDto model)
         {
-            if (wordId.IsNullOrDefault())
-                return BadRequest(new {message = "Word is invalid or you don't have permission." });
-
-            var response = _wordService.GetWord((long)wordId);
-
-            if (response == null)
-                return BadRequest(new { message = "Word not found." });
+            var response = _wordService.GetWord(model.Id, User.GetUserId());
 
             var result = new General.ResponseResult() { Data = response };
 
             return Ok(result);
         }
 
-        [HttpGet("getWords")]
-        public IActionResult GetWords(int skipRows, int pageSize)
+        [HttpGet("GetWords")]
+        public IActionResult GetWords(PagingDto.Request model)
         {
-            if (pageSize.IsNullOrDefault())
-                return BadRequest(new { message = "Pagination parameter(s) error, try again." });
-
-            var response = _wordService.GetWords(skipRows, pageSize);
-
-            if (response == null)
-                return BadRequest(new { message = "Words not found." });
+            var response = _wordService.GetWords(model.PageCount, model.PageSize, User.GetUserId());
 
             var result = new General.ResponseResult() { Data = response };
 
             return Ok(result);
         }
 
-        [HttpPost("deleteWord")]
-        public IActionResult DeleteWord(long? wordId)
+        [HttpPost("DeleteWord")]
+        public IActionResult DeleteWord(IdDto model)
         {
-            if (wordId.IsNullOrDefault())
-                return BadRequest(new { message = "Word is invalid or you don't have permission." });
+            _wordService.DeleteWord(model.Id, User.GetUserId());
 
-            var response = _wordService.DeleteWord((long)wordId);
-
-            if (response.IsNullOrDefault())
-                return BadRequest(new { message = "Word not found." });
-
-            var result = new General.ResponseResult() { Data = response };
-
-            return Ok(result);
+            return Ok(new General.ResponseResult());
         }
 
-        [HttpPost("updateWord")]
+        [HttpPost("UpdateWord")]
         public IActionResult UpdateWord(WordRequest model)
         {
-            if (model.IsNullOrDefault() || model.Id.IsNullOrDefault())
-                return BadRequest(new { message = "Word is invalid." });
+            _wordService.UpdateWord(model, User.GetUserId());
 
-            var response = _wordService.UpdateWord(model);
-
-            if (response.IsNullOrDefault())
-                return BadRequest(new { message = "Word not found." });
-
-            var result = new General.ResponseResult() { Data = response };
-
-            return Ok(result);
+            return Ok(new General.ResponseResult());
         }
 
     }
