@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Http;
+using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 
 namespace wordmeister_api.Helpers
 {
@@ -35,5 +37,12 @@ namespace wordmeister_api.Helpers
             return object.Equals(value, default(T));
         }
 
+        public static int GetUserId(this ClaimsPrincipal context)
+        {
+            int userId = 0;
+            int.TryParse(context.Claims.First(x => x.Type == "id").Value, out userId);
+
+            return userId;
+        }
     }
 }
