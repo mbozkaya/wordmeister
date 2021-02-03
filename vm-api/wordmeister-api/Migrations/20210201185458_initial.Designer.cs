@@ -10,7 +10,7 @@ using wordmeister_api.Entity;
 namespace wordmeister_api.Migrations
 {
     [DbContext(typeof(WordmeisterContext))]
-    [Migration("20210131145028_initial")]
+    [Migration("20210201185458_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
