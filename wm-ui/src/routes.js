@@ -11,6 +11,7 @@ import ProductListView from 'src/views/product/ProductListView';
 import RegisterView from 'src/views/auth/RegisterView';
 import SettingsView from 'src/views/settings/SettingsView';
 import KeywordView from './views/keyword';
+import Word from './views/word/Word';
 
 const routes = [
   {
@@ -23,6 +24,7 @@ const routes = [
       { path: 'products', element: <ProductListView /> },
       { path: 'settings', element: <SettingsView /> },
       { path: 'keyword', element: <KeywordView /> },
+      { path: 'word', element: <Word /> },
       { path: '*', element: <Navigate to="/404" /> }
     ]
   },

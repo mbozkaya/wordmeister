@@ -42,6 +42,11 @@ const items = [
     title: 'Keyword'
   },
   {
+    href: '/app/word',
+    icon: ShoppingBagIcon,
+    title: 'Word'
+  },
+  {
     href: '/app/customers',
     icon: UsersIcon,
     title: 'Customers'

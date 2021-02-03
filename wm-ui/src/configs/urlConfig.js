@@ -15,5 +15,10 @@ export default {
     checkAnswer: `${appConfig.api.service()}Wordbook/CheckAnswer`,
     removeRegister: `${appConfig.api.service()}Wordbook/RemoveRegister`,
     removeAnswer: `${appConfig.api.service()}Wordbook/RemoveAnswer`,
+    addWord: `${appConfig.api.service()}Word/AddWord`,
+    getWord: `${appConfig.api.service()}Word/GetWord`,
+    getWords: `${appConfig.api.service()}Word/GetWords`,
+    deleteWord: `${appConfig.api.service()}Word/DeleteWord`,
+    updateWord: `${appConfig.api.service()}Word/UpdateWord`,
   },
 };
