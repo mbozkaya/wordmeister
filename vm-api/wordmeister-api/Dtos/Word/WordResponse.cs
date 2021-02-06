@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace wordmeister_api.Dtos.Word
 {
@@ -8,5 +9,6 @@ namespace wordmeister_api.Dtos.Word
         public string Text { get; set; }
         public string Description { get; set; }
         public ICollection<SentenceDto> Sentences { get; set; }
+        public DateTime CreatedDate { get; set; }
     }
 }

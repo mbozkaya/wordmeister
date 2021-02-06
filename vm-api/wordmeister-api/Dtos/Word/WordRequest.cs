@@ -1,4 +1,6 @@
-﻿namespace wordmeister_api.Dtos.Word
+﻿using System.Collections.Generic;
+
+namespace wordmeister_api.Dtos.Word
 {
     public class IdDto
     {
@@ -8,5 +10,10 @@
     {
         public string Text { get; set; }
         public string Description { get; set; }
+    }
+
+    public class IdListDto
+    {
+        public List<long> Ids { get; set; }
     }
 }

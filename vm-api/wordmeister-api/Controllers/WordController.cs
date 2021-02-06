@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using wordmeister_api.Dtos.General;
 using wordmeister_api.Dtos.Word;
 using wordmeister_api.Helpers;
@@ -26,7 +27,7 @@ namespace wordmeister_api.Controllers
             return Ok(result);
         }
 
-        [HttpGet("GetWord")]
+        [HttpPost("GetWord")]
         public IActionResult GetWord(IdDto model)
         {
             var response = _wordService.GetWord(model.Id, User.GetUserId());
@@ -36,7 +37,7 @@ namespace wordmeister_api.Controllers
             return Ok(result);
         }
 
-        [HttpGet("GetWords")]
+        [HttpPost("GetWords")]
         public IActionResult GetWords(PagingDto.Request model)
         {
             var response = _wordService.GetWords(model.PageCount, model.PageSize, User.GetUserId());
@@ -46,10 +47,13 @@ namespace wordmeister_api.Controllers
             return Ok(result);
         }
 
-        [HttpPost("DeleteWord")]
-        public IActionResult DeleteWord(IdDto model)
+        [HttpDelete("DeleteWord")]
+        public IActionResult DeleteWord(List<long> ids)
         {
-            _wordService.DeleteWord(model.Id, User.GetUserId());
+            foreach (var id in ids)
+            {
+                _wordService.DeleteWord(id, User.GetUserId());
+            }
 
             return Ok(new General.ResponseResult());
         }

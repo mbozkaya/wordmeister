@@ -21,7 +21,7 @@ namespace wordmeister_api.Services
             _wordMeisterDbContext = wordMeisterDbContext;
         }
 
-        public WordResponse GetWord(long wordId,int userId)
+        public WordResponse GetWord(long wordId, int userId)
         {
             var exist = _wordMeisterDbContext.UserWords.FirstOrDefault(x => x.WordId == wordId && x.UserId == userId);
 
@@ -42,7 +42,7 @@ namespace wordmeister_api.Services
             };
         }
 
-        public PageResponse GetWords(int pageNumber, int pageSize,int userId)
+        public PageResponse GetWords(int pageNumber, int pageSize, int userId)
         {
             var query = _wordMeisterDbContext.UserWords.Where(x => x.UserId == userId);
             var page = query.OrderBy(x => x.WordId)
@@ -55,9 +55,10 @@ namespace wordmeister_api.Services
                     {
                         Id = s.Id,
                         Text = s.Text
-                    }).ToList()
+                    }).ToList(),
+                    CreatedDate = x.CreatedDate,
                 })
-            .Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
+            .Skip((pageNumber) * pageSize).Take(pageSize).ToList();
 
             int total = query.Count();
             var words = page.Select(x => x);
@@ -86,8 +87,10 @@ namespace wordmeister_api.Services
                 {
                     UserId = userId,
                     WordId = newWord.Entity.Id,
-                    Description = model.Description
+                    Description = model.Description,
+                    CreatedDate = DateTime.Now
                 };
+                _wordMeisterDbContext.UserWords.Add(userWord);
 
             }
             else
@@ -111,7 +114,7 @@ namespace wordmeister_api.Services
             return new ResponseResult();
         }
 
-        public void DeleteWord(long wordId,int userId)
+        public void DeleteWord(long wordId, int userId)
         {
             var exist = _wordMeisterDbContext.UserWords.FirstOrDefault(x => x.WordId == wordId && x.UserId == userId);
 
@@ -119,7 +122,7 @@ namespace wordmeister_api.Services
             _wordMeisterDbContext.SaveChanges();
         }
 
-        public void UpdateWord(WordRequest model,int userId)
+        public void UpdateWord(WordRequest model, int userId)
         {
             var existWord = _wordMeisterDbContext.UserWords.FirstOrDefault(x => x.WordId == model.Id && x.UserId == userId);
 
