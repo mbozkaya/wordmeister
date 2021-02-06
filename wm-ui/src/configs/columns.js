@@ -15,22 +15,19 @@ const columns = {
     {
       id: 'action', numeric: false, disablePadding: false, label: 'Action', description: 'Action'
     },
-    // {
-    //   id: 'answerCount', numeric: true, disablePadding: false, label: 'Answer Count', description: 'Answer Count',
-    // },
   ],
-  word:[
+  word: [
     {
-      id: 'text', numeric: false, disablePadding: true, label: 'Text', description: 'Text'
+      id: 'text', numeric: false, disablePadding: true, label: 'Text', description: 'Text', edittable: true, show: true,
     },
     {
-      id: 'description', numeric: false, disablePadding: false, label: 'Description', description: 'Description'
+      id: 'description', numeric: false, disablePadding: false, label: 'Description', description: 'Description', edittable: true, show: true,
     },
     {
-      id: 'createdDate', numeric: false, disablePadding: false, label: 'Created Date', description: 'Created Date', date: true
+      id: 'createdDate', numeric: false, disablePadding: false, label: 'Created Date', description: 'Created Date', date: true, edittable: false, show: true,
     },
     {
-      id: 'action', numeric: false, disablePadding: false, label: 'Action', description: 'Action'
+      id: 'action', numeric: false, disablePadding: false, label: 'Action', description: 'Action', edittable: false, show: false,
     },
   ]
 };

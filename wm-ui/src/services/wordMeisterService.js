@@ -13,7 +13,7 @@ export default {
   },
   getWord: (wordId) => {
     const requestOptions = {
-      method: 'GET',
+      method: 'POST',
       headers: utilitity.authorizedHeader(),
       body: JSON.stringify(wordId),
     };
@@ -21,7 +21,7 @@ export default {
   },
   getWords: (id) => {
     const requestOptions = {
-      method: 'GET',
+      method: 'POST',
       headers: utilitity.authorizedHeader(),
       body: JSON.stringify(id),
     };
@@ -37,7 +37,7 @@ export default {
   },
   deleteWord: (model) => {
     const requestOptions = {
-      method: 'POST',
+      method: 'DELETE',
       headers: utilitity.authorizedHeader(),
       body: JSON.stringify(model),
     };

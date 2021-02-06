@@ -49,7 +49,7 @@ const EnhancedTableToolbar = (props) => {
   const {
     numSelected, title, drawerOpen, drawerData, onDrawerClose,
     onDrawerUpdate, dialogOnSubmit, DialogName, DialogDescription,
-    confirmationDialogSubmit, confirmationDialogSubmitText, selectedData
+    confirmationDialogSubmit, confirmationDialogSubmitText, selectedData, addButtonDisable, columns
   } = props;
 
   const [updateData, setUpdateData] = useState({});
@@ -58,13 +58,12 @@ const EnhancedTableToolbar = (props) => {
   const [confirmationDialog, setConfirmationDialog] = useState(false);
 
   useEffect(() => {
-    if (Object.keys(updateData).length === 0 && updateData.constructor === Object) {
+    if (Object.keys(drawerData).length > 0 && drawerData.constructor === Object) {
       setUpdateData(drawerData);
     }
-  }, []);
+  }, [drawerData]);
 
   useEffect(() => setDialogData(''), [dialogOpen]);
-
   return (
     <Toolbar
       className={clsx(classes.root, {
@@ -98,21 +97,42 @@ const EnhancedTableToolbar = (props) => {
                 <FilterListIcon />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Add Item">
-              <IconButton
-                aria-label="add-icon"
-                onClick={() => setDialogOpen(true)}
-              >
-                <AddIcon />
-              </IconButton>
-            </Tooltip>
+            {addButtonDisable && (
+              <Tooltip title="Add Item">
+                <IconButton
+                  aria-label="add-icon"
+                  onClick={() => setDialogOpen(true)}
+                >
+                  <AddIcon />
+                </IconButton>
+              </Tooltip>
+            )}
           </>
         )}
       <Drawer anchor="right" open={drawerOpen} onClose={onDrawerClose}>
         <Container>
           <Box mt={3}>
             <form className={classes.textField} noValidate autoComplete="off">
-              <div>
+              {
+                Array(columns).length > 0 && Object.keys(drawerData).length > 0 && (
+                  columns.filter((f) => f.show === true).map((col) => (
+                    <div>
+                      <TextField
+                        label={col.label}
+                        value={updateData[col.id]}
+                        onChange={(el) => {
+                          const stateData = { ...updateData };
+                          stateData[col.id] = el.target.value;
+                          setUpdateData(stateData);
+                        }}
+                        disabled={!col.edittable}
+                        key={`textfieldEdit${col.id}`}
+                      />
+                    </div>
+                  ))
+                )
+              }
+              {/* <div>
                 <TextField
                   id="standard-basic"
                   label="Title"
@@ -128,7 +148,7 @@ const EnhancedTableToolbar = (props) => {
               </div>
               <div>
                 <TextField id="outlined-basic" label="Outlined" disabled value={updateData.createdDate} />
-              </div>
+              </div> */}
               <div>
                 <Button variant="contained" size="small" color="primary" className={classes.margin} onClick={() => onDrawerUpdate(updateData)}>
                   Update
@@ -216,6 +236,8 @@ EnhancedTableToolbar.propTypes = {
   confirmationDialogSubmit: PropTypes.func,
   confirmationDialogSubmitText: PropTypes.string,
   selectedData: PropTypes.array,
+  addButtonDisable: PropTypes.bool,
+  columns: PropTypes.array,
 };
 
 EnhancedTableToolbar.defaultProps = {
@@ -229,6 +251,8 @@ EnhancedTableToolbar.defaultProps = {
   confirmationDialogSubmit: () => console.log('confirmation dialog submit'),
   confirmationDialogSubmitText: 'Delete',
   selectedData: [],
+  addButtonDisable: false,
+  columns: [],
 };
 
 export default EnhancedTableToolbar;

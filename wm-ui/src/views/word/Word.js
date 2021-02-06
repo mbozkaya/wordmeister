@@ -16,6 +16,7 @@ import DataTable from 'src/components/Datatable/DataTable';
 import columns from 'src/configs/columns';
 import { Formik } from 'formik';
 import wordMeisterService from 'src/services/wordMeisterService';
+import { DepartureBoard } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,27 +40,29 @@ const useStyles = makeStyles((theme) => ({
 
 const Word = () => {
   const classes = useStyles();
+  const [dataFlag, setDataFlag] = useState(false);
 
   return (
     <Page
       className={classes.root}
       title="Keywords"
     >
-      <Container maxWidth={false}>
-        <Grid container spacing={3}>
+      <Container maxWidth={false} key="container">
+        <Grid container spacing={3} key="wrapperGrid">
           <Grid
             item
             lg={8}
             md={12}
             xl={9}
             xs={12}
+            key="grid1"
           >
             <DataTable
               columns={columns.word}
-              data={[]}
-              getData={() => new Promise((resolutionFunc) => {
-                resolutionFunc(777);
-              })}
+              rowEdit={(model) => wordMeisterService.updateWord(model)}
+              getData={(model) => wordMeisterService.getWords(model)}
+              removeRow={(model) => wordMeisterService.deleteWord(model)}
+              getDataFlag={dataFlag}
             />
           </Grid>
           <Grid
@@ -68,6 +71,7 @@ const Word = () => {
             md={6}
             xl={3}
             xs={12}
+            key="grid2"
           >
             <Card>
               <CardHeader
@@ -87,12 +91,12 @@ const Word = () => {
                   }
                   onSubmit={(form, { resetForm }) => {
                     wordMeisterService.addWord(form).then((response) => {
-                      if (response.error && response.error === false) {
+                      if (response && response.error === false) {
                         resetForm({
                           text: '',
                           description: ''
                         });
-                      } else {
+                        setDataFlag(!dataFlag);
                       }
                     });
                   }}
@@ -100,19 +104,18 @@ const Word = () => {
                   {
                     ({
                       errors,
-                      handleBlur,
                       handleChange,
                       handleSubmit,
                       touched,
                       values,
-                      isSubmitting
                     }) => (
                       <form className={classes.form} noValidate autoComplete="off" onSubmit={handleSubmit}>
                         <Grid
                           container
                           spacing={3}
+                          key="grid6"
                         >
-                          <Grid item sm={12}>
+                          <Grid item sm={12} key="grid3">
                             <TextField
                               fullWidth
                               error={Boolean(touched.text && errors.text)}
@@ -123,9 +126,10 @@ const Word = () => {
                               variant="outlined"
                               value={values.text}
                               onChange={handleChange}
+                              key="textfield1"
                             />
                           </Grid>
-                          <Grid item sm={12}>
+                          <Grid item sm={12} key="grid4">
                             <TextField
                               fullWidth
                               label="description"
@@ -133,14 +137,14 @@ const Word = () => {
                               variant="outlined"
                               value={values.description}
                               onChange={handleChange}
+                              key="textfield2"
                             />
                           </Grid>
-                          <Grid item sm={6} alignContent="center">
+                          <Grid item sm={6} key="grid5">
                             <Button
                               color="primary"
                               variant="contained"
                               type="submit"
-                              disabled={isSubmitting}
                             >
                               Create
                             </Button>

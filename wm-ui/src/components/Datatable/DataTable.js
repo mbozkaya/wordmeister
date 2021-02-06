@@ -101,7 +101,7 @@ const useStyles = makeStyles((theme) => ({
 const DataTable = (props) => {
   const {
     defaultOrder, defaultOrderBy, defaultRowsPerPage, columns,
-    rowEdit, insertNewRow, removeRow, getData
+    rowEdit, insertNewRow, removeRow, getData,getDataFlag
   } = props;
   const classes = useStyles();
   const [data, setData] = useState([]);
@@ -212,6 +212,7 @@ const DataTable = (props) => {
   useEffect(() => {
     getRegister();
   }, [pagingParam]);
+  useEffect(()=>{getRegister()},[getDataFlag])
 
   return (
     <div className={classes.root}>
@@ -243,6 +244,7 @@ const DataTable = (props) => {
               }
             })}
           selectedData={selected}
+          columns={columns}
         />
         <TableContainer>
           <Table
@@ -274,7 +276,7 @@ const DataTable = (props) => {
                       role="checkbox"
                       aria-checked={isItemSelected}
                       tabIndex={-1}
-                      key={row.name}
+                      key={`tableRow${index}`}
                       selected={isItemSelected}
                     >
                       {columns.map((col, index2) => (
@@ -288,7 +290,7 @@ const DataTable = (props) => {
                             </TableCell>
                           )}
                           {
-                            <TableCell id={labelId} scope="row" padding="none" align="left">
+                            <TableCell id={labelId} scope="row" padding="none" align="left" key={`tableCell2${index2}`}>
                               {row[col.id]
                                 ? (col.date ? new Date(Date.parse(row[col.id])).toLocaleString() : row[col.id])
                                 : (
@@ -301,6 +303,7 @@ const DataTable = (props) => {
                                       setDrawerOpen(true);
                                       setEditRow(row);
                                     }}
+                                    key={`button${index2}`}
                                   >
                                     Edit
                                   </Button>
@@ -324,17 +327,17 @@ const DataTable = (props) => {
         <TablePagination
           rowsPerPageOptions={[5, 10, 25]}
           component="div"
-          count={totalRowCount}
+          count={totalRowCount || 0}
           rowsPerPage={rowsPerPage}
           page={page}
           onChangePage={handleChangePage}
           onChangeRowsPerPage={handleChangeRowsPerPage}
         />
       </Paper>
-      <FormControlLabel
+      {/* <FormControlLabel
         control={<Switch checked={dense} onChange={handleChangeDense} />}
         label="Dense padding"
-      />
+      /> */}
     </div>
   );
 };
@@ -342,7 +345,6 @@ const DataTable = (props) => {
 export default DataTable;
 
 DataTable.propTypes = {
-  data: PropTypes.array,
   columns: PropTypes.array,
   onPerPageChange: PropTypes.func,
   onPageCountChange: PropTypes.func,
@@ -354,6 +356,7 @@ DataTable.propTypes = {
   insertNewRow: PropTypes.func,
   removeRow: PropTypes.func,
   getData: PropTypes.func,
+  getDataFlag: PropTypes.bool,
 };
 
 DataTable.defaultProps = {
@@ -369,4 +372,5 @@ DataTable.defaultProps = {
   insertNewRow: () => { },
   removeRow: () => { },
   getData: () => { },
+  getDataFlag: false,
 };
