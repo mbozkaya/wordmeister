@@ -14,11 +14,13 @@ namespace wordmeister_api.Services
 {
     public class WordService : IWordService
     {
-        private WordmeisterContext _wordMeisterDbContext;
+        WordmeisterContext _wordMeisterDbContext;
+        ITranslateService _translateService;
 
-        public WordService(WordmeisterContext wordMeisterDbContext)
+        public WordService(WordmeisterContext wordMeisterDbContext, ITranslateService translateService)
         {
             _wordMeisterDbContext = wordMeisterDbContext;
+            _translateService = translateService;
         }
 
         public WordResponse GetWord(long wordId, int userId)
@@ -78,9 +80,10 @@ namespace wordmeister_api.Services
                 {
                     Text = model.Text,
                     Sentences = null,
-                    CreatedDate = DateTime.Now
+                    CreatedDate = DateTime.Now,
                 });
 
+                _translateService.TranslateText(model.Text);
                 _wordMeisterDbContext.SaveChanges();
 
                 userWord = new UserWord
