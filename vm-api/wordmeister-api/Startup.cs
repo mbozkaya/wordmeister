@@ -82,6 +82,7 @@ namespace wordmeister_api
                 });
 
             // configure DI for application services
+            services.AddSingleton<ITranslateService, TranslateService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IWordService, WordService>();
 
