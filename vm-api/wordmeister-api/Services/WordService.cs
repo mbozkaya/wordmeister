@@ -47,7 +47,7 @@ namespace wordmeister_api.Services
         public PageResponse GetWords(int pageNumber, int pageSize, int userId)
         {
             var query = _wordMeisterDbContext.UserWords.Where(x => x.UserId == userId);
-            var page = query.OrderBy(x => x.WordId)
+            var page = query.OrderByDescending(x => x.CreatedDate)
                 .Select(x => new WordResponse
                 {
                     Id = x.WordId,

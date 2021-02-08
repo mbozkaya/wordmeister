@@ -14,5 +14,8 @@ namespace wordmeister_api.Interfaces
         IEnumerable<User> GetAll();
         User GetById(int id);
         General.ResponseResult CreateUser(SignUp model);
+        General.ResponseResult UploadFiles(List<UploadFileDto.Request> fileModel, int userId);
+        string GetUserPP(int userId);
+        General.ResponseResult GetAccountInformation(int userId);
     }
 }

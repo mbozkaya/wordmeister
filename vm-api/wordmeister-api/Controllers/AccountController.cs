@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using wordmeister_api.Dtos.Account;
 using wordmeister_api.Dtos.General;
 using wordmeister_api.Entities;
+using wordmeister_api.Helpers;
 using wordmeister_api.Interfaces;
 using wordmeister_api.Services;
 
@@ -57,6 +58,19 @@ namespace wordmeister_api.Controllers
         public IActionResult Authenticated()
         {
             return Ok();
+        }
+
+        [Authorize]
+        [HttpPost("UploadFile")]
+        public IActionResult UploadFile(UploadFileDto.Request model)
+        {
+            return Ok(_userService.UploadFiles(new List<UploadFileDto.Request> { model }, User.GetUserId()));
+        }
+        [Authorize]
+        [HttpGet("AccountInformation")]
+        public IActionResult AccountInformation()
+        {
+            return Ok(_userService.GetAccountInformation(User.GetUserId()));
         }
     }
 }

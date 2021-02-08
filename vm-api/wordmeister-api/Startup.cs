@@ -6,8 +6,10 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using System.IO;
 using System.IO.Compression;
 using System.Text;
 using wordmeister_api.Dtos;
@@ -42,6 +44,7 @@ namespace wordmeister_api
                     Version = "v1",
                     Description = "Sample interface for test service",
                 });
+                options.CustomSchemaIds(x => x.FullName);
             });
 
             // Configure Compression level
@@ -132,6 +135,16 @@ namespace wordmeister_api
 
             app.UseSwagger();
             app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "Query result Service API"));
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                OnPrepareResponse = context =>
+                {
+                    context.Context.Response.Headers["Access-Control-Allow-Origin"] = "*";
+                },
+                FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "UploadFiles")),
+                RequestPath = "/Files",
+            });
         }
     }
 }

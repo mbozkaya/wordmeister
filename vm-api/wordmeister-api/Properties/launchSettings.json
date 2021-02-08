@@ -32,7 +32,7 @@
     },
     "Docker": {
       "commandName": "Docker",
-      "launchUrl": "{https}://{localhost}:{32770}/swagger",
+      "launchUrl": "{https}://{localhost}:{5001}/swagger",
       "publishAllPorts": false,
       "useSSL": true
     }

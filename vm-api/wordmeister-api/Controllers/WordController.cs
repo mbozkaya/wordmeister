@@ -23,8 +23,7 @@ namespace wordmeister_api.Controllers
         public IActionResult AddWord(WordRequest model)
         {
             var response = _wordService.AddWord(model, User.GetUserId());
-            var result = new General.ResponseResult() { Data = response };
-            return Ok(result);
+            return Ok(response);
         }
 
         [HttpPost("GetWord")]

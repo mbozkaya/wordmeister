@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using static wordmeister_api.Helpers.Enums;
 
 namespace wordmeister_api.Helpers
 {
@@ -43,6 +44,16 @@ namespace wordmeister_api.Helpers
             int.TryParse(context.Claims.First(x => x.Type == "id").Value, out userId);
 
             return userId;
+        }
+
+        public static string GetDirectoryName(this UploadFileType type)
+        {
+            string directory = "error";
+            var fileTypeDictionary = new Dictionary<int, string> { { 1, "PP" } };
+
+            fileTypeDictionary.TryGetValue((int)type, out directory);
+
+            return directory;
         }
     }
 }

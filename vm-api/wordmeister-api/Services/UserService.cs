@@ -1,8 +1,10 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -12,8 +14,10 @@ using wordmeister_api.Dtos.Account;
 using wordmeister_api.Dtos.General;
 using wordmeister_api.Entities;
 using wordmeister_api.Entity;
+using wordmeister_api.Helpers;
 using wordmeister_api.Interfaces;
 using wordmeister_api.Model;
+using static wordmeister_api.Helpers.Enums;
 
 namespace wordmeister_api.Services
 {
@@ -21,12 +25,16 @@ namespace wordmeister_api.Services
     {
         private readonly Appsettings _appSettings;
         private WordmeisterContext _wordMeisterDbContext;
+        private readonly string uploadFilePath;
+        IHostingEnvironment _env;
 
-        public UserService(IOptions<Appsettings> appSettings, WordmeisterContext wordMeisterDbContext)
+
+        public UserService(IOptions<Appsettings> appSettings, WordmeisterContext wordMeisterDbContext, IHostingEnvironment env)
         {
             _appSettings = appSettings.Value;
             _wordMeisterDbContext = wordMeisterDbContext;
-
+            _env = env;
+            uploadFilePath = $"{_env.ContentRootPath}/UploadFiles";
         }
 
         public AuthenticateResponse Authenticate(AuthenticateRequest model)
@@ -79,8 +87,122 @@ namespace wordmeister_api.Services
             return new General.ResponseResult();
         }
 
-        // helper methods
+        public General.ResponseResult UploadFiles(List<UploadFileDto.Request> fileModel, int userId)
+        {
+            var currentUser = GetById(userId);
 
+            List<string> acceptedFileType = new List<string> { ".jpeg", ".png", ".jpg", ".bmp" };
+            var isUnAcceptedFile = fileModel.Any(a => !acceptedFileType.Contains(Path.GetExtension(a.File.FileName)));
+            if (isUnAcceptedFile)
+            {
+                return new General.ResponseResult
+                {
+                    Error = true,
+                    ErrorMessage = "Not validating file format was found."
+                };
+            }
+
+            var filesHasErrors = new List<string>();
+
+            foreach (var item in fileModel)
+            {
+                if (item.File.Length < 1)
+                {
+                    continue;
+                }
+
+                var result = UploadFile(item, currentUser);
+
+                if (result.error)
+                {
+                    filesHasErrors.Add(item.File.FileName);
+                }
+            }
+
+            if (filesHasErrors.Count > 0)
+            {
+                return new General.ResponseResult
+                {
+                    Error = true,
+                    ErrorMessage = string.Concat(string.Join(Environment.NewLine, filesHasErrors), " The file/files have errors while uploading. "),
+                };
+            }
+
+            return new General.ResponseResult();
+        }
+
+        public General.ResponseResult GetAccountInformation(int userId)
+        {
+            var user = GetById(userId);
+
+            return new General.ResponseResult
+            {
+                Data = new AccountResponse.Information
+                {
+                    Email = user.Email,
+                    Firstname = user.FirstName,
+                    Lastname = user.LastName,
+                    PictureUri = GetUserPP(userId),
+                }
+            };
+        }
+
+        public string GetUserPP(int userId)
+        {
+            var uri = _wordMeisterDbContext.UploadFiles
+                .Where(w => w.UserId == userId && w.Type == (int)UploadFileType.ProfilePic && w.Status)
+                .Select(s => s.Uri)
+                .FirstOrDefault();
+
+            if (string.IsNullOrEmpty(uri))
+            {
+                uri = $"{uploadFilePath}/PP/default.png";
+            }
+
+            return uri;
+        }
+
+        private (bool error, string message) UploadFile(UploadFileDto.Request item, User user)
+        {
+            var fileGuid = Guid.NewGuid();
+            var fileExtension = Path.GetExtension(item.File.FileName);
+            var fileUri = $"{item.Type.GetDirectoryName()}/{user.Guid.ToString("N")}/{fileGuid.ToString("N")}{fileExtension}";
+
+            var filePath = $"{uploadFilePath}/{fileUri}";
+
+            if (!Directory.Exists(filePath))
+            {
+                Directory.CreateDirectory(filePath);
+            }
+
+            try
+            {
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    item.File.CopyTo(stream);
+                }
+
+                _wordMeisterDbContext.UploadFiles.Add(new Model.UploadFile
+                {
+                    CreatedDate = DateTime.Now,
+                    Description = item.Description,
+                    Extension = fileExtension,
+                    Guid = fileGuid,
+                    OriginalName = item.File.FileName,
+                    Status = true,
+                    Type = (int)item.Type,
+                    Uri = fileUri,
+                    UserId = user.Id,
+                });
+                _wordMeisterDbContext.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                return new(true, ex.Message);
+            }
+
+            return new(false, string.Empty);
+        }
         private string generateJwtToken(User user)
         {
             // generate token that is valid for 7 days
