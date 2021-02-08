@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import moment from 'moment';
@@ -11,7 +11,14 @@ import {
   CardContent,
   Divider,
   Typography,
-  makeStyles
+  makeStyles,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  TextField,
+  Input
 } from '@material-ui/core';
 
 const user = {
@@ -34,54 +41,78 @@ const useStyles = makeStyles(() => ({
 const Profile = ({ className, ...rest }) => {
   const classes = useStyles();
 
+  const [openDialog, setOpenDialog] = useState(false);
+
   return (
-    <Card
-      className={clsx(classes.root, className)}
-      {...rest}
-    >
-      <CardContent>
-        <Box
-          alignItems="center"
-          display="flex"
-          flexDirection="column"
-        >
-          <Avatar
-            className={classes.avatar}
-            src={user.avatar}
-          />
-          <Typography
-            color="textPrimary"
-            gutterBottom
-            variant="h3"
+    <>
+      <Card
+        className={clsx(classes.root, className)}
+        {...rest}
+      >
+        <CardContent>
+          <Box
+            alignItems="center"
+            display="flex"
+            flexDirection="column"
           >
-            {user.name}
-          </Typography>
-          <Typography
-            color="textSecondary"
-            variant="body1"
+            <Avatar
+              className={classes.avatar}
+              src={user.avatar}
+            />
+            <Typography
+              color="textPrimary"
+              gutterBottom
+              variant="h3"
+            >
+              {user.name}
+            </Typography>
+            <Typography
+              color="textSecondary"
+              variant="body1"
+            >
+              {`${user.city} ${user.country}`}
+            </Typography>
+            <Typography
+              className={classes.dateText}
+              color="textSecondary"
+              variant="body1"
+            >
+              {`${moment().format('hh:mm A')} ${user.timezone}`}
+            </Typography>
+          </Box>
+        </CardContent>
+        <Divider />
+        <CardActions>
+          <Button
+            color="primary"
+            fullWidth
+            variant="text"
+            onClick={() => setOpenDialog(true)}
           >
-            {`${user.city} ${user.country}`}
-          </Typography>
-          <Typography
-            className={classes.dateText}
-            color="textSecondary"
-            variant="body1"
-          >
-            {`${moment().format('hh:mm A')} ${user.timezone}`}
-          </Typography>
-        </Box>
-      </CardContent>
-      <Divider />
-      <CardActions>
-        <Button
-          color="primary"
-          fullWidth
-          variant="text"
-        >
-          Upload picture
-        </Button>
-      </CardActions>
-    </Card>
+            Upload picture
+          </Button>
+        </CardActions>
+      </Card>
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} aria-labelledby="form-dialog-title">
+        <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            ...
+          </DialogContentText>
+          <Input type="file" accept="image/png, image/jpeg, image/jpg">
+            Select a file
+          </Input>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDialog(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={() => { }} color="primary">
+            Subscribe
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 

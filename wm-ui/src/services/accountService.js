@@ -50,5 +50,13 @@ export default {
         console.error(ex);
         return false;
       });
+  },
+  accountInformation: () => {
+    const requestOptions = {
+      method: 'GET',
+      headers: utilitity.authorizedHeader(),
+    };
+
+    return Fetch(urlConfig.account.accountInformation, requestOptions);
   }
 };
