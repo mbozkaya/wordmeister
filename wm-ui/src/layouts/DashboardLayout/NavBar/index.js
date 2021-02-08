@@ -36,26 +36,26 @@ const items = [
     icon: BarChartIcon,
     title: 'Dashboard'
   },
-  {
-    href: '/app/keyword',
-    icon: ShoppingBagIcon,
-    title: 'Keyword'
-  },
+  // {
+  //   href: '/app/keyword',
+  //   icon: ShoppingBagIcon,
+  //   title: 'Keyword'
+  // },
   {
     href: '/app/word',
     icon: ShoppingBagIcon,
     title: 'Word'
   },
-  {
-    href: '/app/customers',
-    icon: UsersIcon,
-    title: 'Customers'
-  },
-  {
-    href: '/app/products',
-    icon: ShoppingBagIcon,
-    title: 'Products'
-  },
+  // {
+  //   href: '/app/customers',
+  //   icon: UsersIcon,
+  //   title: 'Customers'
+  // },
+  // {
+  //   href: '/app/products',
+  //   icon: ShoppingBagIcon,
+  //   title: 'Products'
+  // },
   {
     href: '/app/account',
     icon: UserIcon,
@@ -66,21 +66,21 @@ const items = [
     icon: SettingsIcon,
     title: 'Settings'
   },
-  {
-    href: '/login',
-    icon: LockIcon,
-    title: 'Login'
-  },
-  {
-    href: '/register',
-    icon: UserPlusIcon,
-    title: 'Register'
-  },
-  {
-    href: '/404',
-    icon: AlertCircleIcon,
-    title: 'Error'
-  }
+  // {
+  //   href: '/login',
+  //   icon: LockIcon,
+  //   title: 'Login'
+  // },
+  // {
+  //   href: '/register',
+  //   icon: UserPlusIcon,
+  //   title: 'Register'
+  // },
+  // {
+  //   href: '/404',
+  //   icon: AlertCircleIcon,
+  //   title: 'Error'
+  // }
 ];
 
 const useStyles = makeStyles(() => ({

@@ -19,11 +19,11 @@ const routes = [
     element: <DashboardLayout />,
     children: [
       { path: 'account', element: <AccountView /> },
-      { path: 'customers', element: <CustomerListView /> },
+      // { path: 'customers', element: <CustomerListView /> },
       { path: 'dashboard', element: <DashboardView /> },
-      { path: 'products', element: <ProductListView /> },
+      // { path: 'products', element: <ProductListView /> },
       { path: 'settings', element: <SettingsView /> },
-      { path: 'keyword', element: <KeywordView /> },
+      // { path: 'keyword', element: <KeywordView /> },
       { path: 'word', element: <Word /> },
       { path: '*', element: <Navigate to="/404" /> }
     ]
