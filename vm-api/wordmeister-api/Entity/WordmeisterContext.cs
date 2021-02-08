@@ -22,5 +22,6 @@ namespace wordmeister_api.Entity
         public DbSet<Word> Words { get; set; }
         public DbSet<UserWord> UserWords { get; set; }
         public DbSet<Sentence> Sentences { get; set; }
+        public DbSet<UploadFile> UploadFiles { get; set; }
     }
 }
