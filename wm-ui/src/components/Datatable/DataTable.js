@@ -268,7 +268,6 @@ const DataTable = (props) => {
                 .map((row, index) => {
                   const isItemSelected = isSelected(row._uuid);
                   const labelId = `enhanced-table-checkbox-${index}`;
-
                   return (
                     <TableRow
                       hover
@@ -291,7 +290,7 @@ const DataTable = (props) => {
                           )}
                           {
                             <TableCell id={labelId} scope="row" padding="none" align="left" key={`tableCell2${index2}`}>
-                              {row[col.id]
+                              {row[col.id] !== undefined
                                 ? (col.date ? new Date(Date.parse(row[col.id])).toLocaleString() : row[col.id])
                                 : (
                                   <Button
