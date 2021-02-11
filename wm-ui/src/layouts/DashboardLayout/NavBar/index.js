@@ -23,12 +23,13 @@ import {
   Users as UsersIcon
 } from 'react-feather';
 import NavItem from './NavItem';
+import appConfig from 'src/configs/appConfig';
 
-const user = {
-  avatar: '/static/images/avatars/avatar_6.png',
-  jobTitle: 'Senior Developer',
-  name: 'Katarina Smith'
-};
+// const user = {
+//   avatar: '/static/images/avatars/avatar_6.png',
+//   jobTitle: 'Senior Developer',
+//   name: 'Katarina Smith'
+// };
 
 const items = [
   {
@@ -99,7 +100,7 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-const NavBar = ({ onMobileClose, openMobile }) => {
+const NavBar = ({ onMobileClose, openMobile, user }) => {
   const classes = useStyles();
   const location = useLocation();
 
@@ -125,7 +126,7 @@ const NavBar = ({ onMobileClose, openMobile }) => {
         <Avatar
           className={classes.avatar}
           component={RouterLink}
-          src={user.avatar}
+          src={`${appConfig.api.development}${user.avatar}`}
           to="/app/account"
         />
         <Typography
@@ -187,12 +188,18 @@ const NavBar = ({ onMobileClose, openMobile }) => {
 
 NavBar.propTypes = {
   onMobileClose: PropTypes.func,
-  openMobile: PropTypes.bool
+  openMobile: PropTypes.bool,
+  user: PropTypes.object,
 };
 
 NavBar.defaultProps = {
-  onMobileClose: () => {},
-  openMobile: false
+  onMobileClose: () => { },
+  openMobile: false,
+  user: {
+    avatar: '/static/images/avatars/avatar_6.png',
+    jobTitle: '',
+    name: ''
+  }
 };
 
 export default NavBar;

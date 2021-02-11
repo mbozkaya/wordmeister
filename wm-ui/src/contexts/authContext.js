@@ -19,6 +19,11 @@ const AuthProvider = (props) => {
     signupError: false,
     signupErrorMessage: '',
     backdropOpen: false,
+    user: {
+      avatar: '/static/images/avatars/avatar_1.png',
+      jobTitle: '',
+      name: ''
+    },
   });
   const { children } = props;
 
@@ -31,6 +36,11 @@ const AuthProvider = (props) => {
           loginError: false,
           loginErrorMessage: '',
           checkAuth: true,
+          user: {
+            avatar: data.avatar,
+            name: `${data.firstName} ${data.lastName}`,
+            jobTitle: '',
+          },
         });
         localStorage.setItem('token', data.token);
         localStorage.setItem('ug', data.guid);
@@ -104,6 +114,7 @@ const AuthProvider = (props) => {
         loginError: contextState.loginError,
         loginErrorMessage: contextState.loginErrorMessage,
         backdropOpen: contextState.backdropOpen,
+        user: contextState.user,
         onLogin,
         onLogout,
         onSignup,

@@ -6,6 +6,7 @@ export default {
     signup: `${appConfig.api.accountService()}/signup`,
     authenticated: `${appConfig.api.accountService()}/authenticated`,
     accountInformation: `${appConfig.api.accountService()}/AccountInformation`,
+    uploadFile: `${appConfig.api.accountService()}/UploadFile`,
   },
   wordMeister: {
     addWord: `${appConfig.api.service()}Word/AddWord`,

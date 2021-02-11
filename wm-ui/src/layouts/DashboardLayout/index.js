@@ -40,7 +40,7 @@ const DashboardLayout = () => {
 
   return (
     <AuthContext.Consumer>
-      {({ authorize, checkAuth }) => {
+      {({ authorize, checkAuth, user }) => {
         if (checkAuth && authorize) {
           return (
             <div className={classes.root}>
@@ -48,6 +48,7 @@ const DashboardLayout = () => {
               <NavBar
                 onMobileClose={() => setMobileNavOpen(false)}
                 openMobile={isMobileNavOpen}
+                user={user}
               />
               <div className={classes.wrapper}>
                 <div className={classes.contentContainer}>
