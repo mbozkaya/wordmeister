@@ -14,15 +14,17 @@ namespace wordmeister_api.Dtos.Account
         public string LastName { get; set; }
         public string Email { get; set; }
         public string Token { get; set; }
+        public string Avatar { get; set; }
 
 
-        public AuthenticateResponse(User user, string token)
+        public AuthenticateResponse(User user, string token, string uri = "")
         {
             Guid = user.Guid.ToString();
             FirstName = user.FirstName;
             LastName = user.LastName;
             Email = user.Email;
             Token = token;
+            Avatar = uri;
         }
     }
 }

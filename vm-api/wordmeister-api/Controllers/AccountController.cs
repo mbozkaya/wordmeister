@@ -62,7 +62,7 @@ namespace wordmeister_api.Controllers
 
         [Authorize]
         [HttpPost("UploadFile")]
-        public IActionResult UploadFile(UploadFileDto.Request model)
+        public IActionResult UploadFile([FromForm]UploadFileDto.Request model)
         {
             return Ok(_userService.UploadFiles(new List<UploadFileDto.Request> { model }, User.GetUserId()));
         }

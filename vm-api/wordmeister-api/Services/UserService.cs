@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -8,11 +7,9 @@ using System.IO;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 using wordmeister_api.Dtos;
 using wordmeister_api.Dtos.Account;
 using wordmeister_api.Dtos.General;
-using wordmeister_api.Entities;
 using wordmeister_api.Entity;
 using wordmeister_api.Helpers;
 using wordmeister_api.Interfaces;
@@ -26,15 +23,13 @@ namespace wordmeister_api.Services
         private readonly Appsettings _appSettings;
         private WordmeisterContext _wordMeisterDbContext;
         private readonly string uploadFilePath;
-        IHostingEnvironment _env;
 
 
-        public UserService(IOptions<Appsettings> appSettings, WordmeisterContext wordMeisterDbContext, IHostingEnvironment env)
+        public UserService(IOptions<Appsettings> appSettings, WordmeisterContext wordMeisterDbContext)
         {
             _appSettings = appSettings.Value;
             _wordMeisterDbContext = wordMeisterDbContext;
-            _env = env;
-            uploadFilePath = $"{_env.ContentRootPath}/UploadFiles";
+            uploadFilePath = "Files";
         }
 
         public AuthenticateResponse Authenticate(AuthenticateRequest model)
@@ -46,8 +41,9 @@ namespace wordmeister_api.Services
 
             // authentication successful so generate jwt token
             var token = generateJwtToken(user);
+            var ppUri = GetUserPP(user.Id);
 
-            return new AuthenticateResponse(user, token);
+            return new AuthenticateResponse(user, token, ppUri);
         }
 
         public IEnumerable<User> GetAll()
@@ -147,7 +143,7 @@ namespace wordmeister_api.Services
             };
         }
 
-        public string GetUserPP(int userId)
+        public string GetUserPP(long userId)
         {
             var uri = _wordMeisterDbContext.UploadFiles
                 .Where(w => w.UserId == userId && w.Type == (int)UploadFileType.ProfilePic && w.Status)
@@ -159,14 +155,14 @@ namespace wordmeister_api.Services
                 uri = $"{uploadFilePath}/PP/default.png";
             }
 
-            return uri;
+            return $"{uploadFilePath}/{uri}";
         }
 
         private (bool error, string message) UploadFile(UploadFileDto.Request item, User user)
         {
             var fileGuid = Guid.NewGuid();
             var fileExtension = Path.GetExtension(item.File.FileName);
-            var fileUri = $"{item.Type.GetDirectoryName()}/{user.Guid.ToString("N")}/{fileGuid.ToString("N")}{fileExtension}";
+            var fileUri = $"{item.Type.GetDirectoryName()}/{user.Guid.ToString("N")}";
 
             var filePath = $"{uploadFilePath}/{fileUri}";
 
@@ -177,10 +173,12 @@ namespace wordmeister_api.Services
 
             try
             {
-                using (var stream = new FileStream(filePath, FileMode.Create))
+                using (var stream = new FileStream(Path.Combine(filePath, string.Concat(fileGuid, fileExtension)), FileMode.Create))
                 {
                     item.File.CopyTo(stream);
                 }
+
+                fileUri = $"{fileUri}/{fileGuid}{fileExtension}";
 
                 _wordMeisterDbContext.UploadFiles.Add(new Model.UploadFile
                 {
