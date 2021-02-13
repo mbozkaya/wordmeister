@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unused-prop-types */
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable max-len */
 /* eslint-disable no-nested-ternary */
@@ -13,8 +14,6 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
 import { Button } from '@material-ui/core';
 import EnhancedTableHead from './EnhencedTableHead';
 import EnhancedTableToolbar from './EnhencedTableToolbar';
@@ -41,31 +40,31 @@ const rows = [
   createData('Oreo', 437, 18.0, 63, 4.0),
 ];
 
-function descendingComparator(a, b, orderBy) {
-  if (b[orderBy] < a[orderBy]) {
-    return -1;
-  }
-  if (b[orderBy] > a[orderBy]) {
-    return 1;
-  }
-  return 0;
-}
+// function descendingComparator(a, b, orderBy) {
+//   if (b[orderBy] < a[orderBy]) {
+//     return -1;
+//   }
+//   if (b[orderBy] > a[orderBy]) {
+//     return 1;
+//   }
+//   return 0;
+// }
 
-function getComparator(order, orderBy) {
-  return order === 'desc'
-    ? (a, b) => descendingComparator(a, b, orderBy)
-    : (a, b) => -descendingComparator(a, b, orderBy);
-}
+// function getComparator(order, orderBy) {
+//   return order === 'desc'
+//     ? (a, b) => descendingComparator(a, b, orderBy)
+//     : (a, b) => -descendingComparator(a, b, orderBy);
+// }
 
-function stableSort(array, comparator) {
-  const stabilizedThis = array.map((el, index) => [el, index]);
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-  return stabilizedThis.map((el) => el[0]);
-}
+// function stableSort(array, comparator) {
+//   const stabilizedThis = array.map((el, index) => [el, index]);
+//   stabilizedThis.sort((a, b) => {
+//     const order = comparator(a[0], b[0]);
+//     if (order !== 0) return order;
+//     return a[1] - b[1];
+//   });
+//   return stabilizedThis.map((el) => el[0]);
+// }
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -101,7 +100,7 @@ const useStyles = makeStyles((theme) => ({
 const DataTable = (props) => {
   const {
     defaultOrder, defaultOrderBy, defaultRowsPerPage, columns,
-    rowEdit, insertNewRow, removeRow, getData,getDataFlag
+    rowEdit, insertNewRow, removeRow, getData, getDataFlag
   } = props;
   const classes = useStyles();
   const [data, setData] = useState([]);
@@ -109,7 +108,8 @@ const DataTable = (props) => {
   const [orderBy, setOrderBy] = React.useState(defaultOrderBy);
   const [selected, setSelected] = React.useState([]);
   const [page, setPage] = React.useState(0);
-  const [dense, setDense] = React.useState(false);
+  // const [dense, setDense] = React.useState(false);
+  const dense = false;
   const [rowsPerPage, setRowsPerPage] = React.useState(defaultRowsPerPage);
   const [totalRowCount, setTotalRowCount] = useState(0);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -187,9 +187,9 @@ const DataTable = (props) => {
     });
   };
 
-  const handleChangeDense = (event) => {
-    setDense(event.target.checked);
-  };
+  // const handleChangeDense = (event) => {
+  //   setDense(event.target.checked);
+  // };
 
   const isSelected = (name) => selected.indexOf(name) !== -1;
 
@@ -212,7 +212,7 @@ const DataTable = (props) => {
   useEffect(() => {
     getRegister();
   }, [pagingParam]);
-  useEffect(()=>{getRegister()},[getDataFlag])
+  useEffect(() => { getRegister(); }, [getDataFlag]);
 
   return (
     <div className={classes.root}>
@@ -359,7 +359,6 @@ DataTable.propTypes = {
 };
 
 DataTable.defaultProps = {
-  data: [],
   columns: [],
   onPerPageChange: (e) => console.log(e),
   onPageCountChange: (e) => console.log(e),

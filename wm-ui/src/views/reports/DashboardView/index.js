@@ -5,7 +5,6 @@ import {
   makeStyles
 } from '@material-ui/core';
 import Page from 'src/components/Page';
-import wordMeisterService from 'src/services/wordMeisterService';
 import Budget from './Budget';
 import LatestOrders from './LatestOrders';
 import LatestProducts from './LatestProducts';
@@ -26,10 +25,6 @@ const useStyles = makeStyles((theme) => ({
 
 const Dashboard = () => {
   const classes = useStyles();
-
-  useEffect(() => {
-    wordMeisterService.getKeywords().then((response) => console.log(response));
-  });
 
   return (
     <Page
