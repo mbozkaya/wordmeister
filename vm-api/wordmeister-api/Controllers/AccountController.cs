@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using wordmeister_api.Dtos.Account;
 using wordmeister_api.Dtos.General;
+using wordmeister_api.Dtos.Word;
 using wordmeister_api.Entities;
 using wordmeister_api.Helpers;
 using wordmeister_api.Interfaces;
@@ -62,10 +63,26 @@ namespace wordmeister_api.Controllers
 
         [Authorize]
         [HttpPost("UploadFile")]
-        public IActionResult UploadFile([FromForm]UploadFileDto.Request model)
+        public IActionResult UploadFile([FromForm] UploadFileDto.Request model)
         {
             return Ok(_userService.UploadFiles(new List<UploadFileDto.Request> { model }, User.GetUserId()));
         }
+
+        [Authorize]
+        [HttpPost("UserProfilePic")]
+        public IActionResult UserProfilePic(IdDto model)
+        {
+            return Ok(_userService.SetUserPP(User.GetUserId(), model.Id));
+        }
+
+        [Authorize]
+        [HttpGet("UserImages")]
+        public IActionResult UserImages()
+        {
+            var userImages = _userService.GetUserImages(User.GetUserId());
+            return Ok(new General.ResponseResult { Data = userImages });
+        }
+
         [Authorize]
         [HttpGet("AccountInformation")]
         public IActionResult AccountInformation()

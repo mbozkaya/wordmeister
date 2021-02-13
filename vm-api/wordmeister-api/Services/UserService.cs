@@ -29,7 +29,7 @@ namespace wordmeister_api.Services
         {
             _appSettings = appSettings.Value;
             _wordMeisterDbContext = wordMeisterDbContext;
-            uploadFilePath = "Files";
+            uploadFilePath = "UploadFiles";
         }
 
         public AuthenticateResponse Authenticate(AuthenticateRequest model)
@@ -40,7 +40,7 @@ namespace wordmeister_api.Services
             if (user == null) return null;
 
             // authentication successful so generate jwt token
-            var token = generateJwtToken(user);
+            var token = GenerateJwtToken(user);
             var ppUri = GetUserPP(user.Id);
 
             return new AuthenticateResponse(user, token, ppUri);
@@ -113,6 +113,11 @@ namespace wordmeister_api.Services
                 {
                     filesHasErrors.Add(item.File.FileName);
                 }
+
+                if (item.Type == UploadFileType.ProfilePic)
+                {
+                    SetUserPP(userId, result.uploadFileId);
+                }
             }
 
             if (filesHasErrors.Count > 0)
@@ -146,20 +151,62 @@ namespace wordmeister_api.Services
         public string GetUserPP(long userId)
         {
             var uri = _wordMeisterDbContext.UploadFiles
-                .Where(w => w.UserId == userId && w.Type == (int)UploadFileType.ProfilePic && w.Status)
+                .Where(w => w.UserId == userId && w.Type == (int)UploadFileType.ProfilePic && w.Status && w.IsSelected)
                 .Select(s => s.Uri)
                 .FirstOrDefault();
 
             if (string.IsNullOrEmpty(uri))
             {
-                uri = $"{uploadFilePath}/PP/default.png";
+                uri = $"Files/PP/default.png";
             }
 
-            return $"{uploadFilePath}/{uri}";
+            return $"Files/{uri}";
         }
 
-        private (bool error, string message) UploadFile(UploadFileDto.Request item, User user)
+        public General.ResponseResult SetUserPP(long userId, long fileId)
         {
+            var isAny = _wordMeisterDbContext.UploadFiles
+                .Where(w => w.UserId == userId && w.Status && w.Id == fileId)
+                .Any();
+
+            if (!isAny)
+            {
+                return new General.ResponseResult { Error = true, ErrorMessage = "File was not found" };
+            }
+
+            _wordMeisterDbContext.UploadFiles
+                .Where(w => w.UserId == userId && w.Status && w.Type == (int)UploadFileType.ProfilePic && w.Id != fileId)
+                .ToList().ForEach(f => { f.IsSelected = false; f.UpdateDate = DateTime.Now; });
+
+            _wordMeisterDbContext.SaveChanges();
+
+            var selectedImage = _wordMeisterDbContext.UploadFiles.Where(w => w.Id == fileId).FirstOrDefault();
+            selectedImage.IsSelected = true;
+            selectedImage.UpdateDate = DateTime.Now;
+
+            _wordMeisterDbContext.SaveChanges();
+
+            return new General.ResponseResult();
+        }
+
+        public List<AccountResponse.UserImages> GetUserImages(int userId)
+        {
+            return _wordMeisterDbContext.UploadFiles
+                 .Where(w => w.UserId == userId && w.Type == (int)UploadFileType.ProfilePic)
+                 .Select(s => new AccountResponse.UserImages
+                 {
+                     CreatedDate = s.CreatedDate,
+                     Description = s.Description,
+                     Id = s.Id,
+                     Uri = string.Concat("Files/", s.Uri),
+                     Selected = s.IsSelected,
+                     Title = string.Concat(s.OriginalName, s.Extension),
+                 }).ToList();
+        }
+
+        private (bool error, string message, long uploadFileId) UploadFile(UploadFileDto.Request item, User user)
+        {
+            long uploadFileId = 0;
             var fileGuid = Guid.NewGuid();
             var fileExtension = Path.GetExtension(item.File.FileName);
             var fileUri = $"{item.Type.GetDirectoryName()}/{user.Guid.ToString("N")}";
@@ -180,7 +227,7 @@ namespace wordmeister_api.Services
 
                 fileUri = $"{fileUri}/{fileGuid}{fileExtension}";
 
-                _wordMeisterDbContext.UploadFiles.Add(new Model.UploadFile
+                Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<UploadFile> newEntity = _wordMeisterDbContext.UploadFiles.Add(new Model.UploadFile
                 {
                     CreatedDate = DateTime.Now,
                     Description = item.Description,
@@ -193,15 +240,17 @@ namespace wordmeister_api.Services
                     UserId = user.Id,
                 });
                 _wordMeisterDbContext.SaveChanges();
+
+                uploadFileId = newEntity.Entity.Id;
             }
             catch (Exception ex)
             {
-                return new(true, ex.Message);
+                return new(true, ex.Message, uploadFileId);
             }
 
-            return new(false, string.Empty);
+            return new(false, string.Empty, uploadFileId);
         }
-        private string generateJwtToken(User user)
+        private string GenerateJwtToken(User user)
         {
             // generate token that is valid for 7 days
             var tokenHandler = new JwtSecurityTokenHandler();

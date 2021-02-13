@@ -16,5 +16,6 @@ namespace wordmeister_api.Model
         public int Type { get; set; }
         public virtual User User { get; set; }
         public bool Status { get; set; }
+        public bool IsSelected { get; set; }
     }
 }
