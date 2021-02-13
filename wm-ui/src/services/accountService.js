@@ -58,5 +58,22 @@ export default {
     };
 
     return Fetch(urlConfig.account.accountInformation, requestOptions);
-  }
+  },
+  getUserImages: () => {
+    const requestOptions = {
+      method: 'GET',
+      headers: utilitity.authorizedHeader(),
+    };
+
+    return Fetch(urlConfig.account.userImages, requestOptions);
+  },
+  setUserImages: (model) => {
+    const requestOptions = {
+      method: 'POST',
+      body: JSON.stringify(model),
+      headers: utilitity.authorizedHeader(),
+    };
+
+    return Fetch(urlConfig.account.userProfilePic, requestOptions);
+  },
 };

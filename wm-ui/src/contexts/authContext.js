@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {
   Route, Navigate
 } from 'react-router-dom';
+import appConfig from 'src/configs/appConfig';
 import accountService from '../services/accountService';
 // import Login from '../pages/Login';
 // eslint-disable-next-line linebreak-style
@@ -10,6 +11,8 @@ import accountService from '../services/accountService';
 const AuthContext = React.createContext();
 
 const AuthProvider = (props) => {
+  const getUserPP = () => `${appConfig.api.development}${localStorage.getItem('userpp') || 'Files/PP/default.png'}`;
+
   const [contextState, setContextState] = useState({
     authorize: false,
     checkAuth: false,
@@ -20,11 +23,22 @@ const AuthProvider = (props) => {
     signupErrorMessage: '',
     backdropOpen: false,
     user: {
-      avatar: '/static/images/avatars/avatar_1.png',
+      avatar: getUserPP(),
       jobTitle: '',
       name: ''
     },
   });
+
+  const setUserPP = (avatar) => {
+    localStorage.setItem('userpp', avatar);
+    setContextState({
+      ...contextState,
+      user: {
+        ...contextState.user,
+        avatar: getUserPP(),
+      }
+    });
+  };
   const { children } = props;
 
   const onLogin = (model) => {
@@ -45,6 +59,7 @@ const AuthProvider = (props) => {
         localStorage.setItem('token', data.token);
         localStorage.setItem('ug', data.guid);
         localStorage.setItem('user', JSON.stringify(data));
+        localStorage.setItem('userpp', data.avatar);
       } else {
         setContextState({
           ...contextState,
@@ -90,11 +105,6 @@ const AuthProvider = (props) => {
     });
   };
 
-  const setBackrop = () => setContextState({
-    ...contextState,
-    backdropOpen: !contextState.backdropOpen
-  });
-
   useLayoutEffect(() => {
     accountService.authenticated().then((response) => {
       setContextState({
@@ -113,12 +123,11 @@ const AuthProvider = (props) => {
         checkAuth: contextState.checkAuth,
         loginError: contextState.loginError,
         loginErrorMessage: contextState.loginErrorMessage,
-        backdropOpen: contextState.backdropOpen,
         user: contextState.user,
         onLogin,
         onLogout,
         onSignup,
-        setBackrop,
+        setUserPP,
       }}
     >
       {children}

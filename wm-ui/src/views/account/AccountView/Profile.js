@@ -17,39 +17,30 @@ import {
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
-  TextField,
-  Input,
   GridList,
   GridListTile,
   GridListTileBar,
   ListSubheader,
   IconButton,
-  Container,
   Grid,
 } from '@material-ui/core';
 import InfoIcon from '@material-ui/icons/Info';
 import { v4 as uuid } from 'uuid';
 import urlConfig from 'src/configs/urlConfig';
+import ToasterSnackbar from 'src/components/ToasterSnackbar';
+import accountService from 'src/services/accountService';
+import Blockui from 'src/components/Blockui';
+import appConfig from 'src/configs/appConfig';
 
-const user = {
-  avatar: '/static/images/avatars/avatar_6.png',
-  city: 'Los Angeles',
-  country: 'USA',
-  jobTitle: 'Senior Developer',
-  name: 'Katarina Smith',
-  timezone: 'GTM-7'
-};
-
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {},
   avatar: {
     height: 100,
     width: 100
   },
   gridList: {
-    width: 500,
+    width: 'max',
     height: 450,
   },
   icon: {
@@ -66,42 +57,52 @@ const useStyles = makeStyles((theme) => ({
     transition: ' box-shadow 0.6s linear;',
     '&:hover': {
       transform: 'scale(1.01)',
-    }
+    },
   }
 }));
 
-const Profile = ({ className, ...rest }) => {
+const Profile = (props) => {
+  const { user, setuser, className } = props;
   const classes = useStyles();
   const [openDialog, setOpenDialog] = useState(false);
-  const [tileData, setTileData] = useState([
-    {
-      img: '/static/images/avatars/avatar_6.png',
-      title: 'Test',
-      author: 'dsfs',
-      selected: false,
-      uui: uuid(),
-    },
-    {
-      img: '/static/images/avatars/avatar_6.png',
-      title: 'Test',
-      author: 'dsfs',
-      selected: false,
-      uui: uuid(),
-    },
-    {
-      img: '/static/images/avatars/avatar_6.png',
-      title: 'Test',
-      author: 'dsfs',
-      selected: true,
-      uui: uuid(),
-    },
-  ]);
+  const [tileData, setTileData] = useState([]);
+  const getUserImages = (CB) => {
+    accountService.getUserImages().then((response) => {
+      if (response && response.error === false) {
+        setTileData(JSON.parse(JSON.stringify(response.data)));
+        if (CB) {
+          CB();
+        }
+      } else {
+        ToasterSnackbar.error(response.errorMessage);
+      }
+    });
+  };
 
+  const changeLayoutPP = () => {
+    const selectedImage = tileData.find((f) => f.selected === true);
+    if (selectedImage) {
+      setuser(selectedImage.uri);
+    }
+  };
+
+  const setUserPP = (id) => {
+    accountService.setUserImages({ id }).then((response) => {
+      if (response && response.error === false) {
+        ToasterSnackbar.success({ message: 'Profile picture was setted successfully' });
+        changeLayoutPP();
+      } else {
+        ToasterSnackbar.error({ message: response.errorMessage });
+      }
+    });
+  };
   useEffect(() => { }, [tileData]);
+  useEffect(() => { getUserImages(); }, []);
 
   const uploadPhoto = () => {
     const selectedImage = tileData.filter((f) => f.selected);
-    if (typeof selectedImage === 'undefined') {
+    if (typeof selectedImage === 'undefined' || selectedImage.length === 0) {
+      ToasterSnackbar.warning({ message: 'You have to select an image!' });
       return false;
     }
 
@@ -115,24 +116,28 @@ const Profile = ({ className, ...rest }) => {
       const userCrendentials = JSON.parse(localStorage.getItem('user'));
       xhr.setRequestHeader('Authorization', `Bearer ${userCrendentials.token}`);
       xhr.send(formData);
-      debugger;
+      Blockui();
       xhr.onload = () => {
+        Blockui({ isOpen: false });
         if (xhr.status === 200) {
           const response = JSON.parse(xhr.response);
           if (response && response.error === false) {
+            getUserImages(() => changeLayoutPP());
+          } else {
+            ToasterSnackbar.error({ message: response.errorMessage });
           }
         }
       };
     } else {
-
+      setUserPP(selectedImage[0].id);
     }
+    return true;
   };
 
   return (
     <>
       <Card
         className={clsx(classes.root, className)}
-        {...rest}
       >
         <CardContent>
           <Box
@@ -155,14 +160,14 @@ const Profile = ({ className, ...rest }) => {
               color="textSecondary"
               variant="body1"
             >
-              {`${user.city} ${user.country}`}
+              {/* {`${user.city} ${user.country}`} */}
             </Typography>
             <Typography
               className={classes.dateText}
               color="textSecondary"
               variant="body1"
             >
-              {`${moment().format('hh:mm A')} ${user.timezone}`}
+              {`${moment().format('hh:mm A')}`}
             </Typography>
           </Box>
         </CardContent>
@@ -178,51 +183,46 @@ const Profile = ({ className, ...rest }) => {
           </Button>
         </CardActions>
       </Card>
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} aria-labelledby="form-dialog-title">
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} aria-labelledby="form-dialog-title" maxWidth="md">
         <DialogTitle id="form-dialog-title">All Images</DialogTitle>
         <DialogContent>
           <Grid
             container
           >
-            <Grid
-              item
-            >
-              <GridList cellHeight={180} className={classes.gridList}>
-                <GridListTile key="Subheader" cols={2} style={{ height: 'auto' }}>
-                  <ListSubheader component="div">Images You Uploaded Before</ListSubheader>
+            <GridList cellHeight={180} className={classes.gridList}>
+              <GridListTile key="Subheader" cols={2} style={{ height: 'auto' }}>
+                <ListSubheader component="div">Images You Uploaded Before</ListSubheader>
+              </GridListTile>
+              {tileData.length === 0 ? <p>No image found</p> : (tileData.map((tile, index) => (
+                <GridListTile
+                  key={`${tile.uri}${index}`}
+                  className={`${classes.gridTile} ${tile.selected && classes.selectedImage}`}
+                  onClick={() => {
+                    tileData.forEach((f) => { f.selected = false; });
+                    tileData[tileData.findIndex((f) => f.id === tile.id)] = {
+                      ...tile,
+                      selected: true,
+                    };
+                    setTileData([...tileData]);
+                  }}
+                >
+                  <img src={`${tile.isNew ? '' : appConfig.api.development}${tile.uri}`} alt={tile.title} />
+                  <GridListTileBar
+                    title={tile.title}
+                    subtitle={(
+                      <span>
+                        {tile.createdDate}
+                      </span>
+                    )}
+                    actionIcon={(
+                      <IconButton aria-label={`info about ${tile.title}`} className={classes.icon} title="">
+                        <InfoIcon />
+                      </IconButton>
+                    )}
+                  />
                 </GridListTile>
-                {tileData.map((tile, index) => (
-                  <GridListTile
-                    key={`${tile.img}${index}`}
-                    className={`${classes.gridTile} ${tile.selected && classes.selectedImage}`}
-                    onClick={() => {
-                      tileData.forEach((f) => { f.selected = false; });
-                      tileData[tileData.findIndex((f) => f.uui === tile.uui)] = {
-                        ...tile,
-                        selected: true,
-                      };
-                      setTileData([...tileData]);
-                    }}
-                  >
-                    <img src={tile.img} alt={tile.title} />
-                    <GridListTileBar
-                      title={tile.title}
-                      subtitle={(
-                        <span>
-                          by:
-                          {tile.author}
-                        </span>
-                      )}
-                      actionIcon={(
-                        <IconButton aria-label={`info about ${tile.title}`} className={classes.icon} title="">
-                          <InfoIcon />
-                        </IconButton>
-                      )}
-                    />
-                  </GridListTile>
-                ))}
-              </GridList>
-            </Grid>
+              )))}
+            </GridList>
             <Grid item>
               <input
                 accept="image/*"
@@ -240,7 +240,7 @@ const Profile = ({ className, ...rest }) => {
                     isNew: true,
                     title: files[0].name,
                     selected: false,
-                    uui: uuid(),
+                    id: uuid(),
                     file: files[0],
                   };
 
@@ -251,7 +251,7 @@ const Profile = ({ className, ...rest }) => {
                     const uri = e.target.result;
                     tileData[tileData.length - 1] = {
                       ...tileData[tileData.length - 1],
-                      img: uri,
+                      uri,
                     };
                     setTileData([...tileData]);
                   };
@@ -259,11 +259,11 @@ const Profile = ({ className, ...rest }) => {
 
                   return true;
                 }}
-                onClick={(e) => { console.log(e); }}
+                onClick={() => { }}
               />
               <label htmlFor="contained-button-file">
                 <Button variant="contained" color="primary" component="span">
-                  Upload
+                  Select New Image
                 </Button>
               </label>
             </Grid>
@@ -283,7 +283,9 @@ const Profile = ({ className, ...rest }) => {
 };
 
 Profile.propTypes = {
-  className: PropTypes.string
+  className: PropTypes.string,
+  user: PropTypes.object.isRequired,
+  setuser: PropTypes.func.isRequired,
 };
 
 export default Profile;

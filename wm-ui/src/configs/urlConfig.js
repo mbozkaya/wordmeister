@@ -7,6 +7,8 @@ export default {
     authenticated: `${appConfig.api.accountService()}/authenticated`,
     accountInformation: `${appConfig.api.accountService()}/AccountInformation`,
     uploadFile: `${appConfig.api.accountService()}/UploadFile`,
+    userImages: `${appConfig.api.accountService()}/UserImages`,
+    userProfilePic: `${appConfig.api.accountService()}/UserProfilePic`,
   },
   wordMeister: {
     addWord: `${appConfig.api.service()}Word/AddWord`,
