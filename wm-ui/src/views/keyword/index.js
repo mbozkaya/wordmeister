@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
   Box,
   Container,
@@ -20,7 +20,6 @@ const useStyles = makeStyles((theme) => ({
 
 const KeywordView = () => {
   const classes = useStyles();
-  const [callback, setCallback] = useState();
 
   const getRegisters = (model) => wordMeisterService.getKeywords(model);
 

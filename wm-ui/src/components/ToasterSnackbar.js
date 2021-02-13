@@ -72,4 +72,9 @@ ShowSnackbar.defaultProps = {
   onCloseCB: () => { },
 };
 
-export default (props) => { ReactDOM.render(<ShowSnackbar {...props} />, document.getElementById('snackbar')); };
+export default {
+  error: (props) => { ReactDOM.render(<ShowSnackbar type="error" {...props} />, document.getElementById('snackbar')); },
+  success: (props) => { ReactDOM.render(<ShowSnackbar type="success" {...props} />, document.getElementById('snackbar')); },
+  warning: (props) => { ReactDOM.render(<ShowSnackbar type="warning" {...props} />, document.getElementById('snackbar')); },
+  info: (props) => { ReactDOM.render(<ShowSnackbar type="info" {...props} />, document.getElementById('snackbar')); },
+};

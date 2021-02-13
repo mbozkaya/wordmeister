@@ -1,9 +1,9 @@
 import PropTypes from 'prop-types';
-import { loading } from './Loading';
-
+import Blockui from './Blockui';
+import ToasterSnackbar from './ToasterSnackbar';
 // eslint-disable-next-line import/prefer-default-export
 export const Fetch = (url, requestOptions) => {
-  loading();
+  Blockui();
   return (fetch(url, requestOptions)
     .then((response) => {
       if (response.ok) {
@@ -19,10 +19,12 @@ export const Fetch = (url, requestOptions) => {
       throw new Error();
     })
     .then((json) => {
-      loading();
+      Blockui({ isOpen: false });
       return json;
     })
     .catch((ex) => {
+      Blockui({ isOpen: false });
+      ToasterSnackbar.error({ message: 'An error occured' });
       console.error(ex);
       return false;
     })
