@@ -51,13 +51,12 @@ const AuthProvider = (props) => {
           loginErrorMessage: '',
           checkAuth: true,
           user: {
-            avatar: data.avatar,
+            avatar: `${appConfig.api.development}${data.avatar}`,
             name: `${data.firstName} ${data.lastName}`,
             jobTitle: '',
           },
         });
         localStorage.setItem('token', data.token);
-        localStorage.setItem('ug', data.guid);
         localStorage.setItem('user', JSON.stringify(data));
         localStorage.setItem('userpp', data.avatar);
       } else {
@@ -72,7 +71,6 @@ const AuthProvider = (props) => {
 
   const onLogout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('ug');
     localStorage.removeItem('user');
 
     setContextState({
