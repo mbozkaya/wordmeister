@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { Snackbar } from '@material-ui/core';
 import MuiAlert from '@material-ui/lab/Alert';
@@ -34,12 +34,12 @@ const ShowSnackbar = (props) => {
   const handleClose = () => {
     setOpen(false);
   };
-  let timeoutId = 0;
+  const interval = useRef(null);
   useEffect(() => {
     if (autoClose) {
-      timeoutId = setTimeout(() => {
+      interval.current = setTimeout(() => {
         handleClose();
-        clearTimeout(timeoutId);
+        clearTimeout(interval.current);
         if (onCloseCB) onCloseCB();
       }, timeout * 1000);
     }
