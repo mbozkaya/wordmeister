@@ -9,6 +9,7 @@ import NotFoundView from 'src/views/errors/NotFoundView';
 import RegisterView from 'src/views/auth/RegisterView';
 import SettingsView from 'src/views/settings/SettingsView';
 import Word from './views/word/Word';
+import SlackAuthenticationPage from './views/external/Slack/index';
 
 const routes = [
   {
@@ -33,9 +34,13 @@ const routes = [
       { path: 'register', element: <RegisterView /> },
       { path: '404', element: <NotFoundView /> },
       { path: '/', element: <Navigate to="/login" /> },
-      { path: '*', element: <Navigate to="/404" /> }
+      { path: '*', element: <Navigate to="/404" /> },
+      {
+        path: 'external/slack/',
+        element: <SlackAuthenticationPage />,
+      },
     ]
-  }
+  },
 ];
 
 export default routes;
