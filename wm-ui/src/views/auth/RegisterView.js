@@ -14,6 +14,8 @@ import {
   makeStyles
 } from '@material-ui/core';
 import Page from 'src/components/Page';
+import accountService from 'src/services/accountService';
+import ToasterSnackbar from 'src/components/ToasterSnackbar';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -57,8 +59,14 @@ const RegisterView = () => {
                 policy: Yup.boolean().oneOf([true], 'This field must be checked')
               })
             }
-            onSubmit={() => {
-              navigate('/app/dashboard', { replace: true });
+            onSubmit={(val) => {
+              accountService.signup(val).then((response) => {
+                if (response && response.error === false) {
+                  ToasterSnackbar.success({ message: 'Your signup successfully. You are redirecting..', timeout: 5, onCloseCB: () => navigate('/login', { replace: true }) });
+                } else {
+                  ToasterSnackbar.error({ message: response.errorMessage });
+                }
+              });
             }}
           >
             {({
