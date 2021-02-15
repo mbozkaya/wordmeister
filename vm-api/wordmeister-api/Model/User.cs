@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 
 namespace wordmeister_api.Model
@@ -7,7 +8,9 @@ namespace wordmeister_api.Model
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
+        [Comment("EncryptedField")]
         public string Email { get; set; }
+        [Comment("EncryptedField")]
         public string Password { get; set; }
         public Guid Guid { get; set; }
         public bool Status { get; set; }

@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using wordmeister_api.Dtos.Account;
 using wordmeister_api.Dtos.General;
 using wordmeister_api.Dtos.Word;
-using wordmeister_api.Entities;
 using wordmeister_api.Helpers;
 using wordmeister_api.Interfaces;
 using wordmeister_api.Services;
