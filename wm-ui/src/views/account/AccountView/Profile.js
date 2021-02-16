@@ -24,8 +24,9 @@ import {
   ListSubheader,
   IconButton,
   Grid,
+  DialogContentText,
 } from '@material-ui/core';
-import InfoIcon from '@material-ui/icons/Info';
+import DeleteIcon from '@material-ui/icons/Delete';
 import { v4 as uuid } from 'uuid';
 import urlConfig from 'src/configs/urlConfig';
 import ToasterSnackbar from 'src/components/ToasterSnackbar';
@@ -45,6 +46,10 @@ const useStyles = makeStyles(() => ({
   },
   icon: {
     color: 'rgba(255, 255, 255, 0.54)',
+    transition: ' box-shadow 0.6s linear;',
+    '&:hover': {
+      transform: 'scale(1.5)',
+    },
   },
   input: {
     display: 'none',
@@ -66,6 +71,9 @@ const Profile = (props) => {
   const classes = useStyles();
   const [openDialog, setOpenDialog] = useState(false);
   const [tileData, setTileData] = useState([]);
+  const [deleteImageDialog, setDeleteImageDialog] = useState(false);
+  const [deleteImageId, setDeleteImageId] = useState(0);
+
   const getUserImages = (CB) => {
     accountService.getUserImages().then((response) => {
       if (response && response.error === false) {
@@ -96,7 +104,26 @@ const Profile = (props) => {
       }
     });
   };
-  useEffect(() => { }, [tileData]);
+
+  const removeImage = () => {
+    const removedImage = tileData.find((f) => f.id === deleteImageId);
+    if (!removedImage) {
+      ToasterSnackbar.warning({ message: 'The file could not upload.' });
+      return false;
+    }
+    setDeleteImageDialog(false);
+    accountService.removeFile({ id: deleteImageId }).then((response) => {
+      if (response && response.error === false) {
+        getUserImages();
+        ToasterSnackbar.success({ message: 'The image removed successfully' });
+      } else {
+        ToasterSnackbar.error({ message: response.errorMessage });
+      }
+    });
+
+    return true;
+  };
+
   useEffect(() => { getUserImages(); }, []);
 
   const uploadPhoto = () => {
@@ -122,7 +149,7 @@ const Profile = (props) => {
         if (xhr.status === 200) {
           const response = JSON.parse(xhr.response);
           if (response && response.error === false) {
-            getUserImages(() => changeLayoutPP());
+            getUserImages(() => { changeLayoutPP(); });
           } else {
             ToasterSnackbar.error({ message: response.errorMessage });
           }
@@ -215,8 +242,16 @@ const Profile = (props) => {
                       </span>
                     )}
                     actionIcon={(
-                      <IconButton aria-label={`info about ${tile.title}`} className={classes.icon} title="">
-                        <InfoIcon />
+                      <IconButton
+                        aria-label={`info about ${tile.title}`}
+                        className={classes.icon}
+                        title=""
+                        onClick={() => {
+                          setDeleteImageId(tile.id);
+                          setDeleteImageDialog(true);
+                        }}
+                      >
+                        <DeleteIcon />
                       </IconButton>
                     )}
                   />
@@ -277,6 +312,21 @@ const Profile = (props) => {
             Save
           </Button>
         </DialogActions>
+      </Dialog>
+      <Dialog open={deleteImageDialog} onClose={() => setDeleteImageDialog(false)} aria-labelledby="image-dialog-title" maxWidth="xs">
+        <DialogTitle id="image-dialog-title">
+          <DialogContentText>
+            Are you sure to remove image?
+          </DialogContentText>
+          <DialogActions>
+            <Button onClick={() => setDeleteImageDialog(false)} color="primary">
+              Cancel
+            </Button>
+            <Button onClick={removeImage} color="primary">
+              Remove
+            </Button>
+          </DialogActions>
+        </DialogTitle>
       </Dialog>
     </>
   );

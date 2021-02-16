@@ -192,7 +192,7 @@ namespace wordmeister_api.Services
         public List<AccountResponse.UserImages> GetUserImages(int userId)
         {
             return _wordMeisterDbContext.UploadFiles
-                 .Where(w => w.UserId == userId && w.Type == (int)UploadFileType.ProfilePic)
+                 .Where(w => w.UserId == userId && w.Type == (int)UploadFileType.ProfilePic && w.Status)
                  .Select(s => new AccountResponse.UserImages
                  {
                      CreatedDate = s.CreatedDate,
@@ -202,6 +202,35 @@ namespace wordmeister_api.Services
                      Selected = s.IsSelected,
                      Title = string.Concat(s.OriginalName, s.Extension),
                  }).ToList();
+        }
+
+        public General.ResponseResult RemoveImage(long id,long userId)
+        {
+             var image= _wordMeisterDbContext.UploadFiles.Where(w => w.UserId == userId && w.Id == id).FirstOrDefault();
+
+            if (image == null)
+            {
+                return new General.ResponseResult
+                {
+                    Error = true,
+                    ErrorMessage = "The image was not found",
+                };
+            }
+
+            if (image.IsSelected)
+            {
+                return new General.ResponseResult
+                {
+                    Error = true,
+                    ErrorMessage = "The image have selected status. Please change the selected image to remove",
+                };
+            }
+
+            image.Status = false;
+            image.UpdateDate = DateTime.Now;
+            _wordMeisterDbContext.SaveChanges();
+
+            return new General.ResponseResult();
         }
 
         private (bool error, string message, long uploadFileId) UploadFile(UploadFileDto.Request item, User user)

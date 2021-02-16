@@ -76,4 +76,13 @@ export default {
 
     return Fetch(urlConfig.account.userProfilePic, requestOptions);
   },
+  removeFile: (model) => {
+    const requestOptions = {
+      method: 'POST',
+      body: JSON.stringify(model),
+      headers: utilitity.authorizedHeader(),
+    };
+
+    return Fetch(urlConfig.account.removeFile, requestOptions);
+  },
 };

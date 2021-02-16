@@ -9,6 +9,7 @@ export default {
     uploadFile: `${appConfig.api.accountService()}/UploadFile`,
     userImages: `${appConfig.api.accountService()}/UserImages`,
     userProfilePic: `${appConfig.api.accountService()}/UserProfilePic`,
+    removeFile:`${appConfig.api.accountService()}/RemoveFile`,
   },
   wordMeister: {
     addWord: `${appConfig.api.service()}Word/AddWord`,
