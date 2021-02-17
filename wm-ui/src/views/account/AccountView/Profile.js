@@ -77,9 +77,10 @@ const Profile = (props) => {
   const getUserImages = (CB) => {
     accountService.getUserImages().then((response) => {
       if (response && response.error === false) {
-        setTileData(JSON.parse(JSON.stringify(response.data)));
+        setTileData(response.data);
         if (CB) {
-          CB();
+          const selected = response.data.find((f) => f.selected === true);
+          CB(selected);
         }
       } else {
         ToasterSnackbar.error(response.errorMessage);
@@ -87,8 +88,8 @@ const Profile = (props) => {
     });
   };
 
-  const changeLayoutPP = () => {
-    const selectedImage = tileData.find((f) => f.selected === true);
+  const changeLayoutPP = (selected) => {
+    const selectedImage = selected || tileData.find((f) => f.selected === true);
     if (selectedImage) {
       setuser(selectedImage.uri);
     }
@@ -149,7 +150,7 @@ const Profile = (props) => {
         if (xhr.status === 200) {
           const response = JSON.parse(xhr.response);
           if (response && response.error === false) {
-            getUserImages(() => { changeLayoutPP(); });
+            getUserImages((selected) => { changeLayoutPP(selected); });
           } else {
             ToasterSnackbar.error({ message: response.errorMessage });
           }
