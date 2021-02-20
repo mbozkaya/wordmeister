@@ -93,6 +93,7 @@ namespace wordmeister_api
             services.AddSingleton<ITranslateService, TranslateService>();
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IWordService, WordService>();
+            services.AddScoped<IWordAPIService, WordAPIService>();
 
             services.Configure<FormOptions>(x =>
             {

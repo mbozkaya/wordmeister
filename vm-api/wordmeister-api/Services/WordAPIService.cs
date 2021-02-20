@@ -1,27 +1,32 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using wordmeister_api.Dtos;
 using wordmeister_api.Dtos.Word;
+using wordmeister_api.Interfaces;
 
 namespace wordmeister_api.Services
 {
-    public class WordAPIService
+    public class WordAPIService: IWordAPIService
     {
         HttpClient _client;
         private HttpRequestMessage _request;
-        public WordAPIService()
+        IOptions<Appsettings> _appSettings;
+        public WordAPIService(IOptions<Appsettings> appSettings)
         {
+            _appSettings = appSettings;
             _client = new HttpClient();
 
             _request = new HttpRequestMessage
             {
                 Headers =
                         {
-                            { "x-rapidapi-key", "fcc2d442b7msh0ba3fe97c76c156p18e6c2jsnf43fc9bf2698" },
-                            { "x-rapidapi-host", "wordsapiv1.p.rapidapi.com" },
+                            { "x-rapidapi-key", _appSettings.Value.RapidApi.XRapidapiKey },
+                            { "x-rapidapi-host", _appSettings.Value.RapidApi.XRapidapiHost },
                             { "useQueryString", "true" },
                         },
             };

@@ -17,11 +17,9 @@ namespace wordmeister_api.Controllers
     public class WordController : ControllerBase
     {
         private IWordService _wordService;
-        private WordAPIService _wordAPIService;
         public WordController(IWordService wordService)
         {
             _wordService = wordService;
-            _wordAPIService = new WordAPIService();
         }
 
         [HttpPost("AddWord")]

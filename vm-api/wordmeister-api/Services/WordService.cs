@@ -20,12 +20,14 @@ namespace wordmeister_api.Services
         WordmeisterContext _wordMeisterDbContext;
         ITranslateService _translateService;
         IServiceScopeFactory _serviceScopeFactory;
+        IWordAPIService _wordAPIService;
 
-        public WordService(WordmeisterContext wordMeisterDbContext, ITranslateService translateService, IServiceScopeFactory serviceScopeFactory)
+        public WordService(WordmeisterContext wordMeisterDbContext, ITranslateService translateService, IWordAPIService wordAPIService, IServiceScopeFactory serviceScopeFactory )
         {
             _wordMeisterDbContext = wordMeisterDbContext;
             _translateService = translateService;
             _serviceScopeFactory = serviceScopeFactory;
+            _wordAPIService = wordAPIService;
         }
 
         public WordResponse.Word GetWord(long wordId, int userId)
@@ -173,8 +175,7 @@ namespace wordmeister_api.Services
 
                 if (!isExistSentences)
                 {
-                    WordAPIService wordAPIService = new WordAPIService();
-                    var sentences = await wordAPIService.GetExample(word.Text);
+                    var sentences = await _wordAPIService.GetExample(word.Text);
 
                     foreach (var example in sentences.Examples)
                     {
