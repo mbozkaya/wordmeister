@@ -70,11 +70,11 @@ namespace wordmeister_api.Controllers
             return Ok(new General.ResponseResult());
         }
 
-        [HttpGet("GetExample")]
-        [AllowAnonymous]
-        public IActionResult GetExample(string word)
+        [HttpGet("WordCard")]
+        public IActionResult WordCard()
         {
-            return Ok(_wordAPIService.GetExample(word));
+
+            return Ok(new General.ResponseResult { Data = _wordService.GetWordCard(User.GetUserId()) });
         }
     }
 }

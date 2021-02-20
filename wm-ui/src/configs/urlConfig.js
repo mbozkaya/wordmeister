@@ -9,7 +9,7 @@ export default {
     uploadFile: `${appConfig.api.accountService()}/UploadFile`,
     userImages: `${appConfig.api.accountService()}/UserImages`,
     userProfilePic: `${appConfig.api.accountService()}/UserProfilePic`,
-    removeFile:`${appConfig.api.accountService()}/RemoveFile`,
+    removeFile: `${appConfig.api.accountService()}/RemoveFile`,
   },
   wordMeister: {
     addWord: `${appConfig.api.service()}Word/AddWord`,
@@ -17,5 +17,6 @@ export default {
     getWords: `${appConfig.api.service()}Word/GetWords`,
     deleteWord: `${appConfig.api.service()}Word/DeleteWord`,
     updateWord: `${appConfig.api.service()}Word/UpdateWord`,
+    wordCard: `${appConfig.api.service()}Word/WordCard`,
   },
 };

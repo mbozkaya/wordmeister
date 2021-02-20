@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -27,7 +28,7 @@ namespace wordmeister_api.Services
             _serviceScopeFactory = serviceScopeFactory;
         }
 
-        public WordResponse GetWord(long wordId, int userId)
+        public WordResponse.Word GetWord(long wordId, int userId)
         {
             var exist = _wordMeisterDbContext.UserWords.FirstOrDefault(x => x.WordId == wordId && x.UserId == userId);
 
@@ -35,7 +36,7 @@ namespace wordmeister_api.Services
                 return null;
 
 
-            return new WordResponse
+            return new WordResponse.Word
             {
                 Id = exist.WordId,
                 Text = exist.Word.Text,
@@ -52,7 +53,7 @@ namespace wordmeister_api.Services
         {
             var query = _wordMeisterDbContext.UserWords.Where(x => x.UserId == userId);
             var page = query.OrderByDescending(x => x.CreatedDate)
-                .Select(x => new WordResponse
+                .Select(x => new WordResponse.Word
                 {
                     Id = x.WordId,
                     Description = x.Description,
@@ -141,6 +142,27 @@ namespace wordmeister_api.Services
             _wordMeisterDbContext.SaveChanges();
         }
 
+        public WordResponse.WordCard GetWordCard(int userId)
+        {
+
+            var words = _wordMeisterDbContext.UserWords
+                .Where(w => w.UserId == userId)
+                .Include(i => i.Word)
+                .ToList();
+
+            var random = new Random();
+
+            var randomWord = words[random.Next(words.Count)];
+
+            return new WordResponse.WordCard
+            {
+                Sentences = _wordMeisterDbContext.Sentences.Where(w => w.WordId == randomWord.WordId).Select(s => s.Text).ToList(),
+                Description = randomWord.Description,
+                Word = randomWord.Word.Text,
+            };
+
+        }
+
         private async void AddSentences(Word word)
         {
             using (var scope = _serviceScopeFactory.CreateScope())
@@ -167,7 +189,7 @@ namespace wordmeister_api.Services
                     db.SaveChanges();
                 }
             }
-            
+
         }
     }
 }

@@ -1,4 +1,5 @@
-import React from 'react';
+/* eslint-disable react/no-array-index-key */
+import React, { useEffect, useState } from 'react';
 import {
   Container,
   Grid,
@@ -7,7 +8,6 @@ import {
   CardContent,
   CardHeader,
   Divider,
-  TextField,
   Button,
   Box,
   List,
@@ -19,6 +19,8 @@ import {
 import Page from 'src/components/Page';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import wordMeisterService from 'src/services/wordMeisterService';
+import ToasterSnackbar from 'src/components/ToasterSnackbar';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,6 +45,34 @@ const useStyles = makeStyles((theme) => ({
 
 const WordCard = () => {
   const classes = useStyles();
+  const [cardData, setCardData] = useState({
+    userWordId: 0,
+    word: '',
+    description: '',
+    sentences: [],
+  });
+
+  const getData = () => {
+    wordMeisterService.getWordCard().then((response) => {
+      if (response && response.error === false) {
+        const { data } = response;
+        setCardData({
+          ...cardData,
+          userWordId: data.userWordId,
+          word: data.word,
+          sentences: data.sentences,
+          description: data.description,
+        });
+      } else {
+        ToasterSnackbar.error({ message: response.errorMessage });
+      }
+    });
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
   return (
     <>
       <Page
@@ -64,7 +94,7 @@ const WordCard = () => {
               alignItems="center"
             >
               <Box>
-                <Button>
+                <Button type="button" onClick={() => getData()}>
                   <ArrowBackIosIcon />
                 </Button>
               </Box>
@@ -77,8 +107,8 @@ const WordCard = () => {
             >
               <Card>
                 <CardHeader
-                  subheader="The information can be edited"
-                  title="Profile"
+                  subheader={cardData.description}
+                  title={cardData.word}
                   disableTypography={false}
                   titleTypographyProps={{ align: 'center', variant: 'h1' }}
                   subheaderTypographyProps={{ align: 'center' }}
@@ -90,71 +120,22 @@ const WordCard = () => {
                     spacing={3}
                   >
                     <List className={classes.root2}>
-                      <ListItem alignItems="flex-start">
-                        <ListItemAvatar>
-                          <Typography variant="h1" className={classes.typography}>1</Typography>
-                        </ListItemAvatar>
-                        <ListItemText
-                          primary="Brunch this weekend?"
-                          secondary={(
-                            <>
-                              <Typography
-                                component="span"
-                                variant="body2"
-                                className={classes.inline}
-                                color="textPrimary"
-                              >
-                                Ali Connors
-                              </Typography>
-                              {" — I'll be in your neighborhood doing errands this…"}
-                            </>
-                                                    )}
-                        />
-                      </ListItem>
-                      <Divider variant="inset" component="li" />
-                      <ListItem alignItems="flex-start">
-                        <ListItemAvatar>
-                          <Typography variant="h1" className={classes.typography}>2</Typography>
-                        </ListItemAvatar>
-                        <ListItemText
-                          primary="Summer BBQ"
-                          secondary={(
-                            <>
-                              <Typography
-                                component="span"
-                                variant="body2"
-                                className={classes.inline}
-                                color="textPrimary"
-                              >
-                                to Scott, Alex, Jennifer
-                              </Typography>
-                              {" — Wish I could come, but I'm out of town this…"}
-                            </>
-                                                    )}
-                        />
-                      </ListItem>
-                      <Divider variant="inset" component="li" />
-                      <ListItem alignItems="flex-start">
-                        <ListItemAvatar>
-                          <Typography variant="h1" className={classes.typography}>3</Typography>
-                        </ListItemAvatar>
-                        <ListItemText
-                          primary="Oui Oui"
-                          secondary={(
-                            <>
-                              <Typography
-                                component="span"
-                                variant="body2"
-                                className={classes.inline}
-                                color="textPrimary"
-                              >
-                                Sandra Adams
-                              </Typography>
-                              {' — Do you have Paris recommendations? Have you ever…'}
-                            </>
-                                                    )}
-                        />
-                      </ListItem>
+                      {
+                                                cardData.sentences.map((sentence, index) => (
+                                                  <>
+                                                    <ListItem alignItems="flex-start" key={`${index}listItem`}>
+                                                      <ListItemAvatar key={`${index}avatar`}>
+                                                        <Typography variant="h1" className={classes.typography} key={`${index}typo`}>{index + 1}</Typography>
+                                                      </ListItemAvatar>
+                                                      <ListItemText
+                                                        primary={sentence}
+                                                        key={`${index}listItemtext`}
+                                                      />
+                                                    </ListItem>
+                                                    <Divider key={`${index}divider`} variant="inset" component="li" />
+                                                  </>
+                                                ))
+                                            }
                     </List>
                   </Grid>
                 </CardContent>
@@ -171,7 +152,7 @@ const WordCard = () => {
               alignItems="center"
             >
               <Box>
-                <Button>
+                <Button type="button" onClick={() => getData()}>
                   <ArrowForwardIosIcon />
                 </Button>
               </Box>

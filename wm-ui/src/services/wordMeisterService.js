@@ -51,4 +51,12 @@ export default {
     };
     return Fetch(urlConfig.wordMeister.getKeywords, requestOptions);
   },
+  getWordCard: () => {
+    const requestOptions = {
+      method: 'GET',
+      headers: utilitity.authorizedHeader(),
+    };
+
+    return Fetch(urlConfig.wordMeister.wordCard, requestOptions);
+  },
 };
