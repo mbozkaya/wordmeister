@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using wordmeister_api.Dtos.General;
 using wordmeister_api.Dtos.Word;
 using wordmeister_api.Entity;
@@ -16,11 +18,13 @@ namespace wordmeister_api.Services
     {
         WordmeisterContext _wordMeisterDbContext;
         ITranslateService _translateService;
+        IServiceScopeFactory _serviceScopeFactory;
 
-        public WordService(WordmeisterContext wordMeisterDbContext, ITranslateService translateService)
+        public WordService(WordmeisterContext wordMeisterDbContext, ITranslateService translateService, IServiceScopeFactory serviceScopeFactory)
         {
             _wordMeisterDbContext = wordMeisterDbContext;
             _translateService = translateService;
+            _serviceScopeFactory = serviceScopeFactory;
         }
 
         public WordResponse GetWord(long wordId, int userId)
@@ -83,7 +87,7 @@ namespace wordmeister_api.Services
                     CreatedDate = DateTime.Now,
                 });
 
-                _translateService.TranslateText(model.Text);
+                //_translateService.TranslateText(model.Text);
                 _wordMeisterDbContext.SaveChanges();
 
                 userWord = new UserWord
@@ -94,7 +98,9 @@ namespace wordmeister_api.Services
                     CreatedDate = DateTime.Now
                 };
                 _wordMeisterDbContext.UserWords.Add(userWord);
+                _wordMeisterDbContext.SaveChanges();
 
+                Task.Run(() => { AddSentences(newWord.Entity); });
             }
             else
             {
@@ -111,8 +117,8 @@ namespace wordmeister_api.Services
                     CreatedDate = DateTime.Now
                 };
                 _wordMeisterDbContext.UserWords.Add(userWord);
+                _wordMeisterDbContext.SaveChanges();
             }
-            _wordMeisterDbContext.SaveChanges();
 
             return new ResponseResult();
         }
@@ -133,6 +139,35 @@ namespace wordmeister_api.Services
             existWord.UpdateDate = DateTime.Now;
 
             _wordMeisterDbContext.SaveChanges();
+        }
+
+        private async void AddSentences(Word word)
+        {
+            using (var scope = _serviceScopeFactory.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetService<WordmeisterContext>();
+
+                var isExistSentences = db.Sentences.Where(w => w.WordId == word.Id).Any();
+
+                if (!isExistSentences)
+                {
+                    WordAPIService wordAPIService = new WordAPIService();
+                    var sentences = await wordAPIService.GetExample(word.Text);
+
+                    foreach (var example in sentences.Examples)
+                    {
+                        db.Sentences.Add(new Sentence
+                        {
+                            CreatedDate = DateTime.Now,
+                            Text = example,
+                            WordId = word.Id
+                        });
+                    }
+
+                    db.SaveChanges();
+                }
+            }
+            
         }
     }
 }

@@ -51,7 +51,12 @@ namespace wordmeister_api
             services.Configure<GzipCompressionProviderOptions>(options => options.Level = CompressionLevel.Fastest);
 
             services.AddEntityFrameworkNpgsql().AddDbContext<WordmeisterContext>(opt =>
-       opt.UseNpgsql(Configuration.GetConnectionString("MyWebApiConection")));
+            {
+                opt.UseNpgsql(Configuration.GetConnectionString("MyWebApiConection"), npgsqlOptionsAction: sqlOptions =>
+                 {
+                     sqlOptions.EnableRetryOnFailure();
+                 });
+            });
 
             // Add Response compression services
             services.AddResponseCompression(options =>

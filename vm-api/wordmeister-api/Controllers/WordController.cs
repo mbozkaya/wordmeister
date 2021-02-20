@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using wordmeister_api.Dtos.General;
 using wordmeister_api.Dtos.Word;
 using wordmeister_api.Helpers;
 using wordmeister_api.Interfaces;
+using wordmeister_api.Services;
 
 namespace wordmeister_api.Controllers
 {
@@ -14,9 +17,11 @@ namespace wordmeister_api.Controllers
     public class WordController : ControllerBase
     {
         private IWordService _wordService;
+        private WordAPIService _wordAPIService;
         public WordController(IWordService wordService)
         {
             _wordService = wordService;
+            _wordAPIService = new WordAPIService();
         }
 
         [HttpPost("AddWord")]
@@ -65,5 +70,11 @@ namespace wordmeister_api.Controllers
             return Ok(new General.ResponseResult());
         }
 
+        [HttpGet("GetExample")]
+        [AllowAnonymous]
+        public IActionResult GetExample(string word)
+        {
+            return Ok(_wordAPIService.GetExample(word));
+        }
     }
 }
