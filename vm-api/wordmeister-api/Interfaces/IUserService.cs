@@ -19,5 +19,6 @@ namespace wordmeister_api.Interfaces
         General.ResponseResult SetUserPP(long userId, long fileId);
         General.ResponseResult GetAccountInformation(int userId);
         List<AccountResponse.UserImages> GetUserImages(int userId);
+        General.ResponseResult RemoveImage(long id, long userId);
     }
 }

@@ -88,5 +88,11 @@ namespace wordmeister_api.Controllers
         {
             return Ok(_userService.GetAccountInformation(User.GetUserId()));
         }
+
+        [HttpPost("RemoveFile")]
+        public IActionResult RemoveFile(IdDto model)
+        {
+            return Ok(_userService.RemoveImage(model.Id,User.GetUserId()));
+        }
     }
 }
