@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import * as Yup from 'yup';
 import {
   Box,
@@ -16,7 +16,6 @@ import DataTable from 'src/components/Datatable/DataTable';
 import columns from 'src/configs/columns';
 import { Formik } from 'formik';
 import wordMeisterService from 'src/services/wordMeisterService';
-import { DepartureBoard } from '@material-ui/icons';
 
 const useStyles = makeStyles((theme) => ({
   root: {

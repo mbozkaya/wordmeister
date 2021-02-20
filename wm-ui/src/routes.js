@@ -10,6 +10,7 @@ import RegisterView from 'src/views/auth/RegisterView';
 import SettingsView from 'src/views/settings/SettingsView';
 import Word from './views/word/Word';
 import SlackAuthenticationPage from './views/external/Slack/index';
+import WordCard from './views/word/WordCard';
 
 const routes = [
   {
@@ -23,6 +24,7 @@ const routes = [
       { path: 'settings', element: <SettingsView /> },
       // { path: 'keyword', element: <KeywordView /> },
       { path: 'word', element: <Word /> },
+      { path: 'wordcard', element: <WordCard /> },
       { path: '*', element: <Navigate to="/404" /> }
     ]
   },
