@@ -17,14 +17,14 @@ namespace wordmeister_api.Services
 {
     public class WordService : IWordService
     {
-        WordmeisterContext _wordMeisterDbContext;
+        WordmeisterContext _dbContext;
         ITranslateService _translateService;
         IServiceScopeFactory _serviceScopeFactory;
         IWordAPIService _wordAPIService;
 
-        public WordService(WordmeisterContext wordMeisterDbContext, ITranslateService translateService, IWordAPIService wordAPIService, IServiceScopeFactory serviceScopeFactory )
+        public WordService(WordmeisterContext dbContext, ITranslateService translateService, IWordAPIService wordAPIService, IServiceScopeFactory serviceScopeFactory)
         {
-            _wordMeisterDbContext = wordMeisterDbContext;
+            _dbContext = dbContext;
             _translateService = translateService;
             _serviceScopeFactory = serviceScopeFactory;
             _wordAPIService = wordAPIService;
@@ -32,7 +32,7 @@ namespace wordmeister_api.Services
 
         public WordResponse.Word GetWord(long wordId, int userId)
         {
-            var exist = _wordMeisterDbContext.UserWords.FirstOrDefault(x => x.WordId == wordId && x.UserId == userId);
+            var exist = _dbContext.UserWords.FirstOrDefault(x => x.WordId == wordId && x.UserId == userId);
 
             if (exist.IsNullOrDefault())
                 return null;
@@ -53,7 +53,7 @@ namespace wordmeister_api.Services
 
         public PageResponse GetWords(int pageNumber, int pageSize, int userId)
         {
-            var query = _wordMeisterDbContext.UserWords.Where(x => x.UserId == userId);
+            var query = _dbContext.UserWords.Where(x => x.UserId == userId);
             var page = query.OrderByDescending(x => x.CreatedDate)
                 .Select(x => new WordResponse.Word
                 {
@@ -77,21 +77,20 @@ namespace wordmeister_api.Services
 
         public ResponseResult AddWord(WordRequest model, int userId)
         {
-            var existWord = _wordMeisterDbContext.Words.FirstOrDefault(x => x.Text == model.Text);
+            var existWord = _dbContext.Words.FirstOrDefault(x => x.Text == model.Text);
 
             var userWord = new UserWord();
 
             if (existWord.IsNullOrDefault())
             {
-                var newWord = _wordMeisterDbContext.Words.Add(new Word
+                var newWord = _dbContext.Words.Add(new Word
                 {
                     Text = model.Text,
                     Sentences = null,
                     CreatedDate = DateTime.Now,
                 });
 
-                //_translateService.TranslateText(model.Text);
-                _wordMeisterDbContext.SaveChanges();
+                _dbContext.SaveChanges();
 
                 userWord = new UserWord
                 {
@@ -100,14 +99,14 @@ namespace wordmeister_api.Services
                     Description = model.Description,
                     CreatedDate = DateTime.Now
                 };
-                _wordMeisterDbContext.UserWords.Add(userWord);
-                _wordMeisterDbContext.SaveChanges();
+                _dbContext.UserWords.Add(userWord);
+                _dbContext.SaveChanges();
 
-                Task.Run(() => { AddSentences(newWord.Entity); });
+                Task.Run(() => { AddWordModel(newWord.Entity); });
             }
             else
             {
-                var exist = _wordMeisterDbContext.UserWords.FirstOrDefault(x => x.UserId == userId && x.WordId == existWord.Id);
+                var exist = _dbContext.UserWords.FirstOrDefault(x => x.UserId == userId && x.WordId == existWord.Id);
 
                 if (!exist.IsNullOrDefault())
                     return new ResponseResult() { Error = true, ErrorMessage = "Such a word has been added before." };
@@ -119,8 +118,8 @@ namespace wordmeister_api.Services
                     Description = model.Description,
                     CreatedDate = DateTime.Now
                 };
-                _wordMeisterDbContext.UserWords.Add(userWord);
-                _wordMeisterDbContext.SaveChanges();
+                _dbContext.UserWords.Add(userWord);
+                _dbContext.SaveChanges();
             }
 
             return new ResponseResult();
@@ -128,27 +127,27 @@ namespace wordmeister_api.Services
 
         public void DeleteWord(long wordId, int userId)
         {
-            var exist = _wordMeisterDbContext.UserWords.FirstOrDefault(x => x.WordId == wordId && x.UserId == userId);
+            var exist = _dbContext.UserWords.FirstOrDefault(x => x.WordId == wordId && x.UserId == userId);
 
-            _wordMeisterDbContext.UserWords.Remove(exist);
-            _wordMeisterDbContext.SaveChanges();
+            _dbContext.UserWords.Remove(exist);
+            _dbContext.SaveChanges();
         }
 
         public void UpdateWord(WordRequest model, int userId)
         {
-            var existWord = _wordMeisterDbContext.UserWords.FirstOrDefault(x => x.WordId == model.Id && x.UserId == userId);
+            var existWord = _dbContext.UserWords.FirstOrDefault(x => x.WordId == model.Id && x.UserId == userId);
 
             existWord.Description = model.Description;
             existWord.UpdateDate = DateTime.Now;
 
-            _wordMeisterDbContext.SaveChanges();
+            _dbContext.SaveChanges();
         }
 
         public WordResponse.WordCard GetWordCard(int userId)
         {
 
-            var words = _wordMeisterDbContext.UserWords
-                .Where(w => w.UserId == userId)
+            var words = _dbContext.UserWords
+                .Where(w => w.UserId == userId && !w.Learned)
                 .Include(i => i.Word)
                 .ToList();
 
@@ -158,7 +157,7 @@ namespace wordmeister_api.Services
 
             return new WordResponse.WordCard
             {
-                Sentences = _wordMeisterDbContext.Sentences.Where(w => w.WordId == randomWord.WordId).Select(s => s.Text).ToList(),
+                Sentences = _dbContext.Sentences.Where(w => w.WordId == randomWord.WordId).Select(s => s.Text).ToList(),
                 Description = randomWord.Description,
                 Word = randomWord.Word.Text,
             };
@@ -196,6 +195,129 @@ namespace wordmeister_api.Services
                 }
             }
 
+        }
+
+        private async void AddWordModel(Word word)
+        {
+            using (var scope = _serviceScopeFactory.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetService<WordmeisterContext>();
+
+                var response = await _wordAPIService.GetWord(word.Text);
+
+                var now = DateTime.Now;
+                var executionStrategy = db.Database.CreateExecutionStrategy();
+
+                executionStrategy.Execute(() =>
+                {
+                    using (var transaction = db.Database.BeginTransaction())
+                    {
+                        try
+                        {
+                            db.WordFrequencies.Add(new WordFrequency
+                            {
+                                WordId = word.Id,
+                                PerMillion = response.Frequency,
+                                Zipf = decimal.Zero,
+                                Diversity = decimal.Zero,
+                                CreatedDate = now,
+                            });
+
+                            db.WordPronunciations.Add(new WordPronunciation
+                            {
+                                WordId = word.Id,
+                                All = response.Pronunciation.All,
+                                Noun = response.Pronunciation.Noun,
+                                Verb = response.Pronunciation.Verb,
+                                CreatedDate = now,
+                            });
+
+                            response.Syllables.List.ForEach(f =>
+                            {
+                                db.WordSyllables.Add(new WordSyllable
+                                {
+                                    Syllable = f,
+                                    WordId = word.Id,
+                                    CreatedDate = now,
+                                });
+                            });
+
+                            response.Results.ForEach(result =>
+                            {
+                                result.Antonyms.ForEach(antonym =>
+                                {
+                                    db.WordAntonyms.Add(new WordAntonym
+                                    {
+                                        WordId = word.Id,
+                                        Antonym = antonym,
+                                        CreatedDate = now,
+                                    });
+                                });
+
+                                db.WordDefinations.Add(new WordDefinition
+                                {
+                                    WordId = word.Id,
+                                    Definition = result.Definition,
+                                    PartOfSpeech = result.PartOfSpeech,
+                                    CreatedDate = now
+                                });
+
+                                result.Examples.ForEach(example =>
+                                {
+                                    db.Sentences.Add(new Sentence
+                                    {
+                                        WordId = word.Id,
+                                        Text = example,
+                                        CreatedDate = now
+                                    });
+                                });
+
+                                result.HasTypes.ForEach(hasType =>
+                                {
+                                    db.WordHasTypes.Add(new WordHasType
+                                    {
+                                        WordId = word.Id,
+                                        Type = hasType,
+                                        CreatedDate = now,
+                                    });
+                                });
+
+                                result.Synonyms.ForEach(synonym =>
+                                {
+                                    db.WordSynonyms.Add(new WordSynonym
+                                    {
+                                        WordId = word.Id,
+                                        Synonym = synonym,
+                                        CreatedDate = now,
+                                    });
+                                });
+
+
+                                result.TypeOf.ForEach(typeOf =>
+                                {
+                                    db.WordTypeOfs.Add(new WordTypeOf
+                                    {
+                                        WordId = word.Id,
+                                        TypeOf = typeOf,
+                                        CreatedDate = now
+                                    });
+                                });
+
+                            });
+
+
+                            db.SaveChanges();
+
+                            transaction.Commit();
+                        }
+                        catch (Exception ex)
+                        {
+                            //TODO Log
+                            transaction.Rollback();
+                        }
+                    }
+                });
+            }
         }
     }
 }
