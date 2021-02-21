@@ -11,7 +11,10 @@ namespace wordmeister_api.Entity
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<UserWord>().HasKey(e => new { e.UserId, e.WordId});
+            modelBuilder.Entity<UserWord>().HasKey(e => new { e.UserId, e.WordId });
+            modelBuilder.Entity<WordFrequency>().Property(obj => obj.Zipf).HasPrecision(4, 2);
+            modelBuilder.Entity<WordFrequency>().Property(obj => obj.Diversity).HasPrecision(4, 2);
+            modelBuilder.Entity<WordFrequency>().Property(obj => obj.PerMillion).HasPrecision(4, 2);
             OnModelCreatingPartial(modelBuilder);
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -29,5 +32,15 @@ namespace wordmeister_api.Entity
         public DbSet<Language> Languages { get; set; }
         public DbSet<UserInformation> UserInformations { get; set; }
         public DbSet<UserSetting> UserSettings { get; set; }
+        public DbSet<WordAntonym> WordAntonyms { get; set; }
+        public DbSet<WordDefinition> WordDefinations { get; set; }
+        public DbSet<WordDerivation> WordDerivations { get; set; }
+        public DbSet<WordFrequency> WordFrequencies { get; set; }
+        public DbSet<WordHasType> WordHasTypes { get; set; }
+        public DbSet<WordPronunciation> WordPronunciations { get; set; }
+        public DbSet<WordRyhme> WordRyhmes { get; set; }
+        public DbSet<WordSyllable> WordSyllables { get; set; }
+        public DbSet<WordSynonym> WordSynonyms { get; set; }
+        public DbSet<WordTypeOf> WordTypeOfs { get; set; }
     }
 }

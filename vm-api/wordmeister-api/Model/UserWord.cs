@@ -8,6 +8,9 @@ namespace wordmeister_api.Model
         public long WordId { get; set; }
 
         public string Description { get; set; }
+        public bool Learned { get; set; }
+        public bool Showed { get; set; }
+        public byte Point { get; set; }
 
         public virtual User User { get; set; }
         public virtual Word Word { get; set; }

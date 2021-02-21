@@ -13,29 +13,29 @@ namespace wordmeister_api.Dtos.Word
         }
         public class ExampleDto : BaseClass
         {
-            public List<string> Examples { get; set; }
+            public List<string> Examples { get; set; } = new List<string>();
         }
 
         public class SynonymsDto : BaseClass
         {
-            public List<string> Synonyms { get; set; }
+            public List<string> Synonyms { get; set; } = new List<string>();
         }
 
         public class DefinationsDto : BaseClass
         {
-            public Definations Definations { get; set; } = new Definations();
+            public Definitions Definitions { get; set; } = new Definitions();
 
         }
 
-        public class Definations
+        public class Definitions
         {
-            public string Defination { get; set; }
+            public string Definition { get; set; }
             public string PartOfSpeech { get; set; }
         }
 
         public class AntonymsDto : BaseClass
         {
-            public List<string> Antonyms { get; set; }
+            public List<string> Antonyms { get; set; } = new List<string>();
 
         }
 
@@ -46,12 +46,12 @@ namespace wordmeister_api.Dtos.Word
 
         public class Ryhmes
         {
-            public List<string> All { get; set; }
+            public List<string> All { get; set; } = new List<string>();
         }
 
         public class PronunciationDto : BaseClass
         {
-            public Pronunciation Pronunciation { get; set; }
+            public Pronunciation Pronunciation { get; set; } = new Pronunciation();
         }
 
         public class Pronunciation
@@ -69,7 +69,7 @@ namespace wordmeister_api.Dtos.Word
         public class Syllables
         {
             public int Count { get; set; }
-            public List<string> List { get; set; }
+            public List<string> List { get; set; } = new List<string>();
         }
 
         public class FrequencyDto : BaseClass
@@ -84,7 +84,7 @@ namespace wordmeister_api.Dtos.Word
             public decimal Diversity { get; set; }
         }
 
-        public class WordDto : BaseClass
+        public class RandomDto : BaseClass
         {
             public Syllables Syllables { get; set; } = new Syllables();
             public Pronunciation Pronunciation { get; set; } = new Pronunciation();
@@ -92,14 +92,16 @@ namespace wordmeister_api.Dtos.Word
             public List<Results> Results { get; set; } = new List<Results>();
         }
 
-        public class Results : Definations
+        public class Results : Definitions
         {
-            public List<string> Synonyms { get; set; }
-            public List<string> TypeOf { get; set; }
-            public List<string> HasTypes { get; set; }
-            public List<string> Antonyms { get; set; }
-            public List<string> Examples { get; set; }
+            public List<string> Synonyms { get; set; } = new List<string>();
+            public List<string> TypeOf { get; set; } = new List<string>();
+            public List<string> HasTypes { get; set; } = new List<string>();
+            public List<string> Antonyms { get; set; } = new List<string>();
+            public List<string> Examples { get; set; } = new List<string>();
 
         }
+
+
     }
 }

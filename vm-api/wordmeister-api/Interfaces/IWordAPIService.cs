@@ -8,7 +8,7 @@ namespace wordmeister_api.Interfaces
 {
     public interface IWordAPIService
     {
-        Task<WordApiResponse.WordDto> GetWord(string word);
+        Task<WordApiResponse.RandomDto> GetWord(string word);
         Task<WordApiResponse.ExampleDto> GetExample(string word);
         Task<WordApiResponse.SynonymsDto> GetSynonyms(string word);
         Task<WordApiResponse.DefinationsDto> GetDefinations(string word);
@@ -17,6 +17,6 @@ namespace wordmeister_api.Interfaces
         Task<WordApiResponse.PronunciationDto> GetPronunciation(string word);
         Task<WordApiResponse.SyllablesDto> GetSyllables(string word);
         Task<WordApiResponse.FrequencyDto> GetFrequency(string word);
-        Task<WordApiResponse.WordDto> GetRandom();
+        Task<WordApiResponse.RandomDto> GetRandom();
     }
 }

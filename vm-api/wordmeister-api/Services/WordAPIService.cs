@@ -37,11 +37,11 @@ namespace wordmeister_api.Services
             _request.Method = HttpMethod.Get;
 
         }
-        public async Task<WordApiResponse.WordDto> GetWord(string word)
+        public async Task<WordApiResponse.RandomDto> GetWord(string word)
         {
             _request.RequestUri = new Uri($"{_baseUri}{word}");
 
-            var result = await SendRequest<WordApiResponse.WordDto>();
+            var result = await SendRequest<WordApiResponse.RandomDto>();
 
             return result;
         }
@@ -54,7 +54,11 @@ namespace wordmeister_api.Services
 
             return response;
         }
-
+        /// <summary>
+        /// Eş anlamlıları döner
+        /// </summary>
+        /// <param name="word"></param>
+        /// <returns></returns>
         public async Task<WordApiResponse.SynonymsDto> GetSynonyms(string word)
         {
             _request.RequestUri = new Uri($"{_baseUri}{word}/synonyms");
@@ -63,7 +67,11 @@ namespace wordmeister_api.Services
 
             return response;
         }
-
+        /// <summary>
+        /// Tanımlamaları döner
+        /// </summary>
+        /// <param name="word"></param>
+        /// <returns></returns>
         public async Task<WordApiResponse.DefinationsDto> GetDefinations(string word)
         {
             _request.RequestUri = new Uri($"{_baseUri}{word}/definitions");
@@ -72,7 +80,11 @@ namespace wordmeister_api.Services
 
             return response;
         }
-
+        /// <summary>
+        /// Zıt anlamlılarını döner
+        /// </summary>
+        /// <param name="word"></param>
+        /// <returns></returns>
         public async Task<WordApiResponse.AntonymsDto> GetAntonyms(string word)
         {
             _request.RequestUri = new Uri($"https://wordsapiv1.p.rapidapi.com/words/{word}/antonyms");
@@ -81,7 +93,11 @@ namespace wordmeister_api.Services
 
             return response;
         }
-
+        /// <summary>
+        /// Tekerlemeleri döner
+        /// </summary>
+        /// <param name="word"></param>
+        /// <returns></returns>
         public async Task<WordApiResponse.RyhmesDto> GetRyhmes(string word)
         {
             _request.RequestUri = new Uri($"{_baseUri}{word}/rhymes");
@@ -90,7 +106,11 @@ namespace wordmeister_api.Services
 
             return response;
         }
-
+        /// <summary>
+        /// Okunuşları döner
+        /// </summary>
+        /// <param name="word"></param>
+        /// <returns></returns>
         public async Task<WordApiResponse.PronunciationDto> GetPronunciation(string word)
         {
             _request.RequestUri = new Uri($"{_baseUri}{word}/pronunciation");
@@ -99,7 +119,11 @@ namespace wordmeister_api.Services
 
             return response;
         }
-
+        /// <summary>
+        /// Heceleri döner
+        /// </summary>
+        /// <param name="word"></param>
+        /// <returns></returns>
         public async Task<WordApiResponse.SyllablesDto> GetSyllables(string word)
         {
             _request.RequestUri = new Uri($"{_baseUri}{word}/syllables");
@@ -118,10 +142,10 @@ namespace wordmeister_api.Services
             return response;
         }
 
-        public async Task<WordApiResponse.WordDto> GetRandom()
+        public async Task<WordApiResponse.RandomDto> GetRandom()
         {
             _request.RequestUri = new Uri($"{_baseUri}?random=true");
-            var response = await SendRequest<WordApiResponse.WordDto>();
+            var response = await SendRequest<WordApiResponse.RandomDto>();
 
             return response;
         }

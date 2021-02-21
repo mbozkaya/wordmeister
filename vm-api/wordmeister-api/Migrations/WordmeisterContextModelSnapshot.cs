@@ -267,6 +267,15 @@ namespace wordmeister_api.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
+                    b.Property<bool>("Learned")
+                        .HasColumnType("boolean");
+
+                    b.Property<byte>("Point")
+                        .HasColumnType("smallint");
+
+                    b.Property<bool>("Showed")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTime?>("UpdateDate")
                         .HasColumnType("timestamp without time zone");
 
@@ -296,6 +305,284 @@ namespace wordmeister_api.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Words");
+                });
+
+            modelBuilder.Entity("wordmeister_api.Model.WordAntonym", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .UseIdentityByDefaultColumn();
+
+                    b.Property<string>("Antonym")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<long>("WordId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WordId");
+
+                    b.ToTable("WordAntonyms");
+                });
+
+            modelBuilder.Entity("wordmeister_api.Model.WordDefinition", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .UseIdentityByDefaultColumn();
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Definition")
+                        .HasColumnType("text");
+
+                    b.Property<string>("PartOfSpeech")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<long>("WordId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WordId");
+
+                    b.ToTable("WordDefinations");
+                });
+
+            modelBuilder.Entity("wordmeister_api.Model.WordDerivation", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .UseIdentityByDefaultColumn();
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Derivation")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<long>("WordId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WordId");
+
+                    b.ToTable("WordDerivations");
+                });
+
+            modelBuilder.Entity("wordmeister_api.Model.WordFrequency", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .UseIdentityByDefaultColumn();
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<decimal>("Diversity")
+                        .HasPrecision(4, 2)
+                        .HasColumnType("numeric(4,2)");
+
+                    b.Property<decimal>("PerMillion")
+                        .HasPrecision(4, 2)
+                        .HasColumnType("numeric(4,2)");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<long>("WordId")
+                        .HasColumnType("bigint");
+
+                    b.Property<decimal>("Zipf")
+                        .HasPrecision(4, 2)
+                        .HasColumnType("numeric(4,2)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WordId");
+
+                    b.ToTable("WordFrequencies");
+                });
+
+            modelBuilder.Entity("wordmeister_api.Model.WordHasType", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .UseIdentityByDefaultColumn();
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<long>("WordId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WordId");
+
+                    b.ToTable("WordHasTypes");
+                });
+
+            modelBuilder.Entity("wordmeister_api.Model.WordPronunciation", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .UseIdentityByDefaultColumn();
+
+                    b.Property<string>("All")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Noun")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Verb")
+                        .HasColumnType("text");
+
+                    b.Property<long>("WordId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WordId");
+
+                    b.ToTable("WordPronunciations");
+                });
+
+            modelBuilder.Entity("wordmeister_api.Model.WordRyhme", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .UseIdentityByDefaultColumn();
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Ryhme")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<long>("WordId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WordId");
+
+                    b.ToTable("WordRyhmes");
+                });
+
+            modelBuilder.Entity("wordmeister_api.Model.WordSyllable", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .UseIdentityByDefaultColumn();
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Syllable")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<long>("WordId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WordId");
+
+                    b.ToTable("WordSyllables");
+                });
+
+            modelBuilder.Entity("wordmeister_api.Model.WordSynonym", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .UseIdentityByDefaultColumn();
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Synonym")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<long>("WordId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WordId");
+
+                    b.ToTable("WordSynonyms");
+                });
+
+            modelBuilder.Entity("wordmeister_api.Model.WordTypeOf", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .UseIdentityByDefaultColumn();
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("TypeOf")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<long>("WordId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WordId");
+
+                    b.ToTable("WordTypeOfs");
                 });
 
             modelBuilder.Entity("wordmeister_api.Model.Sentence", b =>
@@ -363,6 +650,116 @@ namespace wordmeister_api.Migrations
                     b.Navigation("Word");
                 });
 
+            modelBuilder.Entity("wordmeister_api.Model.WordAntonym", b =>
+                {
+                    b.HasOne("wordmeister_api.Model.Word", "Word")
+                        .WithMany("WordAntonyms")
+                        .HasForeignKey("WordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Word");
+                });
+
+            modelBuilder.Entity("wordmeister_api.Model.WordDefinition", b =>
+                {
+                    b.HasOne("wordmeister_api.Model.Word", "Word")
+                        .WithMany("WordDefinitions")
+                        .HasForeignKey("WordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Word");
+                });
+
+            modelBuilder.Entity("wordmeister_api.Model.WordDerivation", b =>
+                {
+                    b.HasOne("wordmeister_api.Model.Word", "Word")
+                        .WithMany("WordDerivations")
+                        .HasForeignKey("WordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Word");
+                });
+
+            modelBuilder.Entity("wordmeister_api.Model.WordFrequency", b =>
+                {
+                    b.HasOne("wordmeister_api.Model.Word", "Word")
+                        .WithMany("WordFrequencies")
+                        .HasForeignKey("WordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Word");
+                });
+
+            modelBuilder.Entity("wordmeister_api.Model.WordHasType", b =>
+                {
+                    b.HasOne("wordmeister_api.Model.Word", "Word")
+                        .WithMany("WordHasTypes")
+                        .HasForeignKey("WordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Word");
+                });
+
+            modelBuilder.Entity("wordmeister_api.Model.WordPronunciation", b =>
+                {
+                    b.HasOne("wordmeister_api.Model.Word", "Word")
+                        .WithMany("WordPronunciations")
+                        .HasForeignKey("WordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Word");
+                });
+
+            modelBuilder.Entity("wordmeister_api.Model.WordRyhme", b =>
+                {
+                    b.HasOne("wordmeister_api.Model.Word", "Word")
+                        .WithMany("WordRyhmes")
+                        .HasForeignKey("WordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Word");
+                });
+
+            modelBuilder.Entity("wordmeister_api.Model.WordSyllable", b =>
+                {
+                    b.HasOne("wordmeister_api.Model.Word", "Word")
+                        .WithMany("WordSyllables")
+                        .HasForeignKey("WordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Word");
+                });
+
+            modelBuilder.Entity("wordmeister_api.Model.WordSynonym", b =>
+                {
+                    b.HasOne("wordmeister_api.Model.Word", "Word")
+                        .WithMany("WordSynonyms")
+                        .HasForeignKey("WordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Word");
+                });
+
+            modelBuilder.Entity("wordmeister_api.Model.WordTypeOf", b =>
+                {
+                    b.HasOne("wordmeister_api.Model.Word", "Word")
+                        .WithMany("WordTypeOfs")
+                        .HasForeignKey("WordId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Word");
+                });
+
             modelBuilder.Entity("wordmeister_api.Model.User", b =>
                 {
                     b.Navigation("UserWords");
@@ -373,6 +770,26 @@ namespace wordmeister_api.Migrations
                     b.Navigation("Sentences");
 
                     b.Navigation("UserWords");
+
+                    b.Navigation("WordAntonyms");
+
+                    b.Navigation("WordDefinitions");
+
+                    b.Navigation("WordDerivations");
+
+                    b.Navigation("WordFrequencies");
+
+                    b.Navigation("WordHasTypes");
+
+                    b.Navigation("WordPronunciations");
+
+                    b.Navigation("WordRyhmes");
+
+                    b.Navigation("WordSyllables");
+
+                    b.Navigation("WordSynonyms");
+
+                    b.Navigation("WordTypeOfs");
                 });
 #pragma warning restore 612, 618
         }

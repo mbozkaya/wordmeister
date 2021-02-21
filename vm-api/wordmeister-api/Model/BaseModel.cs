@@ -10,7 +10,13 @@ namespace wordmeister_api.Model
     {
         [Key]
         public long Id { get; set; }
-        public DateTime CreatedDate { get; set; }
+        public DateTime CreatedDate { get; set; } = DateTime.Now;
         public DateTime? UpdateDate { get; set; }
+    }
+
+    public class WordRelatedTableBaseModel : BaseModel
+    {
+        public long WordId { get; set; }
+        public virtual Word Word { get; set; }
     }
 }
