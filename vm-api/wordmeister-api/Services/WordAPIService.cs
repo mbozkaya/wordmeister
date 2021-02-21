@@ -6,16 +6,20 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using wordmeister_api.Dtos;
+using wordmeister_api.Dtos.General;
 using wordmeister_api.Dtos.Word;
 using wordmeister_api.Interfaces;
 
 namespace wordmeister_api.Services
 {
-    public class WordAPIService: IWordAPIService
+    public class WordAPIService : IWordAPIService
     {
         HttpClient _client;
         private HttpRequestMessage _request;
         IOptions<Appsettings> _appSettings;
+        private HttpRequestException _httpRequestException;
+        private bool _error;
+        private string _baseUri = "https://wordsapiv1.p.rapidapi.com/words/";
         public WordAPIService(IOptions<Appsettings> appSettings)
         {
             _appSettings = appSettings;
@@ -30,39 +34,125 @@ namespace wordmeister_api.Services
                             { "useQueryString", "true" },
                         },
             };
-        }
-        public async void GetWord(string word)
-        {
-
             _request.Method = HttpMethod.Get;
-            _request.RequestUri = new Uri("https://wordsapiv1.p.rapidapi.com/words/away");
 
-            var result = await SendRequest();
+        }
+        public async Task<WordApiResponse.WordDto> GetWord(string word)
+        {
+            _request.RequestUri = new Uri($"{_baseUri}{word}");
 
+            var result = await SendRequest<WordApiResponse.WordDto>();
+
+            return result;
         }
 
         public async Task<WordApiResponse.ExampleDto> GetExample(string word)
         {
-            //if not exist
-            _request.Method = HttpMethod.Get;
-            _request.RequestUri = new Uri($"https://wordsapiv1.p.rapidapi.com/words/{word}/examples");
+            _request.RequestUri = new Uri($"{_baseUri}{word}/examples");
 
-            var response = JsonConvert.DeserializeObject<WordApiResponse.ExampleDto>(await SendRequest());
-            //db insert
-            //end if
+            var response = await SendRequest<WordApiResponse.ExampleDto>();
 
             return response;
         }
 
-        private async Task<string> SendRequest()
+        public async Task<WordApiResponse.SynonymsDto> GetSynonyms(string word)
         {
-            string responseResult = string.Empty;
+            _request.RequestUri = new Uri($"{_baseUri}{word}/synonyms");
+
+            var response = await SendRequest<WordApiResponse.SynonymsDto>();
+
+            return response;
+        }
+
+        public async Task<WordApiResponse.DefinationsDto> GetDefinations(string word)
+        {
+            _request.RequestUri = new Uri($"{_baseUri}{word}/definitions");
+
+            var response = await SendRequest<WordApiResponse.DefinationsDto>();
+
+            return response;
+        }
+
+        public async Task<WordApiResponse.AntonymsDto> GetAntonyms(string word)
+        {
+            _request.RequestUri = new Uri($"https://wordsapiv1.p.rapidapi.com/words/{word}/antonyms");
+
+            var response = await SendRequest<WordApiResponse.AntonymsDto>();
+
+            return response;
+        }
+
+        public async Task<WordApiResponse.RyhmesDto> GetRyhmes(string word)
+        {
+            _request.RequestUri = new Uri($"{_baseUri}{word}/rhymes");
+
+            var response = await SendRequest<WordApiResponse.RyhmesDto>();
+
+            return response;
+        }
+
+        public async Task<WordApiResponse.PronunciationDto> GetPronunciation(string word)
+        {
+            _request.RequestUri = new Uri($"{_baseUri}{word}/pronunciation");
+
+            var response = await SendRequest<WordApiResponse.PronunciationDto>();
+
+            return response;
+        }
+
+        public async Task<WordApiResponse.SyllablesDto> GetSyllables(string word)
+        {
+            _request.RequestUri = new Uri($"{_baseUri}{word}/syllables");
+
+            var response = await SendRequest<WordApiResponse.SyllablesDto>();
+
+            return response;
+        }
+
+        public async Task<WordApiResponse.FrequencyDto> GetFrequency(string word)
+        {
+            _request.RequestUri = new Uri($"{_baseUri}{word}/frequency");
+
+            var response = await SendRequest<WordApiResponse.FrequencyDto>();
+
+            return response;
+        }
+
+        public async Task<WordApiResponse.WordDto> GetRandom()
+        {
+            _request.RequestUri = new Uri($"{_baseUri}?random=true");
+            var response = await SendRequest<WordApiResponse.WordDto>();
+
+            return response;
+        }
+
+        private async Task<T> SendRequest<T>() where T : new()
+        {
+            var responseResult = new T();
             using (var response = await _client.SendAsync(_request))
             {
-                response.EnsureSuccessStatusCode();
-                responseResult = await response.Content.ReadAsStringAsync();
-            }
+                if (response.IsSuccessStatusCode)
+                {
+                    try
+                    {
+                        response.EnsureSuccessStatusCode();
+                        var responseResultStr = await response.Content.ReadAsStringAsync();
 
+                        responseResult = JsonConvert.DeserializeObject<T>(responseResultStr);
+                    }
+                    catch (HttpRequestException httpEx)
+                    {
+                        //TODO Log
+                        _httpRequestException = httpEx;
+                        _error = true;
+                    }
+                }
+                else
+                {
+                    //TODO Log
+                    _error = true;
+                }
+            }
             return responseResult;
         }
 

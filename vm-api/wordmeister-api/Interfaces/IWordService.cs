@@ -15,5 +15,6 @@ namespace wordmeister_api.Interfaces
         void UpdateWord(WordRequest model, int userId);
         void DeleteWord(long wordId, int userId);
         WordResponse.WordCard GetWordCard(int userId);
+        void GetRandomWord();
     }
 }

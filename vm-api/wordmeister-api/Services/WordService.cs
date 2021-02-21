@@ -165,6 +165,11 @@ namespace wordmeister_api.Services
 
         }
 
+        public async void GetRandomWord()
+        {
+            var result = await _wordAPIService.GetRandom();
+        }
+
         private async void AddSentences(Word word)
         {
             using (var scope = _serviceScopeFactory.CreateScope())
