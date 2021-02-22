@@ -2,20 +2,17 @@
 
 namespace wordmeister_api.Model
 {
-    public class UserWord
+    public class UserWord : BaseModel
     {
         public long UserId { get; set; }
         public long WordId { get; set; }
-
         public string Description { get; set; }
-        public bool Learned { get; set; }
-        public bool Showed { get; set; }
+        public bool IsLearned { get; set; }
+        public bool IsShowed { get; set; }
+        public bool IsFavorite { get; set; }
         public byte Point { get; set; }
-
         public virtual User User { get; set; }
         public virtual Word Word { get; set; }
-
-        public DateTime CreatedDate { get; set; }
-        public DateTime? UpdateDate { get; set; } 
-    } 
+        public DateTime? LearnedDate { get; set; }
+    }
 }

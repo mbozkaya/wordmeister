@@ -16,10 +16,15 @@ namespace wordmeister_api.Dtos.Word
         
         public class WordCard
         {
-            public int UserWordId { get; set; }
+            public long UserWordId { get; set; }
             public List<string> Sentences { get; set; }
             public string Word { get; set; }
             public string Description { get; set; }
+            public bool IsOver { get; set; }
+            public bool IsFavorite { get; set; }
+            public byte Point { get; set; }
+            public int WordCount { get; set; }
+            public int CurrentIndex { get; set; }
         }
     }
 }

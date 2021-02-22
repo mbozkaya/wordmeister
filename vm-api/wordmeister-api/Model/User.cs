@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace wordmeister_api.Model
 {
-    public class User :BaseModel
+    public class User : BaseModel
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
@@ -14,7 +14,8 @@ namespace wordmeister_api.Model
         public string Password { get; set; }
         public Guid Guid { get; set; }
         public bool Status { get; set; }
-        
-        public virtual ICollection<UserWord> UserWords{ get; set; } 
+
+        public virtual ICollection<UserWord> UserWords { get; set; }
+        public virtual ICollection<Sentence> Sentences { get; set; }
     }
 }
