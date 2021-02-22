@@ -68,16 +68,24 @@ namespace wordmeister_api.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<bool>("IsPrivate")
+                        .HasColumnType("boolean");
+
                     b.Property<string>("Text")
                         .HasColumnType("text");
 
                     b.Property<DateTime?>("UpdateDate")
                         .HasColumnType("timestamp without time zone");
 
+                    b.Property<long?>("UserId")
+                        .HasColumnType("bigint");
+
                     b.Property<long>("WordId")
                         .HasColumnType("bigint");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.HasIndex("WordId");
 
@@ -267,14 +275,23 @@ namespace wordmeister_api.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("text");
 
-                    b.Property<bool>("Learned")
+                    b.Property<long>("Id")
+                        .HasColumnType("bigint");
+
+                    b.Property<bool>("IsFavorite")
                         .HasColumnType("boolean");
+
+                    b.Property<bool>("IsLearned")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsShowed")
+                        .HasColumnType("boolean");
+
+                    b.Property<DateTime?>("LearnedDate")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<byte>("Point")
                         .HasColumnType("smallint");
-
-                    b.Property<bool>("Showed")
-                        .HasColumnType("boolean");
 
                     b.Property<DateTime?>("UpdateDate")
                         .HasColumnType("timestamp without time zone");
@@ -587,11 +604,17 @@ namespace wordmeister_api.Migrations
 
             modelBuilder.Entity("wordmeister_api.Model.Sentence", b =>
                 {
+                    b.HasOne("wordmeister_api.Model.User", "User")
+                        .WithMany("Sentences")
+                        .HasForeignKey("UserId");
+
                     b.HasOne("wordmeister_api.Model.Word", "Word")
                         .WithMany("Sentences")
                         .HasForeignKey("WordId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
 
                     b.Navigation("Word");
                 });
@@ -762,6 +785,8 @@ namespace wordmeister_api.Migrations
 
             modelBuilder.Entity("wordmeister_api.Model.User", b =>
                 {
+                    b.Navigation("Sentences");
+
                     b.Navigation("UserWords");
                 });
 

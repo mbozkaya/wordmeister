@@ -75,7 +75,7 @@ namespace wordmeister_api.Services
             return new PageResponse { Data = words, Total = total };
         }
 
-        public ResponseResult AddWord(WordRequest model, int userId)
+        public ResponseResult AddWord(WordRequest.Add model, int userId)
         {
             var existWord = _dbContext.Words.FirstOrDefault(x => x.Text == model.Text);
 
@@ -133,7 +133,7 @@ namespace wordmeister_api.Services
             _dbContext.SaveChanges();
         }
 
-        public void UpdateWord(WordRequest model, int userId)
+        public void UpdateWord(WordRequest.Add model, int userId)
         {
             var existWord = _dbContext.UserWords.FirstOrDefault(x => x.WordId == model.Id && x.UserId == userId);
 
@@ -143,25 +143,101 @@ namespace wordmeister_api.Services
             _dbContext.SaveChanges();
         }
 
-        public WordResponse.WordCard GetWordCard(int userId)
+        public WordResponse.WordCard GetWordCard(int userId, int currentIndex = 1, bool isRandom = false)
         {
 
             var words = _dbContext.UserWords
-                .Where(w => w.UserId == userId && !w.Learned)
+                .Where(w => w.UserId == userId && !w.IsLearned)
                 .Include(i => i.Word)
                 .ToList();
 
-            var random = new Random();
+            if (currentIndex > words.Count)
+            {
+                return new WordResponse.WordCard
+                {
+                    IsOver = true,
+                };
+            }
 
-            var randomWord = words[random.Next(words.Count)];
+            var userWord = new UserWord();
+
+            if (isRandom)
+            {
+                var random = new Random();
+
+                userWord = words[random.Next(words.Count)];
+            }
+            else
+            {
+                userWord = words[currentIndex - 1];
+            }
 
             return new WordResponse.WordCard
             {
-                Sentences = _dbContext.Sentences.Where(w => w.WordId == randomWord.WordId).Select(s => s.Text).ToList(),
-                Description = randomWord.Description,
-                Word = randomWord.Word.Text,
+                Sentences = _dbContext.Sentences.Where(w => w.WordId == userWord.WordId).Select(s => s.Text).ToList(),
+                Description = userWord.Description,
+                Word = userWord.Word.Text,
+                CurrentIndex = currentIndex,
+                IsFavorite = userWord.IsFavorite,
+                IsOver = currentIndex == words.Count,
+                Point = userWord.Point,
+                UserWordId = userWord.Id,
+                WordCount = words.Count
             };
 
+        }
+
+        public ResponseResult SetWordPoint(WordRequest.WordPoint model)
+        {
+            var userWord = GetUserWord(model.UserWordId);
+
+            if (userWord.IsNullOrDefault())
+            {
+                return new ResponseResult() { Error = true, ErrorMessage = "The word not found" };
+            }
+
+            userWord.Point = (byte)model.Point;
+            _dbContext.SaveChanges();
+
+            return new ResponseResult();
+        }
+
+        public ResponseResult SetWordFavorite(WordRequest.WordFavorite model)
+        {
+            var userWord = GetUserWord(model.UserWordId);
+
+            if (userWord.IsNullOrDefault())
+            {
+                return new ResponseResult() { Error = true, ErrorMessage = "The word not found" };
+            }
+
+            userWord.IsFavorite = model.IsFavorite;
+            userWord.UpdateDate = DateTime.Now;
+            _dbContext.SaveChanges();
+
+            return new ResponseResult();
+        }
+
+        public ResponseResult AddCustomSentence(WordRequest.CustomSentence model)
+        {
+            var userWord = GetUserWord(model.UserWordId);
+
+            if (userWord.IsNullOrDefault())
+            {
+                return new ResponseResult() { Error = true, ErrorMessage = "The word not found" };
+            }
+
+            _dbContext.Sentences.Add(new Sentence
+            {
+                CreatedDate = DateTime.Now,
+                IsPrivate = model.IsPrivate,
+                UserId = userWord.UserId,
+                Text = model.Sentence,
+            });
+
+            _dbContext.SaveChanges();
+
+            return new ResponseResult();
         }
 
         public async void GetRandomWord()
@@ -318,6 +394,13 @@ namespace wordmeister_api.Services
                     }
                 });
             }
+        }
+
+        private UserWord GetUserWord(int userWordId)
+        {
+            return _dbContext.UserWords
+                .Where(w => w.Id == userWordId)
+                .FirstOrDefault();
         }
     }
 }

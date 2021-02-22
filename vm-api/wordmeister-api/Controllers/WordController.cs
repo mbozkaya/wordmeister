@@ -13,7 +13,7 @@ namespace wordmeister_api.Controllers
     [Route("[controller]")]
     [ApiController]
     //TODO: swaggerden auth kontrol edilemedigi icin simdilik yorum satırında kalacak.
-    [Authorize]
+    //[Authorize]
     public class WordController : ControllerBase
     {
         private IWordService _wordService;
@@ -23,7 +23,7 @@ namespace wordmeister_api.Controllers
         }
 
         [HttpPost("AddWord")]
-        public IActionResult AddWord(WordRequest model)
+        public IActionResult AddWord(WordRequest.Add model)
         {
             var response = _wordService.AddWord(model, User.GetUserId());
             return Ok(response);
@@ -61,18 +61,44 @@ namespace wordmeister_api.Controllers
         }
 
         [HttpPost("UpdateWord")]
-        public IActionResult UpdateWord(WordRequest model)
+        public IActionResult UpdateWord(WordRequest.Add model)
         {
             _wordService.UpdateWord(model, User.GetUserId());
 
             return Ok(new General.ResponseResult());
         }
 
-        [HttpGet("WordCard")]
-        public IActionResult WordCard()
+        [HttpPost("WordCard")]
+        public IActionResult WordCard(WordRequest.WordCard model)
         {
 
-            return Ok(new General.ResponseResult { Data = _wordService.GetWordCard(User.GetUserId()) });
+            return Ok(new General.ResponseResult { Data = _wordService.GetWordCard(User.GetUserId(), model.CurrentIndex, model.IsRandom) });
+        }
+
+        [HttpGet("RandomWord")]
+        public IActionResult RandomWord()
+        {
+            _wordService.GetRandomWord();
+
+            return Ok();
+        }
+
+        [HttpPost("WordPoint")]
+        public IActionResult WordPoint(WordRequest.WordPoint model)
+        {
+            return Ok(_wordService.SetWordPoint(model));
+        }
+
+        [HttpPost("WordFavorite")]
+        public IActionResult WordFavorite(WordRequest.WordFavorite model)
+        {
+            return Ok(_wordService.SetWordFavorite(model));
+        }
+
+        [HttpPost("CustomSentence")]
+        public IActionResult CustomSentence(WordRequest.CustomSentence model)
+        {
+            return Ok(_wordService.AddCustomSentence(model));
         }
     }
 }
