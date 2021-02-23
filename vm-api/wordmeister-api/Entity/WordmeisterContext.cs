@@ -11,7 +11,6 @@ namespace wordmeister_api.Entity
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<UserWord>().HasKey(e => new { e.UserId, e.WordId });
             modelBuilder.Entity<WordFrequency>().Property(obj => obj.Zipf).HasPrecision(4, 2);
             modelBuilder.Entity<WordFrequency>().Property(obj => obj.Diversity).HasPrecision(4, 2);
             modelBuilder.Entity<WordFrequency>().Property(obj => obj.PerMillion).HasPrecision(4, 2);

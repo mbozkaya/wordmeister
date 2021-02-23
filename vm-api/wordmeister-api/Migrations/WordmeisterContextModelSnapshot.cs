@@ -263,20 +263,16 @@ namespace wordmeister_api.Migrations
 
             modelBuilder.Entity("wordmeister_api.Model.UserWord", b =>
                 {
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("WordId")
-                        .HasColumnType("bigint");
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .UseIdentityByDefaultColumn();
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Description")
                         .HasColumnType("text");
-
-                    b.Property<long>("Id")
-                        .HasColumnType("bigint");
 
                     b.Property<bool>("IsFavorite")
                         .HasColumnType("boolean");
@@ -296,7 +292,15 @@ namespace wordmeister_api.Migrations
                     b.Property<DateTime?>("UpdateDate")
                         .HasColumnType("timestamp without time zone");
 
-                    b.HasKey("UserId", "WordId");
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.Property<long>("WordId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.HasIndex("WordId");
 
@@ -637,7 +641,7 @@ namespace wordmeister_api.Migrations
                         .HasForeignKey("CountryId1");
 
                     b.HasOne("wordmeister_api.Model.User", "User")
-                        .WithMany()
+                        .WithMany("UserInformations")
                         .HasForeignKey("UserId1");
 
                     b.Navigation("Country");
@@ -648,7 +652,7 @@ namespace wordmeister_api.Migrations
             modelBuilder.Entity("wordmeister_api.Model.UserSetting", b =>
                 {
                     b.HasOne("wordmeister_api.Model.User", "User")
-                        .WithMany()
+                        .WithMany("UserSettings")
                         .HasForeignKey("UserId1");
 
                     b.Navigation("User");
@@ -786,6 +790,10 @@ namespace wordmeister_api.Migrations
             modelBuilder.Entity("wordmeister_api.Model.User", b =>
                 {
                     b.Navigation("Sentences");
+
+                    b.Navigation("UserInformations");
+
+                    b.Navigation("UserSettings");
 
                     b.Navigation("UserWords");
                 });

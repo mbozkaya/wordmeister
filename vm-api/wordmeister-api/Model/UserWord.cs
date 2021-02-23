@@ -1,10 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace wordmeister_api.Model
 {
     public class UserWord : BaseModel
     {
+        [ForeignKey("UserId")]
         public long UserId { get; set; }
+        [ForeignKey("WordId")]
         public long WordId { get; set; }
         public string Description { get; set; }
         public bool IsLearned { get; set; }
