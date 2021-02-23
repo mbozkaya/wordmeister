@@ -18,5 +18,8 @@ export default {
     deleteWord: `${appConfig.api.service()}Word/DeleteWord`,
     updateWord: `${appConfig.api.service()}Word/UpdateWord`,
     wordCard: `${appConfig.api.service()}Word/WordCard`,
+    wordPoint: `${appConfig.api.service()}Word/WordPoint`,
+    wordFavorite: `${appConfig.api.service()}Word/WordFavorite`,
+    customSentence: `${appConfig.api.service()}Word/CustomSentence`,
   },
 };

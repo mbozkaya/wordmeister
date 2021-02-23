@@ -51,12 +51,37 @@ export default {
     };
     return Fetch(urlConfig.wordMeister.getKeywords, requestOptions);
   },
-  getWordCard: () => {
+  getWordCard: (model) => {
     const requestOptions = {
-      method: 'GET',
+      method: 'POST',
       headers: utilitity.authorizedHeader(),
+      body: JSON.stringify(model),
     };
 
     return Fetch(urlConfig.wordMeister.wordCard, requestOptions);
+  },
+  setWordPoint: (model) => {
+    const requestOptions = {
+      method: 'POST',
+      headers: utilitity.authorizedHeader(),
+      body: JSON.stringify(model),
+    };
+    return Fetch(urlConfig.wordMeister.wordPoint, requestOptions);
+  },
+  setWordFavorite: (model) => {
+    const requestOptions = {
+      method: 'POST',
+      headers: utilitity.authorizedHeader(),
+      body: JSON.stringify(model),
+    };
+    return Fetch(urlConfig.wordMeister.wordFavorite, requestOptions);
+  },
+  setCustomSentence: (model) => {
+    const requestOptions = {
+      method: 'POST',
+      headers: utilitity.authorizedHeader(),
+      body: JSON.stringify(model),
+    };
+    return Fetch(urlConfig.wordMeister.customSentence, requestOptions);
   },
 };
