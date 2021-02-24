@@ -148,7 +148,10 @@ namespace wordmeister_api.Services
 
             var words = _dbContext.UserWords
                 .Where(w => w.UserId == userId && !w.IsLearned)
-                .Include(i => i.Word)
+                .Include(i => i.Word).ThenInclude(i => i.Sentences)
+                .Include(i => i.Word).ThenInclude(i => i.WordDefinitions)
+                .Include(i => i.Word).ThenInclude(i => i.WordFrequencies)
+                .Include(i => i.Word).ThenInclude(i => i.WordPronunciations)
                 .ToList();
 
             if (currentIndex > words.Count)
@@ -174,7 +177,7 @@ namespace wordmeister_api.Services
 
             return new WordResponse.WordCard
             {
-                Sentences = _dbContext.Sentences.Where(w => w.WordId == userWord.WordId).Select(s => s.Text).ToList(),
+                Sentences = userWord.Word.Sentences.Where(w => !w.IsPrivate || (w.IsPrivate && w.UserId == userWord.UserId)).Select(s => s.Text).ToList(),
                 Description = userWord.Description,
                 Word = userWord.Word.Text,
                 CurrentIndex = currentIndex,
@@ -182,7 +185,21 @@ namespace wordmeister_api.Services
                 IsOver = currentIndex == words.Count,
                 Point = userWord.Point,
                 UserWordId = userWord.Id,
-                WordCount = words.Count
+                WordCount = words.Count,
+                Definations = userWord.Word.WordDefinitions.Select(s => new WordResponse.Definations
+                {
+                    Defination = s.Definition,
+                    Id = s.Id,
+                    Type = s.PartOfSpeech,
+                }).ToList(),
+                Frequency = userWord.Word.WordFrequencies.Select(s => s.PerMillion).FirstOrDefault(),
+                Prononciations = userWord.Word.WordPronunciations.Select(s => new WordResponse.Prononciation
+                {
+                    All = s.All ?? string.Empty,
+                    Verb = s.Verb ?? string.Empty,
+                    Noun = s.Noun ?? string.Empty,
+                }).FirstOrDefault(),
+                IsLearned = userWord.IsLearned,
             };
 
         }
@@ -233,6 +250,7 @@ namespace wordmeister_api.Services
                 IsPrivate = model.IsPrivate,
                 UserId = userWord.UserId,
                 Text = model.Sentence,
+                WordId = userWord.WordId,
             });
 
             _dbContext.SaveChanges();
@@ -240,6 +258,29 @@ namespace wordmeister_api.Services
             return new ResponseResult();
         }
 
+        public ResponseResult SetWordLearned(WordRequest.Learned model)
+        {
+            var userWord = GetUserWord(model.UserWordId);
+
+            if (userWord.IsNullOrDefault())
+            {
+                return new ResponseResult() { Error = true, ErrorMessage = "The word not found" };
+            }
+
+            userWord.IsLearned = model.IsLearned;
+
+            if (model.IsLearned)
+            {
+                userWord.LearnedDate = DateTime.Now;
+            }
+            else
+            {
+                userWord.UpdateDate = DateTime.Now;
+            }
+            _dbContext.SaveChanges();
+
+            return new ResponseResult();
+        }
         public async void GetRandomWord()
         {
             var result = await _wordAPIService.GetRandom();

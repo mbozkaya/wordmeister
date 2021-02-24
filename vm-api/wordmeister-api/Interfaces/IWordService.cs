@@ -19,5 +19,6 @@ namespace wordmeister_api.Interfaces
         ResponseResult SetWordPoint(WordRequest.WordPoint model);
         ResponseResult SetWordFavorite(WordRequest.WordFavorite model);
         ResponseResult AddCustomSentence(WordRequest.CustomSentence model);
+        ResponseResult SetWordLearned(WordRequest.Learned model);
     }
 }

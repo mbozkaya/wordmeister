@@ -100,5 +100,11 @@ namespace wordmeister_api.Controllers
         {
             return Ok(_wordService.AddCustomSentence(model));
         }
+
+        [HttpPost("Learned")]
+        public IActionResult Learned(WordRequest.Learned model)
+        {
+            return Ok(_wordService.SetWordLearned(model));
+        }
     }
 }

@@ -13,7 +13,7 @@ namespace wordmeister_api.Dtos.Word
             public ICollection<SentenceDto> Sentences { get; set; }
             public DateTime CreatedDate { get; set; }
         }
-        
+
         public class WordCard
         {
             public long UserWordId { get; set; }
@@ -25,6 +25,25 @@ namespace wordmeister_api.Dtos.Word
             public byte Point { get; set; }
             public int WordCount { get; set; }
             public int CurrentIndex { get; set; }
+            public bool IsLearned { get; set; }
+            public List<Definations> Definations { get; set; }
+            public Prononciation Prononciations { get; set; }
+            public decimal Frequency { get; set; }
+        }
+
+        public class Definations
+        {
+            public long Id { get; set; }
+            public string Defination { get; set; }
+            public string Type { get; set; }
+
+        }
+
+        public class Prononciation
+        {
+            public string Verb { get; set; }
+            public string Noun { get; set; }
+            public string All { get; set; }
         }
     }
 }

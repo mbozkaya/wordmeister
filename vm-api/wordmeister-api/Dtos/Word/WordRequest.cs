@@ -32,6 +32,12 @@ namespace wordmeister_api.Dtos.Word
             public bool IsFavorite { get; set; }
         }
 
+        public class Learned
+        {
+            public int UserWordId { get; set; }
+            public bool IsLearned { get; set; }
+        }
+
         public class CustomSentence
         {
             public int UserWordId { get; set; }
