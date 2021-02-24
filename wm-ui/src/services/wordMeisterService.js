@@ -84,4 +84,12 @@ export default {
     };
     return Fetch(urlConfig.wordMeister.customSentence, requestOptions);
   },
+  setLearned: (model) => {
+    const requestOptions = {
+      method: 'POST',
+      headers: utilitity.authorizedHeader(),
+      body: JSON.stringify(model),
+    };
+    return Fetch(urlConfig.wordMeister.learned, requestOptions);
+  },
 };
