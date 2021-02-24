@@ -1,3 +1,4 @@
+/* eslint-disable react/no-find-dom-node */
 import React, { useEffect, useState, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { Snackbar } from '@material-ui/core';
@@ -39,15 +40,15 @@ const ShowSnackbar = (props) => {
     if (autoClose) {
       interval.current = setTimeout(() => {
         handleClose();
-        clearTimeout(interval.current);
         if (onCloseCB) onCloseCB();
+        ReactDOM.unmountComponentAtNode(document.getElementById('snackbar'));
       }, timeout * 1000);
     }
   }, []);
 
   return (
     <div className={classes.root}>
-      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+      <Snackbar open={open} autoHideDuration={timeout * 1000} onClose={handleClose}>
         <Alert onClose={handleClose} severity={type}>
           {message}
         </Alert>
@@ -67,7 +68,7 @@ ShowSnackbar.propTypes = {
 ShowSnackbar.defaultProps = {
   type: messageType.error,
   autoClose: true,
-  timeout: 10,
+  timeout: 6,
   message: '',
   onCloseCB: () => { },
 };
