@@ -92,4 +92,19 @@ export default {
     };
     return Fetch(urlConfig.wordMeister.learned, requestOptions);
   },
+  setUserWordSetting: (model) => {
+    const requestOptions = {
+      method: 'POST',
+      headers: utilitity.authorizedHeader(),
+      body: JSON.stringify(model),
+    };
+    return Fetch(urlConfig.wordMeister.userWordSetting, requestOptions);
+  },
+  getUserWordSetting: () => {
+    const requestOptions = {
+      method: 'GET',
+      headers: utilitity.authorizedHeader(),
+    };
+    return Fetch(urlConfig.wordMeister.userWordSetting, requestOptions);
+  }
 };

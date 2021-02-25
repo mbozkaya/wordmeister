@@ -17,7 +17,8 @@ import {
   ShoppingBag as ShoppingBagIcon,
   User as UserIcon,
 } from 'react-feather';
-import appConfig from 'src/configs/appConfig';
+import SortByAlphaIcon from '@material-ui/icons/SortByAlpha';
+import SpellcheckIcon from '@material-ui/icons/Spellcheck';
 import NavItem from './NavItem';
 
 // const user = {
@@ -39,12 +40,12 @@ const items = [
   // },
   {
     href: '/app/word',
-    icon: ShoppingBagIcon,
+    icon: SortByAlphaIcon,
     title: 'Word'
   },
   {
     href: '/app/wordCard',
-    icon: ShoppingBagIcon,
+    icon: SpellcheckIcon,
     title: 'Word Card'
   },
   // {

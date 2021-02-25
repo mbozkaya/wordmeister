@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
 /* eslint-disable react/no-array-index-key */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Grid,
   makeStyles,
@@ -20,11 +20,13 @@ import {
   Tab,
   Tabs,
   Switch,
+  Drawer,
 } from '@material-ui/core';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import AddIcon from '@material-ui/icons/Add';
 import StarIcon from '@material-ui/icons/Star';
 import FavoriteIcon from '@material-ui/icons/Favorite';
+import SettingsIcon from '@material-ui/icons/Settings';
 import Rating from '@material-ui/lab/Rating';
 import Page from 'src/components/Page';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
@@ -33,6 +35,7 @@ import wordMeisterService from 'src/services/wordMeisterService';
 import ToasterSnackbar from 'src/components/ToasterSnackbar';
 import * as Yup from 'yup';
 import { Formik } from 'formik';
+import WordCardSettings from 'src/components/Word/WordSettings';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -88,6 +91,16 @@ const useStyles = makeStyles((theme) => ({
   },
   headerGrid: {
     minHeight: '100px',
+  },
+  headerActions: {
+    width: '-webkit-fill-available',
+    marginTop: '5px',
+  },
+  nowrap: {
+    whiteSpace: 'nowrap'
+  },
+  frequency: {
+    minHeight: '58px;'
   }
 }));
 
@@ -127,6 +140,11 @@ const WordCard = () => {
   const [showAddSentence, setShowAddSentence] = useState(false);
 
   const [currentTab, setCurrentTab] = useState(0);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
+  const currentIndexRef = useRef(cardData.currentIndex);
+  const currentTabRef = useRef(currentTab);
+  const showAddSentenceRef = useRef(showAddSentence);
 
   const getData = (currentIndex, isRandom = false) => {
     const model = {
@@ -140,6 +158,7 @@ const WordCard = () => {
           ...cardData,
           ...data,
           point: data.point / 2,
+          currentIndex: data.currentIndex,
         });
       } else {
         ToasterSnackbar.error({ message: response.errorMessage });
@@ -148,19 +167,43 @@ const WordCard = () => {
   };
 
   const navigateButton = (e) => {
-    if (e.key.toLowerCase() === 'arrowleft') {
-      getData(cardData.currentIndex - 1 > 0 ? cardData.currentIndex - 1 : 1);
-    } else if (e.key.toLowerCase() === 'arrowright') {
-      getData(cardData.currentIndex + 1);
-    } else if (e.code.toLowerCase() === 'space' && !showAddSentence && currentTab === tabsEnum.sentences) {
-      setShowAddSentence(true);
+    switch (e.code.toLowerCase()) {
+      case 'arrowleft':
+        getData(currentIndexRef.current - 1 > 0 ? currentIndexRef.current - 1 : 1);
+        break;
+      case 'arrowright':
+        getData(currentIndexRef.current + 1);
+        break;
+      case 'space':
+        if (!showAddSentenceRef.current && currentTabRef.current === tabsEnum.sentences) {
+          setShowAddSentence(true);
+        }
+        break;
+      case 'keyd':
+        if (e.target.tagName === 'BODY') {
+          setCurrentTab(tabsEnum.definations);
+        }
+        break;
+      case 'keys':
+        if (e.target.tagName === 'BODY') {
+          setCurrentTab(tabsEnum.sentences);
+        }
+        break;
+      default:
+        break;
     }
   };
+
   useEffect(() => {
     getData();
-    window.addEventListener('keyup', navigateButton);
-    return () => window.removeEventListener('keyup', navigateButton);
+    window.addEventListener('keyup', (e) => navigateButton(e, cardData, currentTab));
+
+    return () => { window.removeEventListener('keyup', navigateButton); };
   }, []);
+
+  useEffect(() => { currentIndexRef.current = cardData.currentIndex; }, [cardData.currentIndex]);
+  useEffect(() => { showAddSentenceRef.current = showAddSentence; }, [showAddSentence]);
+  useEffect(() => { currentTabRef.current = currentTab; }, [currentTab]);
 
   const a11yProps = (index) => {
     return {
@@ -186,68 +229,79 @@ const WordCard = () => {
                 <Grid item xs={8}>
                   <Grid container className={classes.headerGrid}>
                     <Grid item xs={2} className={classes.backgroundPaper}>
-                      <Grid container justify="center" alignContent="center">
-                        <Box component="fieldset" mb={3} borderColor="transparent">
-                          <StyledRating
-                            name="customized-color"
-                            value={cardData.point}
-                            getLabelText={(value) => `${value} Heart${value !== 1 ? 's' : ''}`}
-                            precision={0.5}
-                            icon={<FavoriteIcon fontSize="inherit" />}
-                            onChange={(e, v) => {
-                              if (v !== cardData.point) {
-                                const model = {
-                                  userWordId: cardData.userWordId,
-                                  point: v * 2,
-                                };
-                                wordMeisterService.setWordPoint(model).then((response) => {
-                                  if (response && response.error === false) {
-                                    setCardData({
-                                      ...cardData,
-                                      point: v,
+                      <Grid item xs={12}>
+                        <Grid container justify="center" alignContent="center">
+                          <Grid item xs={8}>
+                            <Box component="fieldset" mb={3} borderColor="transparent">
+                              <StyledRating
+                                name="customized-color"
+                                value={cardData.point}
+                                getLabelText={(value) => `${value} Heart${value !== 1 ? 's' : ''}`}
+                                precision={0.5}
+                                icon={<FavoriteIcon fontSize="inherit" />}
+                                onChange={(e, v) => {
+                                  if (v !== cardData.point) {
+                                    const model = {
+                                      userWordId: cardData.userWordId,
+                                      point: v * 2,
+                                    };
+                                    wordMeisterService.setWordPoint(model).then((response) => {
+                                      if (response && response.error === false) {
+                                        setCardData({
+                                          ...cardData,
+                                          point: v,
+                                        });
+                                      } else {
+                                        ToasterSnackbar.error({ message: response.errorMessage || 'An error occured' });
+                                      }
                                     });
-                                  } else {
-                                    ToasterSnackbar.error({ message: response.errorMessage || 'An error occured' });
                                   }
-                                });
-                              }
-                            }}
-                          />
-                        </Box>
-                        <Box>
-                          <FormControlLabel
-                            control={(
-                              <Switch
-                                checked={cardData.isLearned}
-                                onChange={() => {
-                                  const model = {
-                                    userWordId: cardData.userWordId,
-                                    isLearned: !cardData.isLearned,
-                                  };
-                                  wordMeisterService.setLearned(model).then((response) => {
-                                    if (response && response.error === false) {
-                                      setCardData({
-                                        ...cardData,
-                                        isLearned: !cardData.isLearned
-                                      });
-                                      ToasterSnackbar.success({ message: `${cardData.word} setted as learned successfully` });
-                                    } else {
-                                      ToasterSnackbar.error({ message: response.errorMessage || 'An error occured' });
-                                    }
-                                  });
                                 }}
-                                name="checkedB"
-                                color="primary"
+                                className={classes.headerActions}
                               />
-                            )}
-                            label={`${cardData.isLearned ? '✅ Learned' : '❗ Not learned yed'}`}
-                          />
-                        </Box>
+                            </Box>
+                          </Grid>
+                        </Grid>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Grid container justify="center" alignContent="center">
+                          <Grid item xs={8}>
+                            <FormControlLabel
+                              control={(
+                                <Switch
+                                  checked={cardData.isLearned}
+                                  onChange={() => {
+                                    const model = {
+                                      userWordId: cardData.userWordId,
+                                      isLearned: !cardData.isLearned,
+                                    };
+                                    wordMeisterService.setLearned(model).then((response) => {
+                                      if (response && response.error === false) {
+                                        setCardData({
+                                          ...cardData,
+                                          isLearned: !cardData.isLearned
+                                        });
+                                        ToasterSnackbar.success({ message: `${cardData.word} setted as learned successfully` });
+                                      } else {
+                                        ToasterSnackbar.error({ message: response.errorMessage || 'An error occured' });
+                                      }
+                                    });
+                                  }}
+                                  name="checkedB"
+                                  color="primary"
+                                />
+                              )}
+                              label={`${cardData.isLearned ? 'Learned' : 'Not learned'}`}
+                              className={`${classes.headerActions} ${classes.nowrap}`}
+                            />
+                          </Grid>
+                        </Grid>
                       </Grid>
                     </Grid>
                     <Grid item xs={8} className={classes.backgroundPaper}>
                       <Grid container spacing={3}>
                         <Grid item xs={12} className={classes.headerWrapper}>
+                          {cardData.isLearned ? '✅' : ''}
                           <Typography align="center" display="inline" className={classes.headerTypography}>{cardData.word}</Typography>
                           <Typography align="center" display="inline">{cardData.prononciations !== null ? cardData.prononciations.all : ''}</Typography>
                           <Divider variant="middle" />
@@ -258,39 +312,50 @@ const WordCard = () => {
                       </Grid>
                     </Grid>
                     <Grid item xs={2} className={classes.backgroundPaper}>
-                      <Grid container justify="center" alignContent="center">
-                        <Grid item xs={12}>
-                          <ToggleButton
-                            title={cardData.isFavorite ? 'Remove star' : 'Give star'}
-                            onClick={() => {
-                              const model = {
-                                userWordId: cardData.userWordId,
-                                isFavorite: !cardData.isFavorite,
-                              };
-                              wordMeisterService.setWordFavorite(model).then((response) => {
-                                if (response && response.error === false) {
-                                  setCardData({
-                                    ...cardData,
-                                    isFavorite: model.isFavorite
-                                  });
-                                } else {
-                                  ToasterSnackbar.error({ message: response.errorMessage || 'An error occured' });
-                                }
-                              });
-                            }}
-                            value={cardData.isFavorite}
-                          >
-                            <StarIcon htmlColor={cardData.isFavorite ? goldColor : ''} className={classes.starIcon} />
-                          </ToggleButton>
+                      <Grid item xs={12}>
+                        <Grid container justify="center" alignContent="center">
+                          <Grid item xs={4}>
+                            <ToggleButton
+                              title={cardData.isFavorite ? 'Remove star' : 'Give star'}
+                              onClick={() => {
+                                const model = {
+                                  userWordId: cardData.userWordId,
+                                  isFavorite: !cardData.isFavorite,
+                                };
+                                wordMeisterService.setWordFavorite(model).then((response) => {
+                                  if (response && response.error === false) {
+                                    setCardData({
+                                      ...cardData,
+                                      isFavorite: model.isFavorite
+                                    });
+                                  } else {
+                                    ToasterSnackbar.error({ message: response.errorMessage || 'An error occured' });
+                                  }
+                                });
+                              }}
+                              value={cardData.isFavorite}
+                              className={classes.headerActions}
+                            >
+                              <StarIcon htmlColor={cardData.isFavorite ? goldColor : ''} className={classes.starIcon} />
+                            </ToggleButton>
+                          </Grid>
                         </Grid>
-                        <Grid item xs={12}>
-                          <Typography align="center">{cardData.frequency !== 0 ? `${cardData.frequency}/10` : '-'}</Typography>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Grid container justify="center" alignContent="center" className={classes.frequency}>
+                          <Grid item xs={8}>
+                            <Typography align="center" className={classes.headerActions}>{cardData.frequency !== 0 ? `${cardData.frequency}/10` : '-'}</Typography>
+                          </Grid>
                         </Grid>
                       </Grid>
                     </Grid>
                   </Grid>
                 </Grid>
-                <Grid item xs={2} />
+                <Grid item xs={2}>
+                  <Button type="button" size="small" onClick={() => setSettingsOpen(true)}>
+                    <SettingsIcon />
+                  </Button>
+                </Grid>
               </Grid>
             </Grid>
             <Grid item xs={12}>
@@ -318,7 +383,7 @@ const WordCard = () => {
                     <Grid item xs={12}>
                       <Tabs
                         value={currentTab}
-                        onChange={(event, newValue) => setCurrentTab(newValue)}
+                        onChange={(event, newValue) => { setCurrentTab(newValue); }}
                         indicatorColor="primary"
                         textColor="primary"
                         variant="fullWidth"
@@ -330,7 +395,7 @@ const WordCard = () => {
                     </Grid>
                     <Grid item xs={12}>
                       {
-                        currentTab === tabsEnum.definations && Array.isArray(tabsEnum.definations) && (
+                        currentTab === tabsEnum.definations && Array.isArray(cardData.definations) && (
                           <List>
                             {
                               cardData.definations.map((value, index) => (
@@ -361,8 +426,8 @@ const WordCard = () => {
                                   </ListItemText>
                                 </ListItem>
                               ) : (
-                                <>
-                                  {
+                                  <>
+                                    {
                                       cardData.sentences.map((sentence, index) => (
                                         <>
                                           <ListItem alignItems="flex-start" key={`${index}listItem`}>
@@ -378,8 +443,8 @@ const WordCard = () => {
                                         </>
                                       ))
                                     }
-                                </>
-                              )
+                                  </>
+                                )
                             }
                             <ListItem>
                               <Grid container direction="row">
@@ -485,8 +550,8 @@ const WordCard = () => {
                                     />
                                   </Box>
                                   <Grid container direction="row">
-                                    <Grid xs={4} />
-                                    <Grid xs={4}>
+                                    <Grid item xs={4} />
+                                    <Grid item xs={4}>
                                       <Grid container justify="center">
                                         <Button
                                           color="primary"
@@ -498,7 +563,7 @@ const WordCard = () => {
                                         </Button>
                                       </Grid>
                                     </Grid>
-                                    <Grid xs={4} />
+                                    <Grid item xs={4} />
                                   </Grid>
                                 </form>
                               )
@@ -513,6 +578,9 @@ const WordCard = () => {
               )
             }
           </Grid>
+          <Drawer anchor="right" open={settingsOpen} onClose={() => setSettingsOpen(false)}>
+            <WordCardSettings />
+          </Drawer>
         </div>
       </Page>
     </>

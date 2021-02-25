@@ -22,5 +22,6 @@ export default {
     wordFavorite: `${appConfig.api.service()}Word/WordFavorite`,
     customSentence: `${appConfig.api.service()}Word/CustomSentence`,
     learned: `${appConfig.api.service()}Word/Learned`,
+    userWordSetting: `${appConfig.api.service()}Word/UserWordSetting`,
   },
 };

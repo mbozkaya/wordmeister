@@ -68,7 +68,7 @@ ShowSnackbar.propTypes = {
 ShowSnackbar.defaultProps = {
   type: messageType.error,
   autoClose: true,
-  timeout: 6,
+  timeout: 3,
   message: '',
   onCloseCB: () => { },
 };
