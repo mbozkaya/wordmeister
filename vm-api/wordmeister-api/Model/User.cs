@@ -19,5 +19,6 @@ namespace wordmeister_api.Model
         public virtual ICollection<Sentence> Sentences { get; set; }
         public virtual ICollection<UserInformation> UserInformations { get; set; }
         public virtual ICollection<UserSetting> UserSettings { get; set; }
+        public virtual ICollection<UserWordSetting> UserWordSettings { get; set; }
     }
 }

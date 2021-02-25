@@ -287,6 +287,7 @@ namespace wordmeister_api.Migrations
                         .HasColumnType("timestamp without time zone");
 
                     b.Property<byte>("Point")
+                        .HasPrecision(4, 2)
                         .HasColumnType("smallint");
 
                     b.Property<DateTime?>("UpdateDate")
@@ -305,6 +306,47 @@ namespace wordmeister_api.Migrations
                     b.HasIndex("WordId");
 
                     b.ToTable("UserWords");
+                });
+
+            modelBuilder.Entity("wordmeister_api.Model.UserWordSetting", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint")
+                        .UseIdentityByDefaultColumn();
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<bool>("IsIncludeFavorite")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsIncludeLearned")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsIncludePoint")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Order")
+                        .HasColumnType("text");
+
+                    b.Property<string>("OrderBy")
+                        .HasColumnType("text");
+
+                    b.Property<decimal?>("Point")
+                        .HasColumnType("numeric");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserWordSettings");
                 });
 
             modelBuilder.Entity("wordmeister_api.Model.Word", b =>
@@ -677,6 +719,17 @@ namespace wordmeister_api.Migrations
                     b.Navigation("Word");
                 });
 
+            modelBuilder.Entity("wordmeister_api.Model.UserWordSetting", b =>
+                {
+                    b.HasOne("wordmeister_api.Model.User", "User")
+                        .WithMany("UserWordSettings")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("wordmeister_api.Model.WordAntonym", b =>
                 {
                     b.HasOne("wordmeister_api.Model.Word", "Word")
@@ -796,6 +849,8 @@ namespace wordmeister_api.Migrations
                     b.Navigation("UserSettings");
 
                     b.Navigation("UserWords");
+
+                    b.Navigation("UserWordSettings");
                 });
 
             modelBuilder.Entity("wordmeister_api.Model.Word", b =>
