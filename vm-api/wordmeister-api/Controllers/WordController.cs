@@ -106,5 +106,17 @@ namespace wordmeister_api.Controllers
         {
             return Ok(_wordService.SetWordLearned(model));
         }
+
+        [HttpPost("UserWordSetting")]
+        public IActionResult UserWordSetting(WordRequest.UserWordSetting model)
+        {
+            return Ok(_wordService.SetUserWordSetting(model, User.GetUserId()));
+        }
+
+        [HttpGet("UserWordSetting")]
+        public IActionResult UserWordSetting()
+        {
+            return Ok(_wordService.GetUserWordSetting(User.GetUserId()));
+        }
     }
 }

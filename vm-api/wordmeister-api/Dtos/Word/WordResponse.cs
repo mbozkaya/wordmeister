@@ -45,5 +45,15 @@ namespace wordmeister_api.Dtos.Word
             public string Noun { get; set; }
             public string All { get; set; }
         }
+
+        public class UserWordSetting
+        {
+            public bool IsIncludedLearned { get; set; }
+            public bool IsIncludedFavorite { get; set; }
+            public bool IsIncludedPoint { get; set; }
+            public decimal Point { get; set; }
+            public string Order { get; set; }
+            public string OrderBy { get; set; }
+        }
     }
 }

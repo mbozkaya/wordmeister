@@ -4,8 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
-using wordmeister_api.Dtos.General;
 using wordmeister_api.Dtos.Word;
 using wordmeister_api.Entity;
 using wordmeister_api.Helpers;
@@ -21,13 +21,15 @@ namespace wordmeister_api.Services
         ITranslateService _translateService;
         IServiceScopeFactory _serviceScopeFactory;
         IWordAPIService _wordAPIService;
+        IMapper _mapper;
 
-        public WordService(WordmeisterContext dbContext, ITranslateService translateService, IWordAPIService wordAPIService, IServiceScopeFactory serviceScopeFactory)
+        public WordService(WordmeisterContext dbContext, ITranslateService translateService, IWordAPIService wordAPIService, IServiceScopeFactory serviceScopeFactory, IMapper mapper)
         {
             _dbContext = dbContext;
             _translateService = translateService;
             _serviceScopeFactory = serviceScopeFactory;
             _wordAPIService = wordAPIService;
+            _mapper = mapper;
         }
 
         public WordResponse.Word GetWord(long wordId, int userId)
@@ -146,15 +148,9 @@ namespace wordmeister_api.Services
         public WordResponse.WordCard GetWordCard(int userId, int currentIndex = 1, bool isRandom = false)
         {
 
-            var words = _dbContext.UserWords
-                .Where(w => w.UserId == userId && !w.IsLearned)
-                .Include(i => i.Word).ThenInclude(i => i.Sentences)
-                .Include(i => i.Word).ThenInclude(i => i.WordDefinitions)
-                .Include(i => i.Word).ThenInclude(i => i.WordFrequencies)
-                .Include(i => i.Word).ThenInclude(i => i.WordPronunciations)
-                .ToList();
+            var authorizedWords = GetUserWordsBySettings(userId);
 
-            if (currentIndex > words.Count)
+            if (currentIndex > authorizedWords.words.Count)
             {
                 return new WordResponse.WordCard
                 {
@@ -168,11 +164,11 @@ namespace wordmeister_api.Services
             {
                 var random = new Random();
 
-                userWord = words[random.Next(words.Count)];
+                userWord = authorizedWords.words[random.Next(authorizedWords.words.Count)];
             }
             else
             {
-                userWord = words[currentIndex - 1];
+                userWord = authorizedWords.words[currentIndex - 1];
             }
 
             return new WordResponse.WordCard
@@ -182,10 +178,10 @@ namespace wordmeister_api.Services
                 Word = userWord.Word.Text,
                 CurrentIndex = currentIndex,
                 IsFavorite = userWord.IsFavorite,
-                IsOver = currentIndex == words.Count,
+                IsOver = currentIndex == authorizedWords.words.Count,
                 Point = userWord.Point,
                 UserWordId = userWord.Id,
-                WordCount = words.Count,
+                WordCount = authorizedWords.words.Where(w => !w.IsLearned).Count(),
                 Definations = userWord.Word.WordDefinitions.Select(s => new WordResponse.Definations
                 {
                     Defination = s.Definition,
@@ -280,6 +276,23 @@ namespace wordmeister_api.Services
             _dbContext.SaveChanges();
 
             return new ResponseResult();
+        }
+
+        public ResponseResult SetUserWordSetting(WordRequest.UserWordSetting model, int userId)
+        {
+            var userWordSetting = GetUserWordSettingByUserId(userId);
+            userWordSetting = _mapper.Map<WordRequest.UserWordSetting, UserWordSetting>(model);
+
+            _dbContext.SaveChanges();
+
+            return new ResponseResult();
+        }
+
+        public ResponseResult GetUserWordSetting(int userId)
+        {
+            var data = _mapper.Map<UserWordSetting, WordResponse.UserWordSetting>(GetUserWordSettingByUserId(userId));
+
+            return new ResponseResult() { Data = data };
         }
         public async void GetRandomWord()
         {
@@ -442,6 +455,52 @@ namespace wordmeister_api.Services
             return _dbContext.UserWords
                 .Where(w => w.Id == userWordId)
                 .FirstOrDefault();
+        }
+
+        private UserWordSetting GetUserWordSettingByUserId(int userId)
+        {
+            var userwordSetting = _dbContext.UserWordSettings
+              .Where(w => w.UserId == userId)
+              .FirstOrDefault();
+
+            if (userwordSetting == null)
+            {
+                userwordSetting = new UserWordSetting
+                {
+                    CreatedDate = DateTime.Now,
+                    IsIncludeFavorite = true,
+                    IsIncludeLearned = false,
+                    IsIncludePoint = true,
+                    Order = "CreatedDate",
+                    OrderBy = "desc",
+                    UserId = userId,
+                };
+                _dbContext.UserWordSettings.Add(userwordSetting);
+
+                _dbContext.SaveChanges();
+            }
+
+            return userwordSetting;
+        }
+
+        private (List<UserWord> words, UserWordSetting userWordSetting) GetUserWordsBySettings(int userId)
+        {
+            var userwordSetting = GetUserWordSettingByUserId(userId);
+
+            var userWords = _dbContext.UserWords
+                .Where(w => w.UserId == userId)
+                //.WhereIf(!userwordSetting.IsIncludeLearned, w => !w.IsLearned)
+                //.WhereIf(!userwordSetting.IsIncludeFavorite, w => !w.IsFavorite)
+                //.WhereIf(!userwordSetting.IsIncludePoint, w => w.Point < userwordSetting.Point.GetValueOrDefault(10))
+                .Include(i => i.Word).ThenInclude(i => i.Sentences)
+                .Include(i => i.Word).ThenInclude(i => i.WordDefinitions)
+                .Include(i => i.Word).ThenInclude(i => i.WordFrequencies)
+                .Include(i => i.Word).ThenInclude(i => i.WordPronunciations)
+                .OrderBy($"{userwordSetting.Order} {userwordSetting.OrderBy}")
+                .ToList();
+
+
+            return (userWords, userwordSetting);
         }
     }
 }
