@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -54,6 +54,14 @@ namespace wordmeister_api.Helpers
             fileTypeDictionary.TryGetValue((int)type, out directory);
 
             return directory;
+        }
+
+        public static IQueryable<TSource> WhereIf<TSource>(this IQueryable<TSource> source, bool condition, Func<TSource, bool> predicate)
+        {
+            if (condition)
+                return (IQueryable<TSource>)source.Where(predicate);
+            else
+                return source;
         }
     }
 }
