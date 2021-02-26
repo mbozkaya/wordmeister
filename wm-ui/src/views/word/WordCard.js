@@ -515,7 +515,7 @@ const WordCard = () => {
                                 sentence: Yup.string()
                                   .min(cardData.word.length + 1, 'too less your sentence')
                                   .required('You should enter a sentence.')
-                                  .matches(new RegExp(cardData.word, 'gi'), `You should add the ${cardData.word} your sentence.`)
+                                  .matches(new RegExp(cardData.word, 'gi'), `You should use the ${cardData.word} your sentence.`)
                               })
                             }
                           >
@@ -579,7 +579,7 @@ const WordCard = () => {
             }
           </Grid>
           <Drawer anchor="right" open={settingsOpen} onClose={() => setSettingsOpen(false)}>
-            <WordCardSettings />
+            <WordCardSettings drawerOpen={settingsOpen} onSettingsChange={() => getData()} />
           </Drawer>
         </div>
       </Page>

@@ -12,6 +12,7 @@ using wordmeister_api.Helpers;
 using wordmeister_api.Interfaces;
 using wordmeister_api.Model;
 using static wordmeister_api.Dtos.General.General;
+using static wordmeister_api.Helpers.Enums;
 
 namespace wordmeister_api.Services
 {
@@ -281,8 +282,14 @@ namespace wordmeister_api.Services
         public ResponseResult SetUserWordSetting(WordRequest.UserWordSetting model, int userId)
         {
             var userWordSetting = GetUserWordSettingByUserId(userId);
-            userWordSetting = _mapper.Map<WordRequest.UserWordSetting, UserWordSetting>(model);
-
+            //userWordSetting = _mapper.Map<WordRequest.UserWordSetting, UserWordSetting>(model);
+            userWordSetting.IsIncludeFavorite = model.IsIncludeFavorite;
+            userWordSetting.IsIncludeLearned = model.IsIncludeLearned;
+            userWordSetting.IsIncludePoint = model.IsIncludePoint;
+            userWordSetting.Point = model.Point;
+            userWordSetting.Order = model.Order;
+            userWordSetting.OrderBy = model.OrderBy;
+            userWordSetting.ConditionType = (byte)model.ConditionType;
             _dbContext.SaveChanges();
 
             return new ResponseResult();
@@ -461,6 +468,7 @@ namespace wordmeister_api.Services
         {
             var userwordSetting = _dbContext.UserWordSettings
               .Where(w => w.UserId == userId)
+              .AsTracking()
               .FirstOrDefault();
 
             if (userwordSetting == null)
@@ -474,6 +482,7 @@ namespace wordmeister_api.Services
                     Order = "CreatedDate",
                     OrderBy = "desc",
                     UserId = userId,
+                    ConditionType = (byte)DynamicConditions.Equal,
                 };
                 _dbContext.UserWordSettings.Add(userwordSetting);
 
@@ -487,11 +496,21 @@ namespace wordmeister_api.Services
         {
             var userwordSetting = GetUserWordSettingByUserId(userId);
 
+            var conditionDic = new Dictionary<DynamicConditions, string>()
+            {
+                {DynamicConditions.Equal , "=" },
+                {DynamicConditions.GreaterThan , ">" },
+                {DynamicConditions.GreaterThanOrEqual , ">=" },
+                {DynamicConditions.LessThan, "<" },
+                {DynamicConditions.LessThanOrEqual , "<=" },
+                {DynamicConditions.NotEqual, "!=" },
+            };
+
             var userWords = _dbContext.UserWords
                 .Where(w => w.UserId == userId)
-                //.WhereIf(!userwordSetting.IsIncludeLearned, w => !w.IsLearned)
-                //.WhereIf(!userwordSetting.IsIncludeFavorite, w => !w.IsFavorite)
-                //.WhereIf(!userwordSetting.IsIncludePoint, w => w.Point < userwordSetting.Point.GetValueOrDefault(10))
+                .WhereIf(!userwordSetting.IsIncludeLearned, w => !w.IsLearned)
+                .WhereIf(!userwordSetting.IsIncludeFavorite, w => !w.IsFavorite)
+                .WhereIf(userwordSetting.IsIncludePoint, string.Concat("Point != 0 && Point ", conditionDic[(DynamicConditions)userwordSetting.ConditionType.GetValueOrDefault(1)], " ", userwordSetting.Point.GetValueOrDefault(10)))
                 .Include(i => i.Word).ThenInclude(i => i.Sentences)
                 .Include(i => i.Word).ThenInclude(i => i.WordDefinitions)
                 .Include(i => i.Word).ThenInclude(i => i.WordFrequencies)
