@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using static wordmeister_api.Helpers.Enums;
 
 namespace wordmeister_api.Dtos.Word
 {
@@ -47,12 +48,13 @@ namespace wordmeister_api.Dtos.Word
 
         public class UserWordSetting
         {
-            public bool IsIncludedLearned { get; set; }
-            public bool IsIncludedFavorite { get; set; }
-            public bool IsIncludedPoint { get; set; }
+            public bool IsIncludeLearned { get; set; }
+            public bool IsIncludeFavorite { get; set; }
+            public bool IsIncludePoint { get; set; }
             public decimal Point { get; set; }
             public string Order { get; set; }
             public string OrderBy { get; set; }
+            public DynamicConditions ConditionType { get; set; }
         }
     }
 

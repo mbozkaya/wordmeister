@@ -11,5 +11,15 @@ namespace wordmeister_api.Helpers
         {
             ProfilePic = 1,
         }
+
+        public enum DynamicConditions
+        {
+            Equal = 1,
+            NotEqual = 2,
+            LessThan = 3,
+            LessThanOrEqual = 4,
+            GreaterThan = 5,
+            GreaterThanOrEqual = 6
+        }
     }
 }

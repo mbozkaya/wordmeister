@@ -315,6 +315,9 @@ namespace wordmeister_api.Migrations
                         .HasColumnType("bigint")
                         .UseIdentityByDefaultColumn();
 
+                    b.Property<byte?>("ConditionType")
+                        .HasColumnType("smallint");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("timestamp without time zone");
 

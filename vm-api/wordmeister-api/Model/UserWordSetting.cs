@@ -15,6 +15,7 @@ namespace wordmeister_api.Model
         public bool IsIncludeFavorite { get; set; }
         public bool IsIncludePoint { get; set; }
         public decimal? Point { get; set; }
+        public byte? ConditionType { get; set; }
         public string OrderBy { get; set; }
         public string Order { get; set; }
         public virtual User User { get; set; }
