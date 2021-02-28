@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
@@ -35,7 +36,20 @@ namespace wordmeister_api
             services.AddCors();
             services.AddControllers();
             services.AddHttpClient<ISlackService, SlackService>();
+            services.AddLogging(c => c.AddSerilog());
 
+            services.AddSingleton<Serilog.ILogger>(x =>
+            {
+                var configuration = new ConfigurationBuilder()
+            .SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json")
+            .Build();
+
+                return new LoggerConfiguration()
+                    .ReadFrom.Configuration(configuration)
+                    .CreateLogger();
+                //return new LoggerConfiguration().WriteTo.PostgreSQL(Configuration["Serilog:ConnectionString"], Configuration["Serilog:TableName"], autoCreateSqlTable: true).CreateLogger();
+            });
             services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
@@ -114,9 +128,11 @@ namespace wordmeister_api
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                //app.UseExceptionHandler("/Home/Error");
                 app.UseHsts();
             }
+
+            app.ConfigureCustomExceptionMiddleware();
 
             // global cors policy
             app.UseCors(x => x
