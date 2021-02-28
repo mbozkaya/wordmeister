@@ -12,7 +12,8 @@ import {
   Typography,
   TextField,
   MenuItem,
-  Grid
+  Grid,
+  withStyles,
 } from '@material-ui/core';
 import FavoriteIcon from '@material-ui/icons/Favorite';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
@@ -21,6 +22,7 @@ import FormatListNumberedIcon from '@material-ui/icons/FormatListNumbered';
 import SortByAlphaIcon from '@material-ui/icons/SortByAlpha';
 import wordMeisterService from 'src/services/wordMeisterService';
 import ToasterSnackbar from '../ToasterSnackbar';
+import Rating from '@material-ui/lab/Rating';
 
 const useStyles = makeStyles({
   list: {
@@ -28,8 +30,17 @@ const useStyles = makeStyles({
   },
   fullList: {
     width: 'auto',
-  },
+  },  
 });
+
+const StyledRating = withStyles({
+  iconFilled: {
+    color: '#ff6d75',
+  },
+  iconHover: {
+    color: '#ff3d47',
+  },
+})(Rating);
 
 const WordCardSettings = (props) => {
   const classes = useStyles();
@@ -170,7 +181,7 @@ const WordCardSettings = (props) => {
           <Divider />
           <ListItem key="Point">
             <ListItemIcon><FavoriteIcon /></ListItemIcon>
-            <ListItemText primary="Is include point?" />
+            <ListItemText primary="Filter by point" />
             <Switch
               checked={settingsData.isIncludePoint}
               color="primary"
@@ -183,31 +194,27 @@ const WordCardSettings = (props) => {
           {
             settingsData.isIncludePoint && (
               <ListItem key="Pointnumber">
-                <Grid container justify="flex-end" alignContent="space-between">
-                  <Grid item xs={6}>
-                    <TextField
-                      id="standard-number"
-                      label="Number"
-                      type="number"
-                      InputLabelProps={{
-                        shrink: true,
-                      }}
-                      value={settingsData.point}
-                      onChange={(e) => {
-                        if (!isNaN(parseFloat(e.target.value)) && parseFloat(e.target.value) <= 5) {
-                          setSettingsData({
-                            ...settingsData,
-                            point: parseFloat(e.target.value),
-                          });
-                        }
-                      }}
-                      inputProps={{ step: '0.5', min: 0, max: 5 }}
-                    />
+                <Grid container justify="center" alignContent="space-between">
+                  <Grid item xs={8}>
+                  <StyledRating
+                  label="Point"
+                                name="filter-point-heart"
+                                value={settingsData.point}
+                                getLabelText={(value) => `${value} Heart${value !== 1 ? 's' : ''}`}
+                                precision={0.5}
+                                icon={<FavoriteIcon fontSize="inherit" />}
+                                onChange={(e, v) => {
+                                  setSettingsData({
+                                    ...settingsData,
+                                    point: v
+                                  })
+                                }}
+                                className={classes.headerActions}
+                              />                 
                   </Grid>
-                  <Grid item xs={6}>
+                  <Grid item xs={4}>
                     <TextField
                       select
-                      label="Condition"
                       value={settingsData.conditionType}
                       onChange={(e) => setSettingsData({
                         ...settingsData,

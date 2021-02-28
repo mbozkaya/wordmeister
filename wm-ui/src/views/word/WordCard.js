@@ -20,7 +20,7 @@ import {
   Tab,
   Tabs,
   Switch,
-  Drawer,
+  Drawer
 } from '@material-ui/core';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import AddIcon from '@material-ui/icons/Add';
@@ -216,7 +216,7 @@ const WordCard = () => {
     <>
       <Page
         className={classes.root}
-        title="Account"
+        title={cardData.word}
       >
         <div className={classes.mainRoot}>
           <Grid
@@ -417,9 +417,8 @@ const WordCard = () => {
                       {
                         currentTab === tabsEnum.sentences && (
                           <List>
-
                             {
-                              cardData.isOver ? (
+                              cardData.sentences == null || cardData.sentences?.length == 0 ? (
                                 <ListItem>
                                   <ListItemText>
                                     <Typography variant="h1" className={classes.typography}>No data to show.</Typography>
@@ -428,6 +427,7 @@ const WordCard = () => {
                               ) : (
                                   <>
                                     {
+
                                       cardData.sentences.map((sentence, index) => (
                                         <>
                                           <ListItem alignItems="flex-start" key={`${index}listItem`}>
@@ -441,7 +441,8 @@ const WordCard = () => {
                                           </ListItem>
                                           <Divider key={`${index}divider`} variant="inset" component="li" />
                                         </>
-                                      ))
+                                      )
+                                      )
                                     }
                                   </>
                                 )
