@@ -21,5 +21,14 @@ namespace wordmeister_api.Helpers
             GreaterThan = 5,
             GreaterThanOrEqual = 6
         }
+
+        public enum DateRange
+        {
+            LastDay = 1,
+            LastWeek = 2,
+            LastMonth = 3,
+            LastSixMonth = 4,
+            AllTime = 5,
+        }
     }
 }

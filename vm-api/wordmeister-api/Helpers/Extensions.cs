@@ -56,6 +56,64 @@ namespace wordmeister_api.Helpers
             return directory;
         }
 
-       
+        public static DateTime GetDate(this DateRange dateRange)
+        {
+            DateTime result = DateTime.Today;
+            switch (dateRange)
+            {
+                case DateRange.LastDay:
+                    result = result.AddDays(-1);
+                    break;
+                case DateRange.LastWeek:
+                    result = result.AddDays(-7);
+                    break;
+                case DateRange.LastMonth:
+                    result = result.AddMonths(-1);
+                    break;
+                case DateRange.LastSixMonth:
+                    result = result.AddMonths(-6);
+                    break;
+                case DateRange.AllTime:
+                    result = DateTime.MinValue;
+                    break;
+                default:
+                    break;
+            }
+
+            return result;
+        }
+
+        public static (DateTime begin, DateTime end) GetCompareDate(this DateRange dateRange)
+        {
+            DateTime begin = DateTime.Today,
+            end = DateTime.Today;
+
+            switch (dateRange)
+            {
+                case DateRange.LastDay:
+                    begin = begin.AddDays(-1);
+                    end = begin.AddDays(-2);
+                    break;
+                case DateRange.LastWeek:
+                    begin = begin.AddDays(-7);
+                    end = begin.AddDays(-7);
+                    break;
+                case DateRange.LastMonth:
+                    begin = begin.AddMonths(-1);
+                    end = begin.AddMonths(-1);
+                    break;
+                case DateRange.LastSixMonth:
+                    begin = begin.AddMonths(-6);
+                    end = begin.AddMonths(-6);
+                    break;
+                case DateRange.AllTime:
+                    break;
+                default:
+                    break;
+            }
+
+            return (begin, end);
+        }
+
     }
 }

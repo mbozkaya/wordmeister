@@ -13,7 +13,7 @@ namespace wordmeister_api.Controllers
     [Route("[controller]")]
     [ApiController]
     //TODO: swaggerden auth kontrol edilemedigi icin simdilik yorum satırında kalacak.
-    //[Authorize]
+    [Authorize]
     public class WordController : ControllerBase
     {
         private IWordService _wordService;
