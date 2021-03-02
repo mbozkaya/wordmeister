@@ -45,6 +45,9 @@ const AuthProvider = (props) => {
     accountService.login(model).then((response) => {
       if (response && response.error === false) {
         const { data } = response;
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data));
+        localStorage.setItem('userpp', data.avatar);
         setContextState({
           authorize: true,
           loginError: false,
@@ -56,9 +59,6 @@ const AuthProvider = (props) => {
             jobTitle: '',
           },
         });
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data));
-        localStorage.setItem('userpp', data.avatar);
       } else {
         setContextState({
           ...contextState,
