@@ -83,6 +83,18 @@ namespace wordmeister_api.Services
             return new General.ResponseResult();
         }
 
+        public General.ResponseResult UpdateInformation(AccountRequest.Information model, long userId)
+        {
+            var user = _wordMeisterDbContext.Users.Where(w => w.Id == userId).FirstOrDefault();
+
+            user.Email = model.Email;
+            user.FirstName = model.Firstname;
+            user.LastName = model.Lastname;
+            user.UpdateDate = DateTime.Now;
+            _wordMeisterDbContext.SaveChanges();
+
+            return new General.ResponseResult();
+        }
         public General.ResponseResult UploadFiles(List<UploadFileDto.Request> fileModel, int userId)
         {
             var currentUser = GetById(userId);

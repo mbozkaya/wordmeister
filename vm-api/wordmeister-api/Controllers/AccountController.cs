@@ -94,5 +94,12 @@ namespace wordmeister_api.Controllers
         {
             return Ok(_userService.RemoveImage(model.Id,User.GetUserId()));
         }
+
+        [Authorize]
+        [HttpPost("UpdateInformation")]
+        public IActionResult UpdateInformation([FromBody] AccountRequest.Information model)
+        {
+            return Ok(_userService.UpdateInformation(model, User.GetUserId()));
+        }
     }
 }
