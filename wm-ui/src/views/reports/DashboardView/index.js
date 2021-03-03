@@ -198,7 +198,6 @@ const Dashboard = () => {
               wordCount={learnedWords.wordCount}
               cardType={constant.dashboardCardType.learnedWords}
             />
-            {/* <TotalCustomers /> */}
           </Grid>
           <Grid
             item

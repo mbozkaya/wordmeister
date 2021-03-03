@@ -21,8 +21,8 @@ import BookmarkIcon from '@material-ui/icons/Bookmark';
 import FormatListNumberedIcon from '@material-ui/icons/FormatListNumbered';
 import SortByAlphaIcon from '@material-ui/icons/SortByAlpha';
 import wordMeisterService from 'src/services/wordMeisterService';
-import ToasterSnackbar from '../ToasterSnackbar';
 import Rating from '@material-ui/lab/Rating';
+import ToasterSnackbar from '../ToasterSnackbar';
 
 const useStyles = makeStyles({
   list: {
@@ -30,7 +30,7 @@ const useStyles = makeStyles({
   },
   fullList: {
     width: 'auto',
-  },  
+  },
 });
 
 const StyledRating = withStyles({
@@ -196,21 +196,21 @@ const WordCardSettings = (props) => {
               <ListItem key="Pointnumber">
                 <Grid container justify="center" alignContent="space-between">
                   <Grid item xs={8}>
-                  <StyledRating
-                  label="Point"
-                                name="filter-point-heart"
-                                value={settingsData.point}
-                                getLabelText={(value) => `${value} Heart${value !== 1 ? 's' : ''}`}
-                                precision={0.5}
-                                icon={<FavoriteIcon fontSize="inherit" />}
-                                onChange={(e, v) => {
-                                  setSettingsData({
-                                    ...settingsData,
-                                    point: v
-                                  })
-                                }}
-                                className={classes.headerActions}
-                              />                 
+                    <StyledRating
+                      label="Point"
+                      name="filter-point-heart"
+                      value={settingsData.point}
+                      getLabelText={(value) => `${value} Heart${value !== 1 ? 's' : ''}`}
+                      precision={0.5}
+                      icon={<FavoriteIcon fontSize="inherit" />}
+                      onChange={(e, v) => {
+                        setSettingsData({
+                          ...settingsData,
+                          point: v
+                        });
+                      }}
+                      className={classes.headerActions}
+                    />
                   </Grid>
                   <Grid item xs={4}>
                     <TextField

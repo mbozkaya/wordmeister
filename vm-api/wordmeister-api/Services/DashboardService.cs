@@ -98,6 +98,7 @@ namespace wordmeister_api.Services
             response.ProgressRate = GetProgressRate(userId);
             response.TotalSentences = GetSentencesCard(userId, model.TotalSentences);
             response.TotalWords = GetTotalWordsCard(userId, model.TotalWords);
+            response.LatestWords = GetLatestWords(userId);
 
             return response;
         }
@@ -139,6 +140,22 @@ namespace wordmeister_api.Services
 
             chartResponse.DateRange = (int)dateRange;
             return chartResponse;
+        }
+
+        public List<DashboardResponse.LatestWords> GetLatestWords(int userId)
+        {
+            return _dbContext.UserWords
+                .Where(w => w.UserId == userId)
+                .Select(s => new DashboardResponse.LatestWords
+                {
+                    CreatedDate = s.CreatedDate,
+                    Description = s.Description,
+                    Id = s.Id,
+                    Word = s.Word.Text,
+                })
+                .OrderByDescending(o => o.CreatedDate)
+            .Take(6)
+            .ToList();
         }
 
         private DashboardResponse.Chart GetLastWeekOrMonthChartData(List<UserWord> userWords, DateTime endDate)

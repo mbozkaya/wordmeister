@@ -1,4 +1,3 @@
-import Logo from '../../components/Logo';
 import React, { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import clsx from 'clsx';
@@ -21,6 +20,7 @@ import {
 import MenuIcon from '@material-ui/icons/Menu';
 import NotificationsIcon from '@material-ui/icons/NotificationsOutlined';
 import InputIcon from '@material-ui/icons/Input';
+import Logo from '../../components/Logo';
 import { AuthContext } from '../../contexts/authContext';
 
 const useStyles = makeStyles(() => ({
@@ -43,7 +43,7 @@ const TopBar = ({
   return (
     <AuthContext.Consumer>
       {
-        ({ authorize, onLogin, onLogout }) => (
+        ({ onLogout }) => (
           <AppBar
             className={clsx(classes.root, className)}
             elevation={0}
@@ -83,13 +83,16 @@ const TopBar = ({
               <DialogActions>
                 <Button onClick={() => setDialogOpen(false)}>
                   Cancel
-            </Button>
-                <Button color="primary" onClick={() => {
-                  setDialogOpen(false);
-                  onLogout();
-                }}>
+                </Button>
+                <Button
+                  color="primary"
+                  onClick={() => {
+                    setDialogOpen(false);
+                    onLogout();
+                  }}
+                >
                   Yes
-            </Button>
+                </Button>
               </DialogActions>
             </Dialog>
           </AppBar>

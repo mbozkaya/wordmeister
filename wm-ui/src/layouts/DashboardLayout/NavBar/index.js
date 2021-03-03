@@ -14,7 +14,6 @@ import {
 import {
   BarChart as BarChartIcon,
   Settings as SettingsIcon,
-  ShoppingBag as ShoppingBagIcon,
   User as UserIcon,
 } from 'react-feather';
 import SortByAlphaIcon from '@material-ui/icons/SortByAlpha';

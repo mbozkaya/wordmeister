@@ -27,6 +27,15 @@ namespace wordmeister_api.Dtos.Dashboard
             public string Label { get; set; }
         }
 
+        public class LatestWords
+        {
+            public long Id { get; set; }
+            public string Word { get; set; }
+            public string Description { get; set; }
+            public DateTime CreatedDate { get; set; }
+            public byte Status { get; set; }
+        }
+
         public class AllCards
         {
             public StandartDashboardCard TotalWords { get; set; } = new StandartDashboardCard();
@@ -34,6 +43,7 @@ namespace wordmeister_api.Dtos.Dashboard
             public StandartDashboardCard TotalSentences { get; set; } = new StandartDashboardCard();
             public decimal ProgressRate { get; set; }
             public Chart ChartData { get; set; } = new Chart();
+            public List<LatestWords> LatestWords { get; set; } = new List<LatestWords>();
         }
 
     }
