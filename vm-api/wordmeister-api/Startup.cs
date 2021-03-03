@@ -108,6 +108,7 @@ namespace wordmeister_api
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IWordService, WordService>();
             services.AddScoped<IWordAPIService, WordAPIService>();
+            services.AddScoped<IDashboardService, DashboardService>();
             services.AddSingleton<IMapper, Mapper>();
 
             services.Configure<FormOptions>(x =>

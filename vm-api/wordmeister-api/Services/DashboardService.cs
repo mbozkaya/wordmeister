@@ -28,13 +28,13 @@ namespace wordmeister_api.Services
             var compareDate = dateRange.GetCompareDate();
 
             var comparedWords = _dbContext.UserWords
-                .Where(w => w.UserId == userId && w.CreatedDate > compareDate.begin && w.CreatedDate <= compareDate.end)
+                .Where(w => w.UserId == userId && w.CreatedDate > compareDate.end && w.CreatedDate <= compareDate.begin)
                 .Count();
 
             return new DashboardResponse.StandartDashboardCard
             {
                 DateRange = (int)dateRange,
-                Rate = dateRange == DateRange.AllTime || comparedWords == 0 ? decimal.Zero : addedWordsByDate / comparedWords,
+                Rate = dateRange == DateRange.AllTime ? decimal.Zero : (comparedWords == 0 ? addedWordsByDate : addedWordsByDate / comparedWords),
                 WordCount = addedWordsByDate
             };
         }
@@ -48,13 +48,13 @@ namespace wordmeister_api.Services
             var compareDate = dateRange.GetCompareDate();
 
             var comparedWords = _dbContext.UserWords
-                .Where(w => w.UserId == userId && w.LearnedDate != null && w.LearnedDate > compareDate.begin && w.LearnedDate <= compareDate.end)
+                .Where(w => w.UserId == userId && w.LearnedDate != null && w.LearnedDate > compareDate.end && w.LearnedDate <= compareDate.begin)
                 .Count();
 
             return new DashboardResponse.StandartDashboardCard
             {
                 DateRange = (int)dateRange,
-                Rate = comparedWords == 0 ? decimal.Zero : learnedWords / comparedWords,
+                Rate = comparedWords == 0 ? learnedWords : learnedWords / comparedWords,
                 WordCount = learnedWords
             };
         }
@@ -69,14 +69,14 @@ namespace wordmeister_api.Services
             var compareDate = dateRange.GetCompareDate();
 
             var compareSentences = _dbContext.UserWords
-                .Where(w => w.UserId == userId && w.CreatedDate > compareDate.begin && w.CreatedDate <= compareDate.end)
+                .Where(w => w.UserId == userId && w.CreatedDate > compareDate.end && w.CreatedDate <= compareDate.begin)
                 .Select(s => s.Word.Sentences.Where(w => w.UserId == null || w.UserId == userId).Count())
                 .FirstOrDefault();
 
             return new DashboardResponse.StandartDashboardCard
             {
                 DateRange = (int)dateRange,
-                Rate = compareSentences == 0 ? decimal.Zero : userSentences / compareSentences,
+                Rate = compareSentences == 0 ? userSentences : userSentences / compareSentences,
                 WordCount = userSentences
             };
         }
@@ -86,7 +86,7 @@ namespace wordmeister_api.Services
             int userWordCount = _dbContext.UserWords.Where(w => w.UserId == userId).Count();
             int userLearnedWordCount = _dbContext.UserWords.Where(w => w.UserId == userId && w.IsLearned).Count();
 
-            return userWordCount == 0 ? decimal.Zero : userLearnedWordCount / userWordCount;
+            return userWordCount == 0 ? userLearnedWordCount : (decimal)userLearnedWordCount / userWordCount;
         }
 
         public DashboardResponse.AllCards GetDashboard(int userId, DashboardRequest.AllCards model)
@@ -108,11 +108,12 @@ namespace wordmeister_api.Services
 
             var wholeUserWords = _dbContext.UserWords
                 .Where(w => w.UserId == userId && w.CreatedDate >= endDate)
+                .OrderBy(o => o.CreatedDate)
                 .ToList();
 
+            var firstCreatedDate = wholeUserWords.Count > 0 ? wholeUserWords.FirstOrDefault().CreatedDate : DateTime.Today;
+
             DashboardResponse.Chart chartResponse = new DashboardResponse.Chart();
-            chartResponse.Labels.Add("Added Words");
-            chartResponse.Labels.Add("Learned Words");
 
             switch (dateRange)
             {
@@ -128,12 +129,15 @@ namespace wordmeister_api.Services
                     chartResponse = GetLastSixMonthsCharData(wholeUserWords, endDate);
                     break;
                 case DateRange.AllTime:
-                    chartResponse = GetAllTimeChartData(wholeUserWords, endDate);
+                    chartResponse = GetAllTimeChartData(wholeUserWords, firstCreatedDate);
                     break;
                 default:
                     break;
             }
+            chartResponse.Datasets[0].Label = "Added Words";
+            chartResponse.Datasets[1].Label = "Learned Words";
 
+            chartResponse.DateRange = (int)dateRange;
             return chartResponse;
         }
 
@@ -151,14 +155,15 @@ namespace wordmeister_api.Services
 
             for (int i = 0; i < dateEject; i++)
             {
-                createdWords.Data[i] = userWords.Where(w => w.CreatedDate.Date == date.Date).Count();
-                learnedWords.Data[i] = userWords.Where(w => w.LearnedDate != null && w.LearnedDate.Value.Date == date.Date).Count();
-                labels.Add(date.ToString("m"));
+                createdWords.Data[i] = userWords.Where(w => w.CreatedDate.Date == endDate.Date).Count();
+                learnedWords.Data[i] = userWords.Where(w => w.LearnedDate != null && w.LearnedDate.Value.Date == endDate.Date).Count();
+                labels.Add(endDate.ToString("m"));
 
-                date = date.AddDays(1);
+                endDate = endDate.AddDays(1);
             }
             chart.Datasets.Add(createdWords);
             chart.Datasets.Add(learnedWords);
+            chart.Labels = labels;
 
 
             return chart;
@@ -174,6 +179,17 @@ namespace wordmeister_api.Services
             int sixMonth = 6;
             createdWords.Data = new int[sixMonth];
             learnedWords.Data = new int[sixMonth];
+            var dateCount = (DateTime.Today.Date - endDate.Date).TotalDays;
+            var format = string.Empty;
+            if (dateCount / 30 >= 5)
+            {
+                format = "MMM";
+            }
+            else
+            {
+                format = "m";
+            }
+
 
             for (int i = 0; i < sixMonth; i++)
             {
@@ -183,13 +199,13 @@ namespace wordmeister_api.Services
                 createdWords.Data[i] = userWords.Where(w => w.CreatedDate.Date >= currentMonth.Date && w.CreatedDate.Date < nextMonth.Date).Count();
                 learnedWords.Data[i] = userWords.Where(w => w.LearnedDate != null && w.LearnedDate.Value.Date >= currentMonth.Date && w.LearnedDate < nextMonth.Date).Count();
 
-                labels.Add(currentMonth.ToString("MMMM"));
+                labels.Add(currentMonth.ToString(format));
 
             }
 
             chart.Datasets.Add(createdWords);
             chart.Datasets.Add(learnedWords);
-
+            chart.Labels = labels;
             return chart;
         }
 
@@ -205,6 +221,19 @@ namespace wordmeister_api.Services
             var dateCount = (today.Date - endDate.Date).TotalDays;
             createdWords.Data = new int[6];
             learnedWords.Data = new int[6];
+            var format = string.Empty;
+            if (dateCount / 365 > 3)
+            {
+                format = "Y";
+            }
+            else if (dateCount / 30 >= 6)
+            {
+                format = "MMM";
+            }
+            else
+            {
+                format = "m";
+            }
 
             for (int i = 0; i < 6; i++)
             {
@@ -221,8 +250,12 @@ namespace wordmeister_api.Services
                 createdWords.Data[i] = userWords.Where(w => w.CreatedDate.Date >= currentDate.Date && w.CreatedDate.Date < nextDate.Date).Count();
                 learnedWords.Data[i] = userWords.Where(w => w.LearnedDate != null && w.LearnedDate.Value.Date >= currentDate.Date && w.LearnedDate < nextDate.Date).Count();
 
-                labels.Add(currentDate.ToString("Y"));
+                labels.Add(currentDate.ToString(format));
             }
+
+            chart.Datasets.Add(createdWords);
+            chart.Datasets.Add(learnedWords);
+            chart.Labels = labels;
 
             return chart;
         }
