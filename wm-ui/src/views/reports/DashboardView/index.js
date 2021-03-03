@@ -56,6 +56,7 @@ const Dashboard = () => {
       wordCount: 0,
     },
     progressRate: 0,
+    latestWords: [],
   });
 
   const getTotalWordsCard = (daterange) => {
@@ -247,7 +248,7 @@ const Dashboard = () => {
             xl={6}
             xs={12}
           >
-            <LatestOrders />
+            <LatestOrders rows={dashboardData.latestWords} />
           </Grid>
         </Grid>
       </Container>

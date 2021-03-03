@@ -20,7 +20,8 @@ import {
   Tab,
   Tabs,
   Switch,
-  Drawer
+  Drawer,
+  Tooltip
 } from '@material-ui/core';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import AddIcon from '@material-ui/icons/Add';
@@ -31,6 +32,7 @@ import Rating from '@material-ui/lab/Rating';
 import Page from 'src/components/Page';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
 import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
+import InfoIcon from '@material-ui/icons/Info';
 import wordMeisterService from 'src/services/wordMeisterService';
 import ToasterSnackbar from 'src/components/ToasterSnackbar';
 import * as Yup from 'yup';
@@ -233,32 +235,34 @@ const WordCard = () => {
                         <Grid container justify="center" alignContent="center">
                           <Grid item xs={8}>
                             <Box component="fieldset" mb={3} borderColor="transparent">
-                              <StyledRating
-                                name="customized-color"
-                                value={cardData.point}
-                                getLabelText={(value) => `${value} Heart${value !== 1 ? 's' : ''}`}
-                                precision={0.5}
-                                icon={<FavoriteIcon fontSize="inherit" />}
-                                onChange={(e, v) => {
-                                  if (v !== cardData.point) {
-                                    const model = {
-                                      userWordId: cardData.userWordId,
-                                      point: v * 2,
-                                    };
-                                    wordMeisterService.setWordPoint(model).then((response) => {
-                                      if (response && response.error === false) {
-                                        setCardData({
-                                          ...cardData,
-                                          point: v,
-                                        });
-                                      } else {
-                                        ToasterSnackbar.error({ message: response.errorMessage || 'An error occured' });
-                                      }
-                                    });
-                                  }
-                                }}
-                                className={classes.headerActions}
-                              />
+                              <Tooltip title={cardData.point === 0 ? 'Give your first point to words.' : 'Change your points'} enterDelay={800} leaveDelay={200}>
+                                <StyledRating
+                                  name="customized-color"
+                                  value={cardData.point}
+                                  getLabelText={(value) => `${value} Heart${value !== 1 ? 's' : ''}`}
+                                  precision={0.5}
+                                  icon={<FavoriteIcon fontSize="inherit" />}
+                                  onChange={(e, v) => {
+                                    if (v !== cardData.point) {
+                                      const model = {
+                                        userWordId: cardData.userWordId,
+                                        point: v * 2,
+                                      };
+                                      wordMeisterService.setWordPoint(model).then((response) => {
+                                        if (response && response.error === false) {
+                                          setCardData({
+                                            ...cardData,
+                                            point: v,
+                                          });
+                                        } else {
+                                          ToasterSnackbar.error({ message: response.errorMessage || 'An error occured' });
+                                        }
+                                      });
+                                    }
+                                  }}
+                                  className={classes.headerActions}
+                                />
+                              </Tooltip>
                             </Box>
                           </Grid>
                         </Grid>
@@ -336,7 +340,9 @@ const WordCard = () => {
                               value={cardData.isFavorite}
                               className={classes.headerActions}
                             >
-                              <StarIcon htmlColor={cardData.isFavorite ? goldColor : ''} className={classes.starIcon} />
+                              <Tooltip title={cardData.isFavorite ? 'Remove from favorites' : 'Add words as favorite'} enterDelay={800} leaveDelay={200}>
+                                <StarIcon htmlColor={cardData.isFavorite ? goldColor : ''} className={classes.starIcon} />
+                              </Tooltip>
                             </ToggleButton>
                           </Grid>
                         </Grid>
@@ -344,7 +350,11 @@ const WordCard = () => {
                       <Grid item xs={12}>
                         <Grid container justify="center" alignContent="center" className={classes.frequency}>
                           <Grid item xs={8}>
-                            <Typography align="center" className={classes.headerActions}>{cardData.frequency !== 0 ? `${cardData.frequency}/10` : '-'}</Typography>
+                            <Tooltip title="This is the number of times the word is likely to appear in any English corpus, per million words.">
+                              <Typography align="center" className={classes.headerActions}>
+                                {cardData.frequency !== 0 ? `${cardData.frequency}/1M` : '-'}
+                              </Typography>
+                            </Tooltip>
                           </Grid>
                         </Grid>
                       </Grid>
@@ -353,7 +363,9 @@ const WordCard = () => {
                 </Grid>
                 <Grid item xs={2}>
                   <Button type="button" size="small" onClick={() => setSettingsOpen(true)}>
-                    <SettingsIcon />
+                    <Tooltip title="Fetch words using filter" enterDelay={500}>
+                      <SettingsIcon />
+                    </Tooltip>
                   </Button>
                 </Grid>
               </Grid>
@@ -418,7 +430,7 @@ const WordCard = () => {
                         currentTab === tabsEnum.sentences && (
                           <List>
                             {
-                              cardData.sentences == null || cardData.sentences?.length == 0 ? (
+                              cardData.sentences == null || cardData.sentences?.length === 0 ? (
                                 <ListItem>
                                   <ListItemText>
                                     <Typography variant="h1" className={classes.typography}>No data to show.</Typography>
@@ -441,8 +453,7 @@ const WordCard = () => {
                                           </ListItem>
                                           <Divider key={`${index}divider`} variant="inset" component="li" />
                                         </>
-                                      )
-                                      )
+                                      ))
                                     }
                                   </>
                                 )
