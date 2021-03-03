@@ -24,4 +24,11 @@ export default {
     learned: `${appConfig.api.service()}Word/Learned`,
     userWordSetting: `${appConfig.api.service()}Word/UserWordSetting`,
   },
+  dashboard: {
+    allCards: `${appConfig.api.service()}Dashboard/AllCards`,
+    totalWordsCard: `${appConfig.api.service()}Dashboard/TotalWordsCard`,
+    learnedWordsCard: `${appConfig.api.service()}Dashboard/LearnedWordsCard`,
+    totalSentencesCard: `${appConfig.api.service()}Dashboard/TotalSentencesCard`,
+    chartCard: `${appConfig.api.service()}Dashboard/ChartCard`,
+  },
 };
