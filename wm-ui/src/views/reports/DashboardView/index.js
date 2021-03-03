@@ -1,10 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Container,
   Grid,
   makeStyles
 } from '@material-ui/core';
+import SortByAlphaIcon from '@material-ui/icons/SortByAlpha';
+import PeopleIcon from '@material-ui/icons/PeopleOutlined';
+import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 import Page from 'src/components/Page';
+import dashboardService from 'src/services/dashboardService';
+import ToasterSnackbar from 'src/components/ToasterSnackbar';
+import common from 'src/helpers/common';
 import Budget from './Budget';
 import LatestOrders from './LatestOrders';
 import LatestProducts from './LatestProducts';
@@ -13,6 +19,7 @@ import TasksProgress from './TasksProgress';
 import TotalCustomers from './TotalCustomers';
 import TotalProfit from './TotalProfit';
 import TrafficByDevice from './TrafficByDevice';
+import constant from '../../../helpers/Constants';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -25,7 +32,128 @@ const useStyles = makeStyles((theme) => ({
 
 const Dashboard = () => {
   const classes = useStyles();
+  const filter = common.getDashboardFilter();
+  const [dashboardData, setDashboardData] = useState({
+    chartData: {
+      datasets: [],
+      label: '',
+      dateRange: filter.chartData,
+      labels: [],
+    },
+    learnedWords: {
+      dateRange: filter.learnedWords,
+      rate: 0,
+      wordCount: 0,
+    },
+    totalSentences: {
+      dateRange: filter.totalSentences,
+      rate: 0,
+      wordCount: 0,
+    },
+    totalWords: {
+      dateRange: filter.totalWords,
+      rate: 0,
+      wordCount: 0,
+    },
+    progressRate: 0,
+  });
 
+  const getTotalWordsCard = (daterange) => {
+    dashboardService.getTotalWordsCard(daterange).then((response) => {
+      if (response && response.error === false) {
+        const { data } = response;
+        setDashboardData({
+          ...dashboardData,
+          totalWords: {
+            ...data,
+          },
+        });
+        common.setDateRangeFilter('totalWords', data.dateRange);
+      } else {
+        ToasterSnackbar.error({ message: response.errorMessage || '' });
+      }
+    });
+  };
+
+  const getLearnedWordsCard = (daterange) => {
+    dashboardService.getLearnedWordsCard(daterange).then((response) => {
+      if (response && response.error === false) {
+        const { data } = response;
+        setDashboardData({
+          ...dashboardData,
+          learnedWords: {
+            ...data,
+          },
+        });
+        common.setDateRangeFilter('learnedWords', data.dateRange);
+      } else {
+        ToasterSnackbar.error({ message: response.errorMessage || '' });
+      }
+    });
+  };
+
+  const getChartCard = (daterange) => {
+    dashboardService.getChartCard(daterange).then((response) => {
+      if (response && response.error === false) {
+        const { data } = response;
+        setDashboardData({
+          ...dashboardData,
+          chartData: {
+            ...data,
+          },
+        });
+        common.setDateRangeFilter('chartData', data.dateRange);
+      } else {
+        ToasterSnackbar.error({ message: response.errorMessage || '' });
+      }
+    });
+  };
+
+  const getTotalSentences = (daterange) => {
+    dashboardService.getTotalSentencesCard(daterange).then((response) => {
+      if (response && response.error === false) {
+        const { data } = response;
+        setDashboardData({
+          ...dashboardData,
+          totalSentences: {
+            ...data,
+          }
+        });
+        common.setDateRangeFilter('totalSentences', data.dateRange);
+      } else {
+        ToasterSnackbar.error({ message: response.errorMessage || '' });
+      }
+    });
+  };
+
+  const getDashboard = () => {
+    const model = {
+      totalWords: dashboardData.totalWords.dateRange,
+      learnedWords: dashboardData.learnedWords.dateRange,
+      totalSentences: dashboardData.totalSentences.dateRange,
+      chartData: dashboardData.chartData.dateRange,
+    };
+    dashboardService.getAllCards(model).then((response) => {
+      if (response && response.error === false) {
+        const {
+          data
+        } = response;
+
+        setDashboardData({
+          ...dashboardData,
+          ...data,
+        });
+      } else {
+        ToasterSnackbar.error({ message: response.errorMessage || '' });
+      }
+    });
+  };
+
+  useEffect(() => { getDashboard(); }, []);
+
+  const {
+    totalSentences, totalWords, chartData, learnedWords, progressRate
+  } = dashboardData;
   return (
     <Page
       className={classes.root}
@@ -43,7 +171,15 @@ const Dashboard = () => {
             xl={3}
             xs={12}
           >
-            <Budget />
+            <Budget
+              icon={<SortByAlphaIcon />}
+              title="Latest Added Words"
+              dateRange={totalWords.dateRange}
+              onDateRangeChange={(value) => { getTotalWordsCard(value); }}
+              increasingRate={totalWords.rate}
+              wordCount={totalWords.wordCount}
+              cardType={constant.dashboardCardType.totalWords}
+            />
           </Grid>
           <Grid
             item
@@ -52,7 +188,16 @@ const Dashboard = () => {
             xl={3}
             xs={12}
           >
-            <TotalCustomers />
+            <Budget
+              icon={<PeopleIcon />}
+              title="Latest Learned Words"
+              dateRange={learnedWords.dateRange}
+              onDateRangeChange={(value) => { getLearnedWordsCard(value); }}
+              increasingRate={learnedWords.rate}
+              wordCount={learnedWords.wordCount}
+              cardType={constant.dashboardCardType.learnedWords}
+            />
+            {/* <TotalCustomers /> */}
           </Grid>
           <Grid
             item
@@ -61,7 +206,7 @@ const Dashboard = () => {
             xl={3}
             xs={12}
           >
-            <TasksProgress />
+            <TasksProgress progressValue={progressRate} />
           </Grid>
           <Grid
             item
@@ -70,40 +215,36 @@ const Dashboard = () => {
             xl={3}
             xs={12}
           >
-            <TotalProfit />
+            <Budget
+              icon={<AttachMoneyIcon />}
+              title="Latest Sent Sentences"
+              dateRange={totalSentences.dateRange}
+              onDateRangeChange={(value) => { getTotalSentences(value); }}
+              increasingRate={totalSentences.rate}
+              wordCount={totalSentences.wordCount}
+              cardType={constant.dashboardCardType.totalSentences}
+            />
+            {/* <TotalProfit /> */}
           </Grid>
           <Grid
             item
-            lg={8}
+            lg={6}
             md={12}
-            xl={9}
+            xl={6}
             xs={12}
           >
-            <Sales />
+            <Sales
+              labels={chartData.labels}
+              datasets={chartData.datasets}
+              dateRange={chartData.dateRange}
+              onDateRangeChage={(value) => getChartCard(value)}
+            />
           </Grid>
           <Grid
             item
-            lg={4}
-            md={6}
-            xl={3}
-            xs={12}
-          >
-            <TrafficByDevice />
-          </Grid>
-          <Grid
-            item
-            lg={4}
-            md={6}
-            xl={3}
-            xs={12}
-          >
-            <LatestProducts />
-          </Grid>
-          <Grid
-            item
-            lg={8}
+            lg={6}
             md={12}
-            xl={9}
+            xl={6}
             xs={12}
           >
             <LatestOrders />

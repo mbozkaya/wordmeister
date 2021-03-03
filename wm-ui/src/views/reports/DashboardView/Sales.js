@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { Bar } from 'react-chartjs-2';
@@ -11,20 +11,27 @@ import {
   Divider,
   useTheme,
   makeStyles,
-  colors
+  colors,
+  Select,
+  MenuItem,
 } from '@material-ui/core';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 
 const useStyles = makeStyles(() => ({
   root: {}
 }));
 
-const Sales = ({ className, ...rest }) => {
+const Sales = (props) => {
+  const {
+    className, datasets, labels, onDateRangeChage, dateRange, ...rest
+  } = props;
   const classes = useStyles();
   const theme = useTheme();
 
-  const data = {
+  datasets.forEach((f, i) => {
+    f.backgroundColor = i === 0 ? colors.indigo[500] : colors.green[500];
+  });
+  const [chartData, setChartData] = useState({
     datasets: [
       {
         backgroundColor: colors.indigo[500],
@@ -35,10 +42,36 @@ const Sales = ({ className, ...rest }) => {
         backgroundColor: colors.grey[200],
         data: [11, 20, 12, 29, 30, 25, 13],
         label: 'Last year'
+      },
+      {
+        backgroundColor: colors.green[200],
+        data: [11, 20, 12, 29, 30, 25, 13],
+        label: 'Last year'
       }
     ],
-    labels: ['1 Aug', '2 Aug', '3 Aug', '4 Aug', '5 Aug', '6 Aug']
-  };
+    labels: ['1 Aug', '2 Aug', '3 Aug', '4 Aug', '5 Aug', '6 Aug', '7 Aug']
+  });
+
+  // const data = {
+  // datasets: [
+  //   {
+  //     backgroundColor: colors.indigo[500],
+  //     data: [18, 5, 19, 27, 29, 19, 20],
+  //     label: 'This year'
+  //   },
+  //   {
+  //     backgroundColor: colors.grey[200],
+  //     data: [11, 20, 12, 29, 30, 25, 13],
+  //     label: 'Last year'
+  //   },
+  //   {
+  //     backgroundColor: colors.green[200],
+  //     data: [11, 20, 12, 29, 30, 25, 13],
+  //     label: 'Last year'
+  //   }
+  // ],
+  //   labels: ['1 Aug', '2 Aug', '3 Aug', '4 Aug', '5 Aug', '6 Aug', '7 Aug']
+  // };
 
   const options = {
     animation: false,
@@ -95,6 +128,14 @@ const Sales = ({ className, ...rest }) => {
     }
   };
 
+  useEffect(() => {
+    setChartData({
+      ...chartData,
+      datasets,
+      labels,
+    });
+  }, [datasets, labels]);
+
   return (
     <Card
       className={clsx(classes.root, className)}
@@ -102,13 +143,17 @@ const Sales = ({ className, ...rest }) => {
     >
       <CardHeader
         action={(
-          <Button
-            endIcon={<ArrowDropDownIcon />}
-            size="small"
-            variant="text"
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={dateRange}
+            onChange={(e) => { onDateRangeChage(e.target.value); }}
           >
-            Last 7 days
-          </Button>
+            <MenuItem value={2}>Last Week</MenuItem>
+            <MenuItem value={3}>Last Month</MenuItem>
+            <MenuItem value={4}>Last 6 months</MenuItem>
+            <MenuItem value={5}>All Time</MenuItem>
+          </Select>
         )}
         title="Latest Sales"
       />
@@ -119,7 +164,7 @@ const Sales = ({ className, ...rest }) => {
           position="relative"
         >
           <Bar
-            data={data}
+            data={chartData}
             options={options}
           />
         </Box>
@@ -144,7 +189,21 @@ const Sales = ({ className, ...rest }) => {
 };
 
 Sales.propTypes = {
-  className: PropTypes.string
+  className: PropTypes.string,
+  datasets: PropTypes.array,
+  labels: PropTypes.array,
+  onDateRangeChage: PropTypes.func,
+  dateRange: PropTypes.number.isRequired,
+};
+
+Sales.DefaultPropTypes = {
+  datasets: [{
+    backgroundColor: colors.grey[500],
+    data: [],
+    label: ''
+  }],
+  labels: [''],
+  onDateRangeChage: () => { },
 };
 
 export default Sales;

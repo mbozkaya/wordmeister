@@ -25,7 +25,8 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-const TasksProgress = ({ className, ...rest }) => {
+const TasksProgress = (props) => {
+  const { className, progressValue, ...rest } = props;
   const classes = useStyles();
 
   return (
@@ -45,13 +46,13 @@ const TasksProgress = ({ className, ...rest }) => {
               gutterBottom
               variant="h6"
             >
-              TASKS PROGRESS
+              LEARNING PROGRESS
             </Typography>
             <Typography
               color="textPrimary"
               variant="h3"
             >
-              75.5%
+              {`${(progressValue * 100).toFixed(2)}%`}
             </Typography>
           </Grid>
           <Grid item>
@@ -60,9 +61,9 @@ const TasksProgress = ({ className, ...rest }) => {
             </Avatar>
           </Grid>
         </Grid>
-        <Box mt={3}>
+        <Box mt={6}>
           <LinearProgress
-            value={75.5}
+            value={progressValue * 100}
             variant="determinate"
           />
         </Box>
@@ -72,7 +73,12 @@ const TasksProgress = ({ className, ...rest }) => {
 };
 
 TasksProgress.propTypes = {
-  className: PropTypes.string
+  className: PropTypes.string,
+  progressValue: PropTypes.number,
+};
+
+TasksProgress.defaultPropTypes = {
+  progressValue: 0,
 };
 
 export default TasksProgress;
