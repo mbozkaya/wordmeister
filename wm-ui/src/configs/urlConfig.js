@@ -11,6 +11,7 @@ export default {
     userProfilePic: `${appConfig.api.accountService()}/UserProfilePic`,
     removeFile: `${appConfig.api.accountService()}/RemoveFile`,
     updateInformation: `${appConfig.api.accountService()}/UpdateInformation`,
+    updatePassword: `${appConfig.api.accountService()}/UpdatePassword`,
   },
   wordMeister: {
     addWord: `${appConfig.api.service()}Word/AddWord`,

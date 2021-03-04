@@ -15,6 +15,7 @@ namespace wordmeister_api.Interfaces
         User GetById(int id);
         General.ResponseResult CreateUser(SignUp model);
         General.ResponseResult UpdateInformation(AccountRequest.Information model, long userId);
+        General.ResponseResult UpdatePassword(AccountRequest.Password model, long userId);
         General.ResponseResult UploadFiles(List<UploadFileDto.Request> fileModel, int userId);
         string GetUserPP(long userId);
         General.ResponseResult SetUserPP(long userId, long fileId);

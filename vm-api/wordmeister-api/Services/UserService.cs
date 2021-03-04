@@ -95,6 +95,31 @@ namespace wordmeister_api.Services
 
             return new General.ResponseResult();
         }
+
+        public General.ResponseResult UpdatePassword(AccountRequest.Password model, long userId)
+        {
+            var user = _wordMeisterDbContext.Users.Where(w => w.Id == userId).FirstOrDefault();
+
+            if(user.Password != model.OldPassword)
+                return new General.ResponseResult
+                {
+                    Error = true,
+                    ErrorMessage = "Old Password is wrong."
+                };
+
+            if (user.Password == model.NewPassword)
+                return new General.ResponseResult
+                {
+                    Error = true,
+                    ErrorMessage = "Old and new password are the same."
+                };
+
+            user.Password = model.NewPassword;
+            _wordMeisterDbContext.SaveChanges();
+
+            return new General.ResponseResult();
+        }
+
         public General.ResponseResult UploadFiles(List<UploadFileDto.Request> fileModel, int userId)
         {
             var currentUser = GetById(userId);

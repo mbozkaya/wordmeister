@@ -13,5 +13,11 @@ namespace wordmeister_api.Dtos.Account
             public string Lastname { get; set; }
             public string Email { get; set; }
         }
+
+        public class Password
+        {
+            public string OldPassword { get; set; }
+            public string NewPassword { get; set; }
+        }
     }
 }

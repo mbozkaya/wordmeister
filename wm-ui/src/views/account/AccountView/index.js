@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Box,
   Container,
   Grid,
   makeStyles
@@ -8,6 +9,7 @@ import Page from 'src/components/Page';
 import { AuthContext } from 'src/contexts/authContext';
 import Profile from './Profile';
 import ProfileDetails from './ProfileDetails';
+import Password from './Password';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -49,6 +51,9 @@ const Account = () => {
                   xs={12}
                 >
                   <ProfileDetails />
+                  <Box mt={3}>
+                    <Password />
+                  </Box>
                 </Grid>
               </Grid>
             </Container>

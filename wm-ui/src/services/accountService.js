@@ -85,4 +85,21 @@ export default {
 
     return Fetch(urlConfig.account.removeFile, requestOptions);
   },
+  updateInformation: (model) => {
+    const requestOptions = {
+      method: 'POST',
+      body: JSON.stringify(model),
+      headers: utilitity.authorizedHeader()
+    }
+    return Fetch(urlConfig.account.updateInformation, requestOptions);
+  },
+  updatePassword: (model) => {
+    const requestOptions = {
+      method: 'POST',
+      body: JSON.stringify(model),
+      headers: utilitity.authorizedHeader()
+    }
+
+    return Fetch(urlConfig.account.updatePassword, requestOptions);
+  }
 };

@@ -101,5 +101,12 @@ namespace wordmeister_api.Controllers
         {
             return Ok(_userService.UpdateInformation(model, User.GetUserId()));
         }
+
+        [Authorize]
+        [HttpPost("UpdatePassword")]
+        public IActionResult UpdatePassword([FromBody] AccountRequest.Password model)
+        {
+            return Ok(_userService.UpdatePassword(model, User.GetUserId()));
+        }
     }
 }
